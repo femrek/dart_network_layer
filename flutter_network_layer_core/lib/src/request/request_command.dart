@@ -10,18 +10,22 @@ typedef OnProgressCallback = void Function(int done, int total);
 /// such as the path, method, payload type, payload data, headers, progress
 /// callbacks, etc.
 ///
-/// [T] is the type of the successful response model. [E] is the type of the
-/// error response model.
-abstract class RequestCommand<T extends ResponseModel,
-    E extends ResponseModel> {
+/// [T] is the type of the successful response model.
+abstract class RequestCommand<T extends Schema> {
   /// The path of the request.
   String get path;
 
   /// The factory instance to deserialize the response.
-  ResponseFactory<T> get responseFactory;
+  SchemaFactory<T> get defaultResponseFactory;
 
   /// The factory instance to deserialize the error response.
-  ResponseFactory<E> get errorResponseFactory;
+  SchemaFactory get defaultErrorResponseFactory;
+
+  /// The factories for different status codes. This can be used to provide
+  /// different response factories for different status codes. For example, if
+  /// the server returns a 400 status code, the error response factory can be
+  /// different from the one for 500 status code.
+  Map<int, SchemaFactory> get responseFactories => const {};
 
   /// The method of the request. GET, POST, PUT, DELETE, etc.
   HttpRequestMethod get method => HttpRequestMethod.get;
@@ -44,18 +48,30 @@ abstract class RequestCommand<T extends ResponseModel,
   /// The callback for the progress of the response.
   OnProgressCallback? get onReceiveProgressUpdate => null;
 
-  /// The log string of the request. Can be overridden to provide a custom log
-  /// string.
+  /// The network invoker to perform the request. used in [invoke].
   ///
-  /// The default implementation returns a string that contains the method,
-  /// path and payload type.
+  /// This is useful when the request command needs to invoke itself (e.g., for
+  /// retrying the request) or when the invoker needs to be accessed in the
+  /// request command (e.g., for accessing the network configuration or
+  /// cancelling the request).
+  INetworkInvoker? get invoker => null;
+
+  /// Invokes the request using the provided network invoker.
   ///
-  /// The log helper of the package uses this method to log the request data.
-  /// So, if you want to customize the log string, you can override this method.
+  /// This is a convenience method that calls [INetworkInvoker.request] with
+  /// this request command.
   ///
-  /// Used in [NetworkLogRequest.message] function.
-  String toLogString() {
-    return '$runtimeType ${method.value} $path '
-        'Payload Type: $payloadType ';
+  /// Returns a [NetworkResult] with the response data.
+  Future<NetworkResult<T>> invoke([INetworkInvoker? invoker]) {
+    final i = invoker ?? this.invoker;
+    if (i == null) {
+      return Future.value(NetworkErrorResult(
+        error: NullInvokerError(
+          message: 'No network invoker provided for the request command.',
+          stackTrace: StackTrace.current,
+        ),
+      ));
+    }
+    return i.request(this);
   }
 }

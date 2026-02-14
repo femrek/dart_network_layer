@@ -18,25 +18,6 @@ sealed class NetworkErrorBase {
   final Object? error;
 }
 
-/// The error type for errors for returned non-successful responses. (404 etc.)
-final class NetworkErrorResponse extends NetworkErrorBase {
-  /// Creates a network error response.
-  const NetworkErrorResponse({
-    required this.statusCode,
-    required super.message,
-    required super.stackTrace,
-    super.error,
-  });
-
-  /// The status code returned from the server.
-  final int statusCode;
-
-  @override
-  String toString() {
-    return 'NetworkErrorResponse($statusCode): $message';
-  }
-}
-
 /// The error type for errors occurred in the network invoker about the response
 /// type.
 final class NetworkErrorInvalidResponseType extends NetworkErrorBase {
@@ -44,8 +25,16 @@ final class NetworkErrorInvalidResponseType extends NetworkErrorBase {
   NetworkErrorInvalidResponseType({
     required super.message,
     required super.stackTrace,
+    required this.response,
+    required this.statusCode,
     super.error,
   });
+
+  /// The response data that caused the error.
+  final dynamic response;
+
+  /// The HTTP status code of the response.
+  final int statusCode;
 
   @override
   String toString() {
@@ -69,6 +58,22 @@ final class NetworkErrorInvalidPayload extends NetworkErrorBase {
   }
 }
 
+/// The error type for errors occurred in the network invoker about the invoker
+/// instance being null.
+final class NullInvokerError extends NetworkErrorBase {
+  /// Creates a null invoker error.
+  const NullInvokerError({
+    required super.message,
+    required super.stackTrace,
+    super.error,
+  });
+
+  @override
+  String toString() {
+    return 'NullInvokerError: $message';
+  }
+}
+
 /// The error type for general type of errors occurred in the network invoker.
 final class NetworkError extends NetworkErrorBase {
   /// Creates a network error.
@@ -76,7 +81,15 @@ final class NetworkError extends NetworkErrorBase {
     required super.message,
     required super.stackTrace,
     super.error,
+    this.statusCode,
+    this.response,
   });
+
+  /// The response data if available.
+  final dynamic response;
+
+  /// The HTTP status code if available.
+  final int? statusCode;
 
   @override
   String toString() {
