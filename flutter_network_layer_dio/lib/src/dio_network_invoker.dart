@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
+import 'package:flutter_network_layer_dio/src/utils.dart';
 
 /// The network manager class for managing to api communication.
 final class DioNetworkInvoker implements INetworkInvoker {
@@ -24,30 +25,17 @@ final class DioNetworkInvoker implements INetworkInvoker {
 
   @override
   Future<NetworkResult<T>> request<T extends Schema>(
-      RequestCommand<Schema> request) async {
+      RequestCommand<T> request) async {
     final requestPayload = request.payload;
 
     final Response<dynamic> response;
     final Object? payload;
 
-    switch (request.payloadType) {
-      case RequestPayloadType.formData:
-        if (requestPayload == null) {
-          payload = null;
-        } else if (requestPayload is Map<String, dynamic>) {
-          payload = FormData.fromMap(requestPayload);
-        } else {
-          return NetworkErrorResult(
-            error: NetworkErrorInvalidPayload(
-              message:
-                  'Invalid payload type. Payload must be Map<String, dynamic> '
-                  'when payloadType is RequestPayloadType.formData.',
-              stackTrace: StackTrace.current,
-            ),
-          );
-        }
-      case RequestPayloadType.other:
-        payload = requestPayload;
+    // payload preprocessing
+    try {
+      payload = await _resolveDioPayload(requestPayload);
+    } on NetworkError catch (e) {
+      return NetworkErrorResult<T>(error: e);
     }
 
     // perform request
@@ -173,6 +161,44 @@ final class DioNetworkInvoker implements INetworkInvoker {
         ),
       );
     }
+  }
+
+  /// Resolves the raw request payload into a Dio-compatible format.
+  Future<Object?> _resolveDioPayload(RequestSchema payload) async {
+    switch (payload) {
+      case final FormDataRequestSchema s:
+        final rawPayload = s.toFormDataMapPayload();
+        return FormData.fromMap(await _convertMultipartFiles(rawPayload));
+      case final JsonRequestSchema s:
+        return s.toJsonPayload();
+      case final StringRequestSchema s:
+        return s.toStringPayload();
+      case final BinaryRequestSchema s:
+        return s.toBinaryPayload();
+      case final StreamRequestSchema s:
+        return s.toStreamPayload();
+      case final DynamicRequestSchema s:
+        return s.toPayload();
+    }
+  }
+
+  Future<Map<String, dynamic>> _convertMultipartFiles(
+    Map<String, dynamic> data,
+  ) async {
+    final dioFormDataMap = <String, dynamic>{};
+    for (final entry in data.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (value is MultipartFileSchema) {
+        dioFormDataMap[key] = await value.toDioMultipartFile();
+      } else if (value is List<MultipartFileSchema>) {
+        final fileFutures = value.map((e) => e.toDioMultipartFile());
+        dioFormDataMap[key] = await Future.wait(fileFutures);
+      } else {
+        dioFormDataMap[key] = value;
+      }
+    }
+    return dioFormDataMap;
   }
 
   NetworkResult<T> _createResult<T extends Schema>({

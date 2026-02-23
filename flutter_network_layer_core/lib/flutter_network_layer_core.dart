@@ -1,9 +1,12 @@
 export 'src/enums/http_request_method.dart';
-export 'src/enums/request_payload_type.dart';
 export 'src/error/network_error.dart';
 export 'src/i_network_invoker.dart';
 export 'src/request/request_command.dart';
 export 'src/response/response_result.dart';
+export 'src/schema/multipart_file_schema.dart';
+export 'src/schema/request_schema.dart';
 export 'src/schema/schema.dart';
 export 'src/schema/schema_factory.dart';
+export 'src/schema/schemas/any_data.schema.dart';
+export 'src/schema/schemas/empty.request_schema.dart';
 export 'src/schema/schemas/ignored.schema.dart';

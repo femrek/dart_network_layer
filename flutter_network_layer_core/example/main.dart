@@ -55,9 +55,6 @@ class NetworkManager implements INetworkInvoker {
 
 class RequestExample extends RequestCommand<ResponseExample> {
   @override
-  Map<String, dynamic> get payload => const {};
-
-  @override
   Map<String, dynamic> get headers => const {};
 
   @override
@@ -73,9 +70,6 @@ class RequestExample extends RequestCommand<ResponseExample> {
   String get path => '/example';
 
   @override
-  RequestPayloadType get payloadType => RequestPayloadType.other;
-
-  @override
   SchemaFactory<ResponseExample> get defaultResponseFactory =>
       ResponseExampleFactory();
 
@@ -86,7 +80,6 @@ class RequestExample extends RequestCommand<ResponseExample> {
   String toString() {
     return 'RequestExample{path: $path, '
         'method: $method, '
-        'payloadType: $payloadType, '
         'data: $payload, '
         'headers: $headers, '
         'onSendProgressUpdate: $onSendProgressUpdate, '

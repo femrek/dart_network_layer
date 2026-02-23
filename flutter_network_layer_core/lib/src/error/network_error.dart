@@ -1,7 +1,7 @@
 /// The base class for errors that occur in the invokers of this package.
 ///
 /// This classes are used to log internal errors or
-sealed class NetworkErrorBase {
+sealed class NetworkErrorBase implements Exception {
   const NetworkErrorBase({
     required this.message,
     required this.stackTrace,
