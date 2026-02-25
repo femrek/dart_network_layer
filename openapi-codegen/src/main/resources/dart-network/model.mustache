@@ -1,8 +1,11 @@
 {{>header}}
 {{>part_of}}
-
 {{#models}}
 {{#model}}
+{{#imports}}
+import '{{{.}}}.dart';
+{{/imports}}
+
 {{#isEnum}}
 {{#native_serialization}}
 {{>serialization/native/native_enum}}

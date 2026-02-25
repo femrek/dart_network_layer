@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 /**
  * Executable to generate actual Dart code from an OpenAPI spec
@@ -26,6 +29,18 @@ public class GenerateExample {
         System.out.println("Input Spec: " + inputSpec);
         System.out.println("Base Output Directory: " + baseOutputDir);
         System.out.println();
+
+        // remove existing output directory if it exists
+        File outputDirToRemove = new File(baseOutputDir);
+        if (outputDirToRemove.exists()) {
+            try {
+                System.out.println("⚠️  Output directory already exists. Deleting: " + baseOutputDir);
+                deleteDirectory(outputDirToRemove);
+                System.out.println("✅ Old output directory deleted.");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // Check if input spec exists
         File specFile = new File(inputSpec);

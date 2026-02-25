@@ -1,4 +1,4 @@
-class {{{classname}}} {
+class {{{classname}}} extends Schema {
 {{>dart_constructor}}
 
 {{#vars}}
@@ -33,13 +33,16 @@ class {{{classname}}} {
       {{/required}}
     {{/isNullable}}
   {{/isEnum}}
-  {{{datatypeWithEnum}}}{{#isNullable}}?{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}?{{/defaultValue}}{{/required}}{{/isNullable}} {{{name}}};
+  final {{{datatypeWithEnum}}}{{#isNullable}}?{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}?{{/defaultValue}}{{/required}}{{/isNullable}} {{{name}}};
 
 {{/vars}}
+  /// The factory instance for creating [{{{classname}}}] from JSON.
+  static const factory = {{{classname}}}Factory();
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is {{{classname}}} &&
   {{#vars}}
-    {{#isMap}}_deepEquality.equals(other.{{{name}}}, {{{name}}}){{/isMap}}{{^isMap}}{{#isArray}}_deepEquality.equals(other.{{{name}}}, {{{name}}}){{/isArray}}{{^isArray}}other.{{{name}}} == {{{name}}}{{/isArray}}{{/isMap}}{{^-last}} &&{{/-last}}{{#-last}};{{/-last}}
+    other.{{{name}}} == {{{name}}}{{^-last}} &&{{/-last}}{{#-last}};{{/-last}}
   {{/vars}}
 
   @override
@@ -66,24 +69,10 @@ class {{{classname}}} {
       {{/required}}
     {{/isNullable}}
     {{#isDateTime}}
-      {{#pattern}}
-      json[r'{{{baseName}}}'] = _isEpochMarker(r'{{{pattern}}}')
-        ? this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.millisecondsSinceEpoch
-        : this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.toUtc().toIso8601String();
-      {{/pattern}}
-      {{^pattern}}
       json[r'{{{baseName}}}'] = this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.toUtc().toIso8601String();
-      {{/pattern}}
     {{/isDateTime}}
     {{#isDate}}
-      {{#pattern}}
-      json[r'{{{baseName}}}'] = _isEpochMarker(r'{{{pattern}}}')
-        ? this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.millisecondsSinceEpoch
-        : _dateFormatter.format(this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.toUtc());
-      {{/pattern}}
-      {{^pattern}}
-      json[r'{{{baseName}}}'] = _dateFormatter.format(this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.toUtc());
-      {{/pattern}}
+      json[r'{{{baseName}}}'] = this.{{{name}}}{{#isNullable}}!{{/isNullable}}{{^isNullable}}{{^required}}{{^defaultValue}}!{{/defaultValue}}{{/required}}{{/isNullable}}.toUtc().toIso8601String();
     {{/isDate}}
     {{^isDateTime}}
       {{^isDate}}
@@ -129,10 +118,30 @@ class {{{classname}}} {
       return {{{classname}}}(
   {{#vars}}
     {{#isDateTime}}
-        {{{name}}}: mapDateTime(json, r'{{{baseName}}}', r'{{{pattern}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+        {{#required}}
+          {{^isNullable}}
+        {{{name}}}: DateTime.parse(json[r'{{{baseName}}}'].toString()),
+          {{/isNullable}}
+          {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] != null ? DateTime.parse(json[r'{{{baseName}}}'].toString()) : null,
+          {{/isNullable}}
+        {{/required}}
+        {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] != null ? DateTime.parse(json[r'{{{baseName}}}'].toString()) : null{{#defaultValue}} ?? {{{.}}}{{/defaultValue}},
+        {{/required}}
     {{/isDateTime}}
     {{#isDate}}
-        {{{name}}}: mapDateTime(json, r'{{{baseName}}}', r'{{{pattern}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+        {{#required}}
+          {{^isNullable}}
+        {{{name}}}: DateTime.parse(json[r'{{{baseName}}}'].toString()),
+          {{/isNullable}}
+          {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] != null ? DateTime.parse(json[r'{{{baseName}}}'].toString()) : null,
+          {{/isNullable}}
+        {{/required}}
+        {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] != null ? DateTime.parse(json[r'{{{baseName}}}'].toString()) : null{{#defaultValue}} ?? {{{.}}}{{/defaultValue}},
+        {{/required}}
     {{/isDate}}
     {{^isDateTime}}
       {{^isDate}}
@@ -163,7 +172,7 @@ class {{{classname}}} {
             : {{items.complexType}}.mapListFromJson(json[r'{{{baseName}}}']),
                 {{/items.complexType}}
                 {{^items.complexType}}
-            : mapCastOfType<String, List>(json, r'{{{baseName}}}'),
+            : (json[r'{{{baseName}}}'] as Map).cast<String, List>(),
                 {{/items.complexType}}
               {{/items.isArray}}
               {{^items.isArray}}
@@ -172,7 +181,17 @@ class {{{classname}}} {
         {{{name}}}: {{items.complexType}}.mapFromJson(json[r'{{{baseName}}}']),
                   {{/items.complexType}}
                   {{^items.complexType}}
-        {{{name}}}: mapCastOfType<String, dynamic>(json, r'{{{baseName}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+                    {{#required}}
+                      {{^isNullable}}
+        {{{name}}}: (json[r'{{{baseName}}}'] as Map).cast<String, dynamic>(),
+                      {{/isNullable}}
+                      {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? null : (json[r'{{{baseName}}}'] as Map).cast<String, dynamic>(),
+                      {{/isNullable}}
+                    {{/required}}
+                    {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}} : (json[r'{{{baseName}}}'] as Map).cast<String, dynamic>(),
+                    {{/required}}
                   {{/items.complexType}}
                 {{/items.isMap}}
                 {{^items.isMap}}
@@ -180,7 +199,17 @@ class {{{classname}}} {
         {{{name}}}: {{{items.complexType}}}.mapFromJson(json[r'{{{baseName}}}']),
                   {{/items.complexType}}
                   {{^items.complexType}}
-        {{{name}}}: mapCastOfType<String, {{items.dataType}}>(json, r'{{{baseName}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+                    {{#required}}
+                      {{^isNullable}}
+        {{{name}}}: (json[r'{{{baseName}}}'] as Map).cast<String, {{items.dataType}}>(),
+                      {{/isNullable}}
+                      {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? null : (json[r'{{{baseName}}}'] as Map).cast<String, {{items.dataType}}>(),
+                      {{/isNullable}}
+                    {{/required}}
+                    {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}} : (json[r'{{{baseName}}}'] as Map).cast<String, {{items.dataType}}>(),
+                    {{/required}}
                   {{/items.complexType}}
                 {{/items.isMap}}
               {{/items.isArray}}
@@ -208,7 +237,17 @@ class {{{classname}}} {
           {{/isArray}}
           {{^isArray}}
             {{#isMap}}
-        {{{name}}}: mapCastOfType<String, {{{items.datatype}}}>(json, r'{{{baseName}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+              {{#required}}
+                {{^isNullable}}
+        {{{name}}}: (json[r'{{{baseName}}}'] as Map).cast<String, {{{items.datatype}}}>(),
+                {{/isNullable}}
+                {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? null : (json[r'{{{baseName}}}'] as Map).cast<String, {{{items.datatype}}}>(),
+                {{/isNullable}}
+              {{/required}}
+              {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] == null ? {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}} : (json[r'{{{baseName}}}'] as Map).cast<String, {{{items.datatype}}}>(),
+              {{/required}}
             {{/isMap}}
             {{^isMap}}
               {{#isNumber}}
@@ -218,7 +257,17 @@ class {{{classname}}} {
               {{/isNumber}}
               {{^isNumber}}
                 {{^isEnum}}
-        {{{name}}}: mapValueOfType<{{{datatypeWithEnum}}}>(json, r'{{{baseName}}}'){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
+                  {{#required}}
+                    {{^isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] as {{{datatypeWithEnum}}},
+                    {{/isNullable}}
+                    {{#isNullable}}
+        {{{name}}}: json[r'{{{baseName}}}'] is {{{datatypeWithEnum}}} ? json[r'{{{baseName}}}'] as {{{datatypeWithEnum}}} : null,
+                    {{/isNullable}}
+                  {{/required}}
+                  {{^required}}
+        {{{name}}}: json[r'{{{baseName}}}'] is {{{datatypeWithEnum}}} ? json[r'{{{baseName}}}'] as {{{datatypeWithEnum}}} : {{#defaultValue}}{{{.}}}{{/defaultValue}}{{^defaultValue}}null{{/defaultValue}},
+                  {{/required}}
                 {{/isEnum}}
                 {{#isEnum}}
         {{{name}}}: {{{enumName}}}.fromJson(json[r'{{{baseName}}}']){{#required}}{{^isNullable}}!{{/isNullable}}{{/required}}{{^required}}{{#defaultValue}} ?? {{{.}}}{{/defaultValue}}{{/required}},
@@ -283,6 +332,14 @@ class {{{classname}}} {
   {{/required}}
 {{/vars}}
   };
+}
+
+/// Factory for creating [{{{classname}}}] instances from JSON data.
+class {{{classname}}}Factory extends JsonSchemaFactory<{{{classname}}}> {
+  const {{{classname}}}Factory();
+
+  @override
+  {{{classname}}} fromJson(dynamic json) => {{{classname}}}.fromJson(json)!;
 }
 {{#vars}}
     {{^isModel}}

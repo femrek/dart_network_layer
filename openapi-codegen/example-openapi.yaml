@@ -1,11 +1,14 @@
 openapi: 3.0.0
 info:
   title: Pet Store API
-  description: A simple pet store API example
+  description: A comprehensive pet store API example for testing codegen edge cases
   version: 1.0.0
 servers:
   - url: https://api.petstore.example.com/v1
+
 paths:
+  # ─── Pets (CRUD + list, path/query/header params) ────────────────────
+
   /pets:
     get:
       summary: List all pets
@@ -20,6 +23,25 @@ paths:
           schema:
             type: integer
             format: int32
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: status
+          in: query
+          description: Filter by pet status
+          required: false
+          schema:
+            $ref: '#/components/schemas/PetStatus'
+        - name: X-Request-Id
+          in: header
+          description: Optional correlation ID for tracing
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: A paged array of pets
@@ -38,12 +60,19 @@ paths:
       operationId: createPet
       tags:
         - pets
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          description: Idempotency key to prevent duplicate creation
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: '#/components/schemas/CreatePetRequest'
       responses:
         '201':
           description: Pet created
@@ -57,6 +86,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
   /pets/{petId}:
     get:
       summary: Info for a specific pet
@@ -74,6 +104,70 @@ paths:
       responses:
         '200':
           description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Full update of a pet
+      operationId: updatePet
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePetRequest'
+      responses:
+        '200':
+          description: Pet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Partial update of a pet
+      operationId: patchPet
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to patch
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchPetRequest'
+      responses:
+        '200':
+          description: Pet patched
           content:
             application/json:
               schema:
@@ -106,13 +200,416 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /pets/{petId}/avatar:
+    post:
+      summary: Upload a pet avatar image
+      description: Uploads a pet's avatar as multipart form data with optional metadata
+      operationId: uploadPetAvatar
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The avatar image file
+                caption:
+                  type: string
+                  description: Optional caption for the avatar
+      responses:
+        '200':
+          description: Avatar uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResource'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /pets/{petId}/documents:
+    post:
+      summary: Upload multiple documents for a pet
+      description: Upload multiple files with metadata in a single multipart request
+      operationId: uploadPetDocuments
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - document
+                - documentType
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: The document file
+                documentType:
+                  type: string
+                  description: Type of the document (e.g. vaccination, certificate)
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: Optional expiration date of the document
+                notes:
+                  type: string
+                  description: Optional notes about the document
+      responses:
+        '201':
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResource'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─── Owners (separate tag for multi-tag testing) ──────────────────────
+
+  /owners:
+    get:
+      summary: List all owners
+      operationId: listOwners
+      tags:
+        - owners
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: search
+          in: query
+          description: Search by owner name or email
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of owners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Owner'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create an owner
+      operationId: createOwner
+      tags:
+        - owners
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOwnerRequest'
+      responses:
+        '201':
+          description: Owner created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /owners/{ownerId}:
+    get:
+      summary: Get an owner by ID
+      operationId: getOwnerById
+      tags:
+        - owners
+      parameters:
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /owners/{ownerId}/pets:
+    get:
+      summary: List all pets belonging to a specific owner
+      operationId: listOwnerPets
+      tags:
+        - owners
+      parameters:
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A list of pets belonging to the owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pets'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─── Appointments (another tag, datetime, nested refs) ────────────────
+
+  /appointments:
+    get:
+      summary: List appointments
+      operationId: listAppointments
+      tags:
+        - appointments
+      parameters:
+        - name: from
+          in: query
+          description: Start date filter (inclusive)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: End date filter (inclusive)
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: petId
+          in: query
+          description: Filter by pet
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: appointmentType
+          in: query
+          description: Filter by appointment type
+          required: false
+          schema:
+            $ref: '#/components/schemas/AppointmentType'
+      responses:
+        '200':
+          description: A list of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create an appointment
+      operationId: createAppointment
+      tags:
+        - appointments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppointmentRequest'
+      responses:
+        '201':
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /appointments/{appointmentId}:
+    delete:
+      summary: Cancel an appointment
+      operationId: cancelAppointment
+      tags:
+        - appointments
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Appointment cancelled
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ─── Health check (no params, no tag, minimal) ───────────────────────
+
+  /health:
+    get:
+      summary: Health check endpoint
+      operationId: healthCheck
+      tags:
+        - system
+      responses:
+        '200':
+          description: Service health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /health/ready:
+    head:
+      summary: Readiness probe
+      description: Returns 200 if the service is ready to accept traffic. No response body.
+      operationId: readinessProbe
+      tags:
+        - system
+      responses:
+        '200':
+          description: Service is ready
+        '503':
+          description: Service is not ready
+
+  # ─── Statistics (complex nested objects, maps, arrays) ────────────────
+
+  /stats:
+    get:
+      summary: Get store statistics
+      operationId: getStoreStats
+      tags:
+        - system
+      parameters:
+        - name: X-Api-Key
+          in: header
+          required: true
+          description: API key for accessing stats
+          schema:
+            type: string
+        - name: X-Trace-Id
+          in: header
+          required: false
+          description: Optional trace ID for observability
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Store statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreStats'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
+    # ─── Enums as standalone schemas ───────────────────────────────────
+
+    PetStatus:
+      type: string
+      description: The current status of a pet in the store
+      enum:
+        - available
+        - pending
+        - sold
+        - quarantine
+
+    AppointmentType:
+      type: string
+      description: The type of veterinary appointment
+      enum:
+        - checkup
+        - vaccination
+        - surgery
+        - grooming
+        - emergency
+
+    # ─── Core models ───────────────────────────────────────────────────
+
     Pet:
       type: object
       required:
         - id
         - name
+        - createdAt
       properties:
         id:
           type: integer
@@ -122,15 +619,364 @@ components:
         tag:
           type: string
         status:
+          $ref: '#/components/schemas/PetStatus'
+        weight:
+          type: number
+          format: double
+          description: Weight of the pet in kilograms
+        dateOfBirth:
           type: string
-          enum:
-            - available
-            - pending
-            - sold
+          format: date
+          description: Date of birth of the pet
+        isVaccinated:
+          type: boolean
+          description: Whether the pet has been vaccinated
+          default: false
+        nicknames:
+          type: array
+          items:
+            type: string
+          description: List of nicknames for the pet
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Arbitrary key-value metadata
+        owner:
+          $ref: '#/components/schemas/OwnerSummary'
+          description: Summary of the owner (nullable when not adopted)
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the pet record was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of last update
+          nullable: true
+
     Pets:
       type: array
       items:
         $ref: '#/components/schemas/Pet'
+
+    CreatePetRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the pet
+        tag:
+          type: string
+        status:
+          $ref: '#/components/schemas/PetStatus'
+        weight:
+          type: number
+          format: double
+        dateOfBirth:
+          type: string
+          format: date
+        isVaccinated:
+          type: boolean
+          default: false
+        nicknames:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        ownerId:
+          type: string
+          format: uuid
+          description: UUID of the owner to assign
+
+    PatchPetRequest:
+      type: object
+      description: All fields optional for partial update
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PetStatus'
+        weight:
+          type: number
+          format: double
+          nullable: true
+        isVaccinated:
+          type: boolean
+        nicknames:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    # ─── Owner models ──────────────────────────────────────────────────
+
+    OwnerSummary:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    Owner:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        address:
+          $ref: '#/components/schemas/Address'
+        petCount:
+          type: integer
+          format: int32
+          description: Number of pets the owner has
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateOwnerRequest:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - country
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipCode:
+          type: string
+        country:
+          type: string
+
+    # ─── Appointment models ────────────────────────────────────────────
+
+    Appointment:
+      type: object
+      required:
+        - id
+        - petId
+        - scheduledAt
+        - appointmentType
+      properties:
+        id:
+          type: string
+          format: uuid
+        petId:
+          type: integer
+          format: int64
+        ownerId:
+          type: string
+          format: uuid
+        scheduledAt:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+          format: int32
+          default: 30
+        appointmentType:
+          $ref: '#/components/schemas/AppointmentType'
+        notes:
+          type: string
+          nullable: true
+        veterinarian:
+          type: string
+          description: Name of the assigned veterinarian
+
+    CreateAppointmentRequest:
+      type: object
+      required:
+        - petId
+        - scheduledAt
+        - appointmentType
+      properties:
+        petId:
+          type: integer
+          format: int64
+        scheduledAt:
+          type: string
+          format: date-time
+        durationMinutes:
+          type: integer
+          format: int32
+          default: 30
+        appointmentType:
+          $ref: '#/components/schemas/AppointmentType'
+        notes:
+          type: string
+        veterinarian:
+          type: string
+
+    # ─── Media / file upload ───────────────────────────────────────────
+
+    MediaResource:
+      type: object
+      required:
+        - id
+        - url
+        - contentType
+        - sizeBytes
+        - uploadedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        contentType:
+          type: string
+          description: MIME type of the uploaded file
+        sizeBytes:
+          type: integer
+          format: int64
+        caption:
+          type: string
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+
+    # ─── System / stats ───────────────────────────────────────────────
+
+    HealthStatus:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          description: Current health status
+          enum:
+            - healthy
+            - degraded
+            - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          description: Application version
+        dependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependencyStatus'
+          description: Status of upstream dependencies
+
+    DependencyStatus:
+      type: object
+      required:
+        - name
+        - healthy
+      properties:
+        name:
+          type: string
+        healthy:
+          type: boolean
+        latencyMs:
+          type: integer
+          format: int32
+          description: Response latency in milliseconds
+        message:
+          type: string
+          nullable: true
+
+    StoreStats:
+      type: object
+      required:
+        - totalPets
+        - totalOwners
+        - totalAppointments
+        - generatedAt
+      properties:
+        totalPets:
+          type: integer
+          format: int64
+        totalOwners:
+          type: integer
+          format: int64
+        totalAppointments:
+          type: integer
+          format: int64
+        petsByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+          description: Count of pets grouped by status
+        recentAdoptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+          description: Most recent adopted pets
+        topVeterinarians:
+          type: array
+          items:
+            type: string
+          description: List of top veterinarian names by appointment count
+        averageAppointmentDuration:
+          type: number
+          format: double
+          description: Average appointment duration in minutes
+        generatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when stats were generated
+
+    # ─── Error ─────────────────────────────────────────────────────────
+
     Error:
       type: object
       required:
@@ -142,4 +988,7 @@ components:
           format: int32
         message:
           type: string
-
+        details:
+          type: string
+          nullable: true
+          description: Additional error details
