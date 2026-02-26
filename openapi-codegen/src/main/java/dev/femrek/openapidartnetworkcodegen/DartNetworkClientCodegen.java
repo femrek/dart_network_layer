@@ -218,7 +218,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
                 // Tag name for folder organization
                 if (op.tags != null && !op.tags.isEmpty()) {
-                    String tagName = StringUtils.underscore(op.tags.get(0).getName());
+                    String tagName = StringUtils.underscore(op.tags.getFirst().getName());
                     op.vendorExtensions.put("x-tag-folder", tagName);
                 }
             }
@@ -248,11 +248,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
         final String serialization_library = getLibrary();
         LOGGER.info("Using serialization library {}", serialization_library);
 
-        switch (serialization_library) {
-            case SERIALIZATION_LIBRARY_NATIVE: // fall through to default backwards compatible generator
-            default:
-                additionalProperties.put(SERIALIZATION_LIBRARY_NATIVE, "true");
-
-        }
+        // fall through to default backwards compatible generator
+        additionalProperties.put(SERIALIZATION_LIBRARY_NATIVE, "true");
     }
 }

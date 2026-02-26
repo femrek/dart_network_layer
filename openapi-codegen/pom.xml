@@ -15,6 +15,7 @@
   </properties>
 
   <dependencies>
+    <!--suppress VulnerableLibrariesLocal -->
     <dependency>
       <groupId>org.openapitools</groupId>
       <artifactId>openapi-generator</artifactId>
