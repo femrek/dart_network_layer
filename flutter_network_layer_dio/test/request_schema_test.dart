@@ -110,8 +110,9 @@ void main() {
         }
       });
 
-      test('POST request with form data including file (ByteMultipartFileSchema)',
-          () async {
+      test(
+          'POST request with form data including file'
+          ' (ByteMultipartFileSchema)', () async {
         server = await TestServer.createHttpServer(events: [
           StandardServerEvent(
             matcher: ServerEvent.standardMatcher(
@@ -239,7 +240,7 @@ void main() {
           'http://localhost:${server.port}',
         );
 
-        final xmlData = '<?xml version="1.0"?><root><item>test</item></root>';
+        const xmlData = '<?xml version="1.0"?><root><item>test</item></root>';
         final request = XmlRequest(xml: xmlData);
 
         final response = await networkInvoker.request(request);
@@ -351,7 +352,7 @@ void main() {
         for (final chunk in dataChunks) {
           streamController.add(chunk);
         }
-        streamController.close();
+        await streamController.close();
 
         final request = StreamDataRequest(
           dataStream: streamController.stream,
@@ -1405,8 +1406,3 @@ class ErrorResponseFactory extends JsonSchemaFactory<ErrorResponse> {
     );
   }
 }
-
-
-
-
-

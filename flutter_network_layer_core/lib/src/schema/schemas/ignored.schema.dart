@@ -14,7 +14,12 @@ class IgnoredSchema extends Schema {
   static const factory = _Factory();
 }
 
+/// Factory for creating [IgnoredSchema] instances from string data.
+///
+/// The string input is ignored and a const [IgnoredSchema] instance is
+/// returned.
 class _Factory extends StringSchemaFactory<IgnoredSchema> {
+  /// Creates a const instance of [_Factory].
   const _Factory();
 
   @override
