@@ -153,11 +153,13 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
                 // Determine the return schema name
                 if (op.returnType != null && !op.returnType.isEmpty()) {
-                    op.vendorExtensions.put("x-has-return-type", true);
-
-                    // Check if return type is a list
-                    if (op.returnType.startsWith("List<")) {
-                        // For list returns, we still need a wrapper Schema
+                    if (op.returnType.equals("Object")) {
+                        // Untyped object response — use AnyDataSchema
+                        op.vendorExtensions.put("x-has-return-type", false);
+                        op.vendorExtensions.put("x-return-schema-name", "AnyDataSchema");
+                    } else if (op.returnType.startsWith("List<")) {
+                        // For list returns, we need a wrapper Schema
+                        op.vendorExtensions.put("x-has-return-type", true);
                         op.vendorExtensions.put("x-is-list-return", true);
                         String innerType = op.returnType.substring(5, op.returnType.length() - 1);
                         op.vendorExtensions.put("x-return-base-type", innerType);
@@ -166,6 +168,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
                         op.vendorExtensions.put("x-return-schema-name", opIdPascal + "ResponseSchema");
                         uniqueModelImports.add(innerFile);
                     } else {
+                        op.vendorExtensions.put("x-has-return-type", true);
                         op.vendorExtensions.put("x-is-list-return", false);
                         op.vendorExtensions.put("x-return-base-type", op.returnType);
                         String retFile = StringUtils.underscore(op.returnType);
@@ -174,15 +177,29 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
                         uniqueModelImports.add(retFile);
                     }
                 } else {
+                    // Void / no-content response — use IgnoredSchema
                     op.vendorExtensions.put("x-has-return-type", false);
                     op.vendorExtensions.put("x-return-schema-name", "IgnoredSchema");
                 }
 
                 // Snake_case body param type for import path
                 if (op.bodyParam != null) {
-                    String bodyFile = StringUtils.underscore(op.bodyParam.dataType);
-                    op.vendorExtensions.put("x-body-type-file", bodyFile);
-                    uniqueModelImports.add(bodyFile);
+                    String bodyDataType = op.bodyParam.dataType;
+
+                    // Handle List<...> body params: extract inner type for import,
+                    // and mark with vendor extension so the template can serialize properly
+                    if (bodyDataType.startsWith("List<")) {
+                        String innerType = bodyDataType.substring(5, bodyDataType.length() - 1);
+                        String innerFile = StringUtils.underscore(innerType);
+                        op.vendorExtensions.put("x-body-type-file", innerFile);
+                        op.vendorExtensions.put("x-is-body-list", true);
+                        uniqueModelImports.add(innerFile);
+                    } else {
+                        String bodyFile = StringUtils.underscore(bodyDataType);
+                        op.vendorExtensions.put("x-body-type-file", bodyFile);
+                        op.vendorExtensions.put("x-is-body-list", false);
+                        uniqueModelImports.add(bodyFile);
+                    }
                 }
 
                 // Collect imports for all parameter types that reference models (e.g., enums used as query params)

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
@@ -23,10 +24,13 @@ public class GenerateExample {
 
         // Get the current directory
         String projectDir = System.getProperty("user.dir");
-        String inputSpec = projectDir + "/example-openapi.yaml";
         String baseOutputDir = projectDir + "/generated-output";
+        List<String> specFiles = List.of(
+                "example-openapi.yaml",
+                "example2-openapi.json"
+        );
 
-        System.out.println("Input Spec: " + inputSpec);
+        System.out.println("Input Specs: " + specFiles);
         System.out.println("Base Output Directory: " + baseOutputDir);
         System.out.println();
 
@@ -42,6 +46,18 @@ public class GenerateExample {
             }
         }
 
+        for (String inputSpec : specFiles) {
+            generateForSpec(
+                    projectDir + '/' + inputSpec,
+                    baseOutputDir + '/' + inputSpec.substring(0, inputSpec.lastIndexOf('.'))
+            );
+        }
+    }
+
+    private static void generateForSpec(
+            String inputSpec,
+            String baseOutputDir
+    ) {
         // Check if input spec exists
         File specFile = new File(inputSpec);
         if (!specFile.exists()) {
@@ -49,26 +65,24 @@ public class GenerateExample {
             System.exit(1);
         }
 
-        // Define the three generators to use
-        String[] generators = {"dart", "dart-dio", "dart-network"};
-        String[] descriptions = {
-            "Standard Dart Client",
-            "Dart Dio Client",
-            "Dart Network Client (Custom)"
+        // Define the generators to use
+        GeneratorConfig[] generatorConfigs = {
+                new GeneratorConfig("dart",         "Standard Dart Client",          "dart-client"),
+//                new GeneratorConfig("dart-dio",     "Dart Dio Client",               "dart-dio-client"),
+                new GeneratorConfig("dart-network", "Dart Network Client (Custom)",  "dart-network-client"),
         };
-        String[] folderNames = {"dart-client", "dart-dio-client", "dart-network-client"};
 
         boolean allSuccessful = true;
 
         // Generate code with each generator
-        for (int i = 0; i < generators.length; i++) {
-            String generator = generators[i];
-            String description = descriptions[i];
-            String folderName = folderNames[i];
-            String outputDir = baseOutputDir + "/" + folderName;
+        for (int i = 0; i < generatorConfigs.length; i++) {
+            GeneratorConfig config = generatorConfigs[i];
+            String generator   = config.generatorName();
+            String description = config.description();
+            String outputDir   = baseOutputDir + "/" + config.folderName();
 
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            System.out.println("Generator " + (i + 1) + "/" + generators.length + ": " + description);
+            System.out.println("Generator " + (i + 1) + "/" + generatorConfigs.length + ": " + description);
             System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             System.out.println("Generator: " + generator);
             System.out.println("Output: " + outputDir);
@@ -96,7 +110,7 @@ public class GenerateExample {
                 System.out.println();
 
             } catch (Exception e) {
-                LOGGER.error("ERROR during code generation for generator: " + generator, e);
+                LOGGER.error("ERROR during code generation for generator: {}", generator, e);
                 System.err.println("  ❌ Failed to generate code with " + generator);
                 System.err.println("  Error: " + e.getMessage());
                 System.out.println();
@@ -160,5 +174,7 @@ public class GenerateExample {
             }
         }
     }
+
+    private record GeneratorConfig(String generatorName, String description, String folderName) {}
 }
 
