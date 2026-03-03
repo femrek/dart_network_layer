@@ -87,17 +87,26 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
     }
 
     /**
-     * Place API (command) files under lib/command/{tag}/
+     * Place API (request) files under lib/requests/
      */
     @Override
     public String apiFileFolder() {
-        // The tag-based subfolder is handled via toApiFilename
-        return outputFolder + File.separator + libPath + "command";
+        return outputFolder + File.separator + libPath + "requests";
     }
 
     @Override
     public String toApiFilename(String name) {
-        return StringUtils.underscore(name);
+        // name is "tag/operationId" from addOperationToGroup
+        // Split into tag folder and operation file
+        int slashIndex = name.indexOf('/');
+        if (slashIndex >= 0) {
+            String tag = name.substring(0, slashIndex);
+            String operationId = name.substring(slashIndex + 1);
+            String tagFolder = StringUtils.underscore(tag);
+            String opFile = StringUtils.underscore(operationId) + "_command";
+            return tagFolder + File.separator + opFile;
+        }
+        return StringUtils.underscore(name) + "_command";
     }
 
     @Override
@@ -262,9 +271,12 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
     @Override
     public void addOperationToGroup(String tag, String resourcePath, Operation operation,
                                      CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
-        // Group operations by tag (default behavior) — each tag generates one file
-        // containing multiple RequestCommand classes
-        super.addOperationToGroup(tag, resourcePath, operation, co, operations);
+        // Each operation gets its own file, placed under the tag folder.
+        // Use "tag/operationId" as the key so toApiFilename can split it.
+        String key = tag + "/" + co.operationId;
+        List<CodegenOperation> opList = operations.computeIfAbsent(key, k -> new ArrayList<>());
+        opList.add(co);
+        co.baseName = key;
     }
 
     private void setSerializationLibrary() {
