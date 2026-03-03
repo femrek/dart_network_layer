@@ -1,6 +1,8 @@
 {{>header}}
 {{>part_of}}
 
+import '../base/base_request.dart';
+
 {{#x-unique-model-imports}}
 import '../model/{{{file}}}.dart';
 {{/x-unique-model-imports}}
@@ -84,7 +86,7 @@ class {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema extends FormData
 {{/notes}}
 ///
 /// {{{httpMethod}}} {{{path}}}
-class {{{vendorExtensions.x-operation-id-pascal}}}Command extends RequestCommand<{{{vendorExtensions.x-return-schema-name}}}> {
+class {{{vendorExtensions.x-operation-id-pascal}}}Command extends BaseRequest<{{{vendorExtensions.x-return-schema-name}}}> {
   {{{vendorExtensions.x-operation-id-pascal}}}Command({{#hasParams}}{
   {{#allParams}}
   {{^isBodyParam}}

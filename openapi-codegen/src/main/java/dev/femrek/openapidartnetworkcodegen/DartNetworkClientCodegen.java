@@ -70,6 +70,9 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
         supportingFiles.add(new SupportingFile("apilib.mustache", libPath, "api.dart"));
         supportingFiles.add(new SupportingFile("gitignore.mustache", "", ".gitignore"));
         supportingFiles.add(new SupportingFile("README.mustache", "", "README.md"));
+
+        String baseFolder = libPath + "base";
+        supportingFiles.add(new SupportingFile("base_request.mustache", baseFolder, "base_request.dart"));
     }
 
     /**
