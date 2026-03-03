@@ -279,6 +279,13 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
     public void preprocessOpenAPI(OpenAPI openAPI) {
         super.preprocessOpenAPI(openAPI);
 
+        // Derive PascalCase base request class name from API title
+        String title = (openAPI.getInfo() != null && openAPI.getInfo().getTitle() != null)
+                ? openAPI.getInfo().getTitle()
+                : "Api";
+        String pascalTitle = toPascalCase(title);
+        additionalProperties.put("x-dart-base-request-name", pascalTitle + "BaseRequest");
+
         if (openAPI.getServers() == null) return;
 
         List<Server> servers = openAPI.getServers();
@@ -293,6 +300,24 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
             server.addExtension("x-dart-server-var-name", finalVarName);
             server.addExtension("x-dart-server-index", i);
         }
+    }
+
+    /**
+     * Converts a string to PascalCase, stripping non-alphanumeric characters.
+     * E.g., "Pet Store API" -> "PetStoreApi"
+     */
+    private String toPascalCase(String input) {
+        String cleaned = input.replaceAll("[^a-zA-Z0-9\\s]", "").trim();
+        String[] words = cleaned.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.isEmpty()) continue;
+            sb.append(word.substring(0, 1).toUpperCase());
+            if (word.length() > 1) {
+                sb.append(word.substring(1).toLowerCase());
+            }
+        }
+        return sb.toString();
     }
 
     /**
