@@ -1,6 +1,8 @@
 package dev.femrek.openapidartnetworkcodegen;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.servers.Server;
 import org.openapitools.codegen.*;
 import org.openapitools.codegen.languages.AbstractDartCodegen;
 import org.openapitools.codegen.model.ModelMap;
@@ -271,5 +273,56 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
         // fall through to default backwards compatible generator
         additionalProperties.put(SERIALIZATION_LIBRARY_NATIVE, "true");
+    }
+
+    @Override
+    public void preprocessOpenAPI(OpenAPI openAPI) {
+        super.preprocessOpenAPI(openAPI);
+
+        if (openAPI.getServers() == null) return;
+
+        List<Server> servers = openAPI.getServers();
+
+        for (int i = 0; i < servers.size(); i++) {
+            Server server = servers.get(i);
+            String description = server.getDescription();
+            String baseName = (description != null && !description.isEmpty())
+                    ? descriptionToVarName(description)
+                    : "server";
+            String finalVarName = "url" + i + "_" + baseName;
+            server.addExtension("x-dart-server-var-name", finalVarName);
+            server.addExtension("x-dart-server-index", i);
+        }
+    }
+
+    /**
+     * Converts a server description to a camelCase variable name (no Url suffix).
+     * Description is truncated to 32 characters before processing.
+     * E.g., "Production Environment" -> "productionEnvironment"
+     */
+    private String descriptionToVarName(String description) {
+        // Truncate to 32 characters
+        if (description.length() > 32) {
+            description = description.substring(0, 32);
+        }
+
+        // Remove non-alphanumeric characters except spaces, then split by spaces
+        String cleaned = description.replaceAll("[^a-zA-Z0-9\\s]", "").trim();
+        String[] words = cleaned.split("\\s+");
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (word.isEmpty()) continue;
+            if (i == 0) {
+                sb.append(word.toLowerCase());
+            } else {
+                sb.append(word.substring(0, 1).toUpperCase());
+                if (word.length() > 1) {
+                    sb.append(word.substring(1).toLowerCase());
+                }
+            }
+        }
+        return sb.toString();
     }
 }

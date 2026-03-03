@@ -7,16 +7,6 @@
 abstract final class ApiConfig {
   ApiConfig._();
 
-  /// The base URL for the API.
-  {{#servers}}
-  {{#-first}}
-  static const String baseUrl = '{{{url}}}';
-  {{/-first}}
-  {{/servers}}
-  {{^servers}}
-  static const String baseUrl = '';
-  {{/servers}}
-
   /// The title of the API.
   static const String apiTitle = '{{appName}}';
 
@@ -25,18 +15,16 @@ abstract final class ApiConfig {
 
   /// The description of the API.
   static const String apiDescription = '''{{appDescription}}''';
-
   {{#servers}}
-  {{^-first}}
-  /// Alternative server URL: {{{description}}}
-  static const String server{{-index}}Url = '{{{url}}}';
-  {{/-first}}
+
+  /// {{{description}}}{{^description}}{{{url}}}{{/description}}
+  static const String {{{vendorExtensions.x-dart-server-var-name}}} = '{{{url}}}';
   {{/servers}}
 
   /// List of all available server URLs.
   static const List<String> serverUrls = [
     {{#servers}}
-    '{{{url}}}',
+    {{{vendorExtensions.x-dart-server-var-name}}},
     {{/servers}}
   ];
 }
