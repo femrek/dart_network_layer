@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
@@ -10,7 +9,7 @@ import 'data/test_paths.dart';
 
 void main() {
   group('DioNetworkInvoker - Request Schema Tests', () {
-    late HttpServer server;
+    late TestServer server;
     late DioNetworkInvoker networkInvoker;
 
     tearDown(() async {
@@ -25,7 +24,7 @@ void main() {
               paths: ['/api/users'],
               method: 'POST',
             ),
-            handler: (request) => '{"id": "123", "success": true}',
+            handler: (request) async => '{"id": "123", "success": true}',
           ),
         ]);
 
@@ -56,7 +55,7 @@ void main() {
               paths: ['/api/users/123'],
               method: 'PUT',
             ),
-            handler: (request) => '{"id": "123", "success": true}',
+            handler: (request) async=> '{"id": "123", "success": true}',
           ),
         ]);
 
@@ -87,7 +86,7 @@ void main() {
               paths: ['/api/upload'],
               method: 'POST',
             ),
-            handler: (request) => '{"id": "upload-123", "success": true}',
+            handler: (request) async=> '{"id": "upload-123", "success": true}',
           ),
         ]);
 
@@ -119,7 +118,7 @@ void main() {
               paths: ['/api/upload-file'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "file-456", "success": true}';
             },
           ),
@@ -156,7 +155,7 @@ void main() {
               paths: ['/api/upload-multiple'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "multi-789", "success": true, "count": 3}';
             },
           ),
@@ -205,7 +204,7 @@ void main() {
               paths: ['/api/text'],
               method: 'POST',
             ),
-            handler: (request) => 'Text received successfully',
+            handler: (request) async=> 'Text received successfully',
           ),
         ]);
 
@@ -232,7 +231,7 @@ void main() {
               paths: ['/api/xml'],
               method: 'POST',
             ),
-            handler: (request) => 'XML processed',
+            handler: (request) async=> 'XML processed',
           ),
         ]);
 
@@ -260,7 +259,7 @@ void main() {
               paths: ['/api/binary'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "binary-001", "success": true}';
             },
           ),
@@ -299,7 +298,7 @@ void main() {
               paths: ['/api/image'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "img-002", "success": true}';
             },
           ),
@@ -330,7 +329,8 @@ void main() {
               paths: ['/api/stream'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async {
+              await request.drain<dynamic>();
               return '{"id": "stream-001", "success": true}';
             },
           ),
@@ -341,21 +341,14 @@ void main() {
         );
 
         // Create a stream of data
-        final streamController = StreamController<List<int>>();
         final dataChunks = [
           [1, 2, 3, 4, 5],
           [6, 7, 8, 9, 10],
           [11, 12, 13, 14, 15],
         ];
 
-        // Add chunks to stream
-        for (final chunk in dataChunks) {
-          streamController.add(chunk);
-        }
-        await streamController.close();
-
         final request = StreamDataRequest(
-          dataStream: streamController.stream,
+          dataStream: Stream.fromIterable(dataChunks),
         );
 
         final response = await networkInvoker.request(request);
@@ -374,7 +367,7 @@ void main() {
               paths: ['/api/large-stream'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "large-stream-002", "success": true}';
             },
           ),
@@ -409,7 +402,7 @@ void main() {
               paths: ['/api/dynamic'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "dynamic-001", "success": true}';
             },
           ),
@@ -439,7 +432,7 @@ void main() {
               paths: ['/api/dynamic-list'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"id": "list-001", "success": true}';
             },
           ),
@@ -469,7 +462,7 @@ void main() {
               paths: ['/api/dynamic-string'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return 'Dynamic string processed';
             },
           ),
@@ -497,7 +490,7 @@ void main() {
               paths: [TestPaths.testUser],
               method: 'GET',
             ),
-            handler: (request) => '{"id": "1", "name": "test", "age": 20}',
+            handler: (request) async=> '{"id": "1", "name": "test", "age": 20}',
           ),
         ]);
 
@@ -524,7 +517,7 @@ void main() {
               paths: ['/api/users/123'],
               method: 'DELETE',
             ),
-            handler: (request) => '{"success": true}',
+            handler: (request) async=> '{"success": true}',
           ),
         ]);
 
@@ -551,7 +544,7 @@ void main() {
               paths: ['/api/auth'],
               method: 'POST',
             ),
-            handler: (request) => '{"token": "abc123", "success": true}',
+            handler: (request) async=> '{"token": "abc123", "success": true}',
           ),
         ]);
 
@@ -580,7 +573,7 @@ void main() {
               paths: ['/api/validate'],
               method: 'POST',
             ),
-            handler: (request) {
+            handler: (request) async{
               return '{"error": "Invalid data", "code": "VALIDATION_ERROR"}';
             },
             responseStatusCode: 400,

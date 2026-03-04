@@ -15,5 +15,5 @@ dependencies:
 
 dev_dependencies:
   test: ^1.25.14
-  http_test_server: ^0.1.0
+  http_test_server: ^0.1.1
   very_good_analysis: ^9.0.0

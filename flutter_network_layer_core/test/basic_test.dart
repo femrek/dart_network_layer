@@ -15,18 +15,18 @@ void main() async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/basic_test_error']),
-          handler: (request) =>
+          handler: (request) async =>
               '{"message": "Bad Request", "errorField": "error_value"}',
           responseStatusCode: 400,
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/basic_test']),
-          handler: (request) => '{"field1": "pong"}',
+          handler: (request) async => '{"field1": "pong"}',
         ),
       ]);
 
       final invoker = _SampleNetworkInvoker(port: server.port);
-      await invoker.init('http://${server.address.address}');
+      await invoker.init('http://${server.server.address.address}');
 
       // error response test
       {

@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
 import 'package:flutter_network_layer_dio/src/utils.dart';
 
-/// The network manager class for managing to api communication.
+/// The network manager class for managing api communication.
 final class DioNetworkInvoker implements INetworkInvoker {
   /// Create a new instance of [DioNetworkInvoker] with the given [baseUrl].
   DioNetworkInvoker.fromBaseUrl(String baseUrl) {
@@ -26,21 +26,17 @@ final class DioNetworkInvoker implements INetworkInvoker {
   @override
   Future<NetworkResult<T>> request<T extends Schema>(
       RequestCommand<T> request) async {
-    final requestPayload = request.payload;
-
-    final Response<dynamic> response;
+    // 1. Prepare Payload
     final Object? payload;
-
-    // payload preprocessing
     try {
-      payload = await _resolveDioPayload(requestPayload);
+      payload = await _resolveDioPayload(request.payload);
     } on NetworkError catch (e) {
       return NetworkErrorResult<T>(error: e);
     }
 
-    // perform request
+    // 2. Perform Request
     try {
-      response = await dio.request<dynamic>(
+      final response = await dio.request<dynamic>(
         request.path,
         data: payload,
         onSendProgress: request.onSendProgressUpdate,
@@ -48,51 +44,17 @@ final class DioNetworkInvoker implements INetworkInvoker {
         options: Options(
           method: request.method.value,
           headers: request.headers,
+
         ),
       );
+
+      // 3. Process Successful Dio Response
+      return _processResponse(response, request);
     } on DioException catch (e, s) {
-      // if the response is null, return an internal error.
-      final response = e.response;
-      if (response == null) {
-        return NetworkErrorResult(
-          error: NetworkError(
-            message: 'Request failed: $e',
-            error: e,
-            stackTrace: s,
-          ),
-        );
-      }
-
-      // if the response status code is null, return an internal error.
-      final statusCode = response.statusCode;
-      if (statusCode == null) {
-        return NetworkErrorResult(
-          error: NetworkError(
-            message: 'No status code in response',
-            error: e,
-            stackTrace: s,
-          ),
-        );
-      }
-
-      final responseData = response.data;
-      final specifiedResponseFactory = request.responseFactories[statusCode];
-
-      // respond by assume error factory is the default.
-      if (specifiedResponseFactory == null) {
-        return _createResult(
-          factory: request.defaultErrorResponseFactory,
-          statusCode: statusCode,
-          responseData: responseData,
-        );
-      } else {
-        return _createResult(
-          factory: specifiedResponseFactory,
-          statusCode: statusCode,
-          responseData: responseData,
-        );
-      }
+      // 4. Handle Dio Specific Errors
+      return _handleDioException(e, s, request);
     } on Exception catch (e, s) {
+      // 5. Handle Generic Errors
       return NetworkErrorResult<T>(
         error: NetworkError(
           message: 'Request failed',
@@ -101,11 +63,69 @@ final class DioNetworkInvoker implements INetworkInvoker {
         ),
       );
     }
+  }
 
+  /// Handles exceptions thrown by Dio, attempting to parse error responses
+  /// defined in the request factories.
+  NetworkResult<T> _handleDioException<T extends Schema>(
+      DioException e,
+      StackTrace s,
+      RequestCommand<T> request,
+      ) {
+    final response = e.response;
+
+    // If the response is null, return an internal error.
+    if (response == null) {
+      return NetworkErrorResult(
+        error: NetworkError(
+          message: 'Request failed: $e',
+          error: e,
+          stackTrace: s,
+        ),
+      );
+    }
+
+    final statusCode = response.statusCode;
+    // If the response status code is null, return an internal error.
+    if (statusCode == null) {
+      return NetworkErrorResult(
+        error: NetworkError(
+          message: 'No status code in response',
+          error: e,
+          stackTrace: s,
+        ),
+      );
+    }
+
+    final responseData = response.data;
+    final specifiedResponseFactory = request.responseFactories[statusCode];
+
+    // Respond assuming error factory is the default if specific one isn't
+    // found.
+    if (specifiedResponseFactory == null) {
+      return _createResult(
+        factory: request.defaultErrorResponseFactory,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+    } else {
+      return _createResult(
+        factory: specifiedResponseFactory,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+    }
+  }
+
+  /// Validates the raw Dio response and maps it to a [NetworkResult].
+  NetworkResult<T> _processResponse<T extends Schema>(
+      Response<dynamic> response,
+      RequestCommand<T> request,
+      ) {
     final responseData = response.data;
     final statusCode = response.statusCode;
 
-    // return error if the response has no status code or data
+    // Return error if the response has no status code
     if (statusCode == null) {
       return NetworkErrorResult<T>(
         error: NetworkError(
@@ -114,6 +134,8 @@ final class DioNetworkInvoker implements INetworkInvoker {
         ),
       );
     }
+
+    // Handle IgnoredSchema (void/null body)
     if (responseData == null) {
       return SpecifiedResponseResult<T>(
         statusCode: statusCode,
@@ -121,6 +143,8 @@ final class DioNetworkInvoker implements INetworkInvoker {
         type: IgnoredSchema,
       );
     }
+
+    // Validate data types
     if (responseData is! String &&
         responseData is! Map<String, dynamic> &&
         responseData is! List<dynamic>) {
@@ -135,7 +159,8 @@ final class DioNetworkInvoker implements INetworkInvoker {
     final specifiedResponseFactory = request.responseFactories[statusCode];
 
     try {
-      // respond by assume success factory is the default.
+      // Respond assuming success factory is the default if specific one isn't
+      // found.
       if (specifiedResponseFactory == null) {
         return _createResult(
           factory: request.defaultResponseFactory,
@@ -183,8 +208,8 @@ final class DioNetworkInvoker implements INetworkInvoker {
   }
 
   Future<Map<String, dynamic>> _convertMultipartFiles(
-    Map<String, dynamic> data,
-  ) async {
+      Map<String, dynamic> data,
+      ) async {
     final dioFormDataMap = <String, dynamic>{};
     for (final entry in data.entries) {
       final key = entry.key;

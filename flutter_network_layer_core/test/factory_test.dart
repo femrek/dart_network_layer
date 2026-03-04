@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 import 'package:http/http.dart' as http;
@@ -153,43 +152,44 @@ void main() {
   });
 
   group('Integration Tests with Network Invoker', () {
-    late HttpServer server;
+    late TestServer server;
     late _TestNetworkInvoker invoker;
 
     setUp(() async {
       server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/user/success']),
-          handler: (request) => '{"name": "Jane Doe", "id": 456}',
+          handler: (request) async => '{"name": "Jane Doe", "id": 456}',
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/user/error']),
-          handler: (request) => '{"message": "User not found", "code": 404}',
+          handler: (request) async =>
+              '{"message": "User not found", "code": 404}',
           responseStatusCode: 404,
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/product/success']),
-          handler: (request) => '{"title": "Laptop", "price": 999.99}',
+          handler: (request) async => '{"title": "Laptop", "price": 999.99}',
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/product/error']),
-          handler: (request) =>
+          handler: (request) async =>
               '{"field": "price", "error": "Must be positive"}',
           responseStatusCode: 400,
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/text/success']),
-          handler: (request) => 'Plain text success',
+          handler: (request) async => 'Plain text success',
         ),
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: ['/text/error']),
-          handler: (request) => 'Plain text error',
+          handler: (request) async => 'Plain text error',
           responseStatusCode: 500,
         ),
       ]);
 
       invoker = _TestNetworkInvoker(port: server.port);
-      await invoker.init('http://${server.address.address}');
+      await invoker.init('http://${server.server.address.address}');
     });
 
     test('should use defaultResponseFactory for successful JSON response',

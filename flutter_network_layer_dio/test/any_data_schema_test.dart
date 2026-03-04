@@ -17,7 +17,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => '{"message": "success", "code": 200}',
+          handler: (request) async=> '{"message": "success", "code": 200}',
         ),
       ]);
 
@@ -40,7 +40,7 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle JSON List string response with AnyDataSchema',
@@ -49,7 +49,7 @@ void main() {
         StandardServerEvent(
           matcher:
               ServerEvent.standardMatcher(paths: [TestPaths.testAnyDataList]),
-          handler: (request) => '[{"id": 1}, {"id": 2}, {"id": 3}]',
+          handler: (request) async=> '[{"id": 1}, {"id": 2}, {"id": 3}]',
         ),
       ]);
 
@@ -72,7 +72,7 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle nested JSON string response with AnyDataSchema',
@@ -81,7 +81,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => jsonResponse,
+          handler: (request) async=> jsonResponse,
         ),
       ]);
 
@@ -104,14 +104,14 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle empty JSON object string with AnyDataSchema', () async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => '{}',
+          handler: (request) async=> '{}',
         ),
       ]);
 
@@ -133,7 +133,7 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle empty JSON array string with AnyDataSchema', () async {
@@ -141,7 +141,7 @@ void main() {
         StandardServerEvent(
           matcher:
               ServerEvent.standardMatcher(paths: [TestPaths.testAnyDataList]),
-          handler: (request) => '[]',
+          handler: (request) async=> '[]',
         ),
       ]);
 
@@ -163,14 +163,14 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle plain text response with AnyDataSchema', () async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => 'plain text response',
+          handler: (request) async=> 'plain text response',
         ),
       ]);
 
@@ -192,14 +192,14 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle JSON number string with AnyDataSchema', () async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => '42',
+          handler: (request) async=> '42',
         ),
       ]);
 
@@ -221,14 +221,14 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle JSON boolean string with AnyDataSchema', () async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => 'true',
+          handler: (request) async=> 'true',
         ),
       ]);
 
@@ -250,14 +250,14 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('should handle JSON null string with AnyDataSchema', () async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) => 'null',
+          handler: (request) async=> 'null',
         ),
       ]);
 
@@ -279,7 +279,7 @@ void main() {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
   });
 }

@@ -16,7 +16,7 @@ void main() async {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testUser]),
-          handler: (request) => '{"id": "1", "name": "test", "age": 20}',
+          handler: (request) async => '{"id": "1", "name": "test", "age": 20}',
         ),
       ]);
 
@@ -87,7 +87,7 @@ void main() async {
           fail('Expected success response, got error: ${error.message}');
       }
 
-      await server.close(force: true);
+      await server.close();
     });
 
     test('onRequest and onError', () async {
@@ -151,7 +151,7 @@ void main() async {
           break;
       }
 
-      await server.close(force: true);
+      await server.close();
     });
   });
 }
