@@ -21,6 +21,21 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
     public static final String SERIALIZATION_LIBRARY_NATIVE = "native_serialization";
 
+    private static final Set<String> DART_PRIMITIVES = Set.of(
+            "String", "int", "double", "bool", "num", "DateTime", "Object", "dynamic"
+    );
+
+    /**
+     * Checks whether a type is a Dart built-in type (primitive, Map, or generic collection)
+     * that does not correspond to a generated model file.
+     */
+    private boolean isDartBuiltinType(String type) {
+        if (type == null) return true;
+        return DART_PRIMITIVES.contains(type)
+                || type.startsWith("Map<")
+                || type.startsWith("List<");
+    }
+
     public DartNetworkClientCodegen() {
         super();
 
@@ -111,7 +126,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
     @Override
     public String toModelFilename(String name) {
-        return StringUtils.underscore(name);
+        return toSnakeCaseFilename(name);
     }
 
     /**
@@ -120,7 +135,21 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
      */
     @Override
     public String toModelImport(String name) {
-        return StringUtils.underscore(name);
+        return toSnakeCaseFilename(name);
+    }
+
+    /**
+     * Converts a name to a snake_case filename, stripping any leading underscores.
+     * This ensures that auto-generated inline schema names (which may start with '_')
+     * do not produce Dart files with leading underscores (which would make them private).
+     */
+    private String toSnakeCaseFilename(String name) {
+        String result = StringUtils.underscore(name);
+        // Strip leading underscores to avoid private-looking filenames in Dart
+        while (result.startsWith("_")) {
+            result = result.substring(1);
+        }
+        return result;
     }
 
     @Override
@@ -135,7 +164,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
             // We need to convert them to snake_case file names for relative imports
             Set<String> newImports = new LinkedHashSet<>();
             for (String imp : model.imports) {
-                newImports.add(StringUtils.underscore(imp));
+                newImports.add(toSnakeCaseFilename(imp));
             }
             model.imports.clear();
             model.imports.addAll(newImports);
@@ -168,25 +197,31 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
                 // Determine the return schema name
                 if (op.returnType != null && !op.returnType.isEmpty()) {
-                    if (op.returnType.equals("Object")) {
-                        // Untyped object response — use AnyDataSchema
+                    if (op.returnType.startsWith("List<")) {
+                        String innerType = op.returnType.substring(5, op.returnType.length() - 1);
+                        if (isDartBuiltinType(innerType)) {
+                            // List of primitives/builtins — use AnyDataSchema
+                            op.vendorExtensions.put("x-has-return-type", false);
+                            op.vendorExtensions.put("x-return-schema-name", "AnyDataSchema");
+                        } else {
+                            // For list returns of model types, we need a wrapper Schema
+                            op.vendorExtensions.put("x-has-return-type", true);
+                            op.vendorExtensions.put("x-is-list-return", true);
+                            op.vendorExtensions.put("x-return-base-type", innerType);
+                            String innerFile = toSnakeCaseFilename(innerType);
+                            op.vendorExtensions.put("x-return-base-type-file", innerFile);
+                            op.vendorExtensions.put("x-return-schema-name", opIdPascal + "ResponseSchema");
+                            uniqueModelImports.add(innerFile);
+                        }
+                    } else if (isDartBuiltinType(op.returnType)) {
+                        // Primitive/builtin return type — use AnyDataSchema
                         op.vendorExtensions.put("x-has-return-type", false);
                         op.vendorExtensions.put("x-return-schema-name", "AnyDataSchema");
-                    } else if (op.returnType.startsWith("List<")) {
-                        // For list returns, we need a wrapper Schema
-                        op.vendorExtensions.put("x-has-return-type", true);
-                        op.vendorExtensions.put("x-is-list-return", true);
-                        String innerType = op.returnType.substring(5, op.returnType.length() - 1);
-                        op.vendorExtensions.put("x-return-base-type", innerType);
-                        String innerFile = StringUtils.underscore(innerType);
-                        op.vendorExtensions.put("x-return-base-type-file", innerFile);
-                        op.vendorExtensions.put("x-return-schema-name", opIdPascal + "ResponseSchema");
-                        uniqueModelImports.add(innerFile);
                     } else {
                         op.vendorExtensions.put("x-has-return-type", true);
                         op.vendorExtensions.put("x-is-list-return", false);
                         op.vendorExtensions.put("x-return-base-type", op.returnType);
-                        String retFile = StringUtils.underscore(op.returnType);
+                        String retFile = toSnakeCaseFilename(op.returnType);
                         op.vendorExtensions.put("x-return-base-type-file", retFile);
                         op.vendorExtensions.put("x-return-schema-name", op.returnType);
                         uniqueModelImports.add(retFile);
@@ -205,25 +240,28 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
                     // and mark with vendor extension so the template can serialize properly
                     if (bodyDataType.startsWith("List<")) {
                         String innerType = bodyDataType.substring(5, bodyDataType.length() - 1);
-                        String innerFile = StringUtils.underscore(innerType);
+                        String innerFile = toSnakeCaseFilename(innerType);
                         op.vendorExtensions.put("x-body-type-file", innerFile);
                         op.vendorExtensions.put("x-is-body-list", true);
-                        uniqueModelImports.add(innerFile);
+                        if (!isDartBuiltinType(innerType)) {
+                            uniqueModelImports.add(innerFile);
+                        }
                     } else {
-                        String bodyFile = StringUtils.underscore(bodyDataType);
+                        String bodyFile = toSnakeCaseFilename(bodyDataType);
                         op.vendorExtensions.put("x-body-type-file", bodyFile);
                         op.vendorExtensions.put("x-is-body-list", false);
-                        uniqueModelImports.add(bodyFile);
+                        if (!isDartBuiltinType(bodyDataType)) {
+                            uniqueModelImports.add(bodyFile);
+                        }
                     }
                 }
 
                 // Collect imports for all parameter types that reference models (e.g., enums used as query params)
-                Set<String> dartPrimitives = Set.of("String", "int", "double", "bool", "num", "DateTime", "Object", "dynamic");
                 for (CodegenParameter param : op.allParams) {
                     if (param.isBodyParam || param.isFormParam) continue;
                     String dt = param.dataType;
-                    if (dt != null && !dartPrimitives.contains(dt) && !dt.startsWith("List<") && !dt.startsWith("Map<")) {
-                        String paramTypeFile = StringUtils.underscore(dt);
+                    if (!isDartBuiltinType(dt)) {
+                        String paramTypeFile = toSnakeCaseFilename(dt);
                         uniqueModelImports.add(paramTypeFile);
                     }
                 }
@@ -270,11 +308,11 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
     @Override
     public void addOperationToGroup(String tag, String resourcePath, Operation operation,
-                                     CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
+                                    CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
         // Each operation gets its own file, placed under the tag folder.
         // Use "tag/operationId" as the key so toApiFilename can split it.
         String key = tag + "/" + co.operationId;
-        List<CodegenOperation> opList = operations.computeIfAbsent(key, k -> new ArrayList<>());
+        List<CodegenOperation> opList = operations.computeIfAbsent(key, ignored -> new ArrayList<>());
         opList.add(co);
         co.baseName = key;
     }
@@ -345,6 +383,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
         // Remove non-alphanumeric characters except spaces, then split by spaces
         String cleaned = description.replaceAll("[^a-zA-Z0-9\\s]", "").trim();
+        //noinspection ExtractMethodRecommender
         String[] words = cleaned.split("\\s+");
 
         StringBuilder sb = new StringBuilder();
