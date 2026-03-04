@@ -26,8 +26,14 @@ public class GenerateExample {
         String projectDir = System.getProperty("user.dir");
         String baseOutputDir = projectDir + "/generated-output";
         List<String> specFiles = List.of(
-                "example-openapi.yaml",
-                "example2-openapi.json"
+                "example1.yaml",
+                "example2.json",
+                "api-with-examples.json",
+                "callback-example.json",
+                "link-example.json",
+                "petstore-expanded.json",
+                "petstore.json",
+                "uspto.json"
         );
 
         System.out.println("Input Specs: " + specFiles);
@@ -48,7 +54,7 @@ public class GenerateExample {
 
         for (String inputSpec : specFiles) {
             generateForSpec(
-                    projectDir + '/' + inputSpec,
+                    projectDir + '/' + "spec_samples" + '/' + inputSpec,
                     baseOutputDir + '/' + inputSpec.substring(0, inputSpec.lastIndexOf('.'))
             );
         }
