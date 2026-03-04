@@ -73,7 +73,7 @@ public class GenerateExample {
 
         // Define the generators to use
         GeneratorConfig[] generatorConfigs = {
-                new GeneratorConfig("dart",         "Standard Dart Client",          "dart-client"),
+//                new GeneratorConfig("dart",         "Standard Dart Client",          "dart-client"),
 //                new GeneratorConfig("dart-dio",     "Dart Dio Client",               "dart-dio-client"),
                 new GeneratorConfig("dart-network", "Dart Network Client (Custom)",  "dart-network-client"),
         };
