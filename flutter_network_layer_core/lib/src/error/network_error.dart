@@ -74,6 +74,55 @@ final class NullInvokerError extends NetworkErrorBase {
   }
 }
 
+/// The error type thrown when a request is cancelled while it is still
+/// in-flight.
+///
+/// Example:
+/// ```dart
+/// final result = await invoker.request(command);
+/// if (result case NetworkErrorResult(:final RequestCancelledError error)) {
+///   print('Request was cancelled: ${error.message}');
+/// }
+/// ```
+final class RequestCancelledError extends NetworkErrorBase {
+  /// Creates a request cancelled error.
+  const RequestCancelledError({
+    required super.message,
+    required super.stackTrace,
+    super.error,
+  });
+
+  @override
+  String toString() {
+    return 'RequestCancelledError: $message';
+  }
+}
+
+/// The error type thrown when trying to cancel a request that has already
+/// completed or been cancelled.
+///
+/// Example:
+/// ```dart
+/// try {
+///   command.cancel();
+/// } on RequestAlreadyCancelledError catch (e) {
+///   print('Too late — request already finished: ${e.message}');
+/// }
+/// ```
+final class RequestAlreadyCancelledError extends NetworkErrorBase {
+  /// Creates a request already cancelled error.
+  const RequestAlreadyCancelledError({
+    required super.message,
+    required super.stackTrace,
+    super.error,
+  });
+
+  @override
+  String toString() {
+    return 'RequestAlreadyCancelledError: $message';
+  }
+}
+
 /// The error type for general type of errors occurred in the network invoker.
 final class NetworkError extends NetworkErrorBase {
   /// Creates a network error.

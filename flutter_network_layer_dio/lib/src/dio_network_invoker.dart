@@ -23,10 +23,56 @@ final class DioNetworkInvoker implements INetworkInvoker {
   /// The Dio instance used for performing network requests.
   late final Dio dio;
 
+  /// Holds active cancel tokens mapped to their specific command.
+  ///
+  /// **Mutation protocol — always remove before cancelling:**
+  /// Whenever a token needs to be cancelled, its entry must be removed from
+  /// this map *first*, and only then the token itself is cancelled. This means
+  /// the `finally` block in [request] (which also calls
+  /// `_activeRequests.remove`) will always find the slot already gone and
+  /// performs a harmless no-op, eliminating any window where both a cancel call
+  /// and the `finally` block could race to act on the same token.
+  final Map<RequestCommand, CancelToken> _activeRequests = {};
+
+  /// Returns a list of all currently processing commands.
+  List<RequestCommand> get activeRequests => _activeRequests.keys.toList();
+
+  /// Cancels a specific request if it is currently active.
+  ///
+  /// The entry is removed from [_activeRequests] **before** the token is
+  /// cancelled, so the `finally` block in [request] always finds the slot
+  /// already gone and performs a harmless no-op. This eliminates the window
+  /// where both [cancelRequest] and the `finally` block could race to act on
+  /// the same token.
+  void cancelRequest(RequestCommand request) {
+    // Remove first, cancel after — the finally block's remove is then a no-op.
+    final token = _activeRequests.remove(request);
+    if (token != null && !token.isCancelled) {
+      token.cancel('Cancelled by user');
+    }
+  }
+
+  /// Cancels all active requests.
+  ///
+  /// The map is drained atomically (snapshot + clear) before any token is
+  /// cancelled, so concurrent completions in the `finally` block cannot
+  /// interfere with the iteration.
+  void cancelAll() {
+    // Snapshot and clear atomically before cancelling any token.
+    final tokens = Map<RequestCommand, CancelToken>.of(_activeRequests);
+    _activeRequests.clear();
+    for (final token in tokens.values) {
+      if (!token.isCancelled) {
+        token.cancel('Cancelled All');
+      }
+    }
+  }
+
   @override
   Future<NetworkResult<T>> request<T extends Schema>(
       RequestCommand<T> request) async {
-    // 1. Prepare Payload
+    final cancelToken = _setupCancelToken(request);
+
     final Object? payload;
     try {
       payload = await _resolveDioPayload(request.payload);
@@ -34,27 +80,29 @@ final class DioNetworkInvoker implements INetworkInvoker {
       return NetworkErrorResult<T>(error: e);
     }
 
-    // 2. Perform Request
     try {
       final response = await dio.request<dynamic>(
         request.path,
         data: payload,
-        onSendProgress: request.onSendProgressUpdate,
-        onReceiveProgress: request.onReceiveProgressUpdate,
+        onSendProgress: (int sent, int total) {
+          request.updateProgress(sent, total, isSend: true);
+          request.onSendProgressUpdate?.call(sent, total);
+        },
+        onReceiveProgress: (int received, int total) {
+          request.updateProgress(received, total, isSend: false);
+          request.onReceiveProgressUpdate?.call(received, total);
+        },
+        cancelToken: cancelToken,
         options: Options(
           method: request.method.value,
           headers: request.headers,
-
         ),
       );
 
-      // 3. Process Successful Dio Response
       return _processResponse(response, request);
     } on DioException catch (e, s) {
-      // 4. Handle Dio Specific Errors
       return _handleDioException(e, s, request);
     } on Exception catch (e, s) {
-      // 5. Handle Generic Errors
       return NetworkErrorResult<T>(
         error: NetworkError(
           message: 'Request failed',
@@ -62,16 +110,42 @@ final class DioNetworkInvoker implements INetworkInvoker {
           stackTrace: s,
         ),
       );
+    } finally {
+      _activeRequests.remove(request);
+      request.onCancel = () {
+        throw RequestAlreadyCancelledError(
+          message: 'Invalid state: Request was cancelled when it was already '
+              'completed or cancelled.',
+          stackTrace: StackTrace.current,
+        );
+      };
     }
+  }
+
+  CancelToken _setupCancelToken(RequestCommand request) {
+    final token = CancelToken();
+    _activeRequests[request] = token;
+    request.onCancel = () => cancelRequest(request);
+    return token;
   }
 
   /// Handles exceptions thrown by Dio, attempting to parse error responses
   /// defined in the request factories.
   NetworkResult<T> _handleDioException<T extends Schema>(
-      DioException e,
-      StackTrace s,
-      RequestCommand<T> request,
-      ) {
+    DioException e,
+    StackTrace s,
+    RequestCommand<T> request,
+  ) {
+    if (CancelToken.isCancel(e)) {
+      return NetworkErrorResult<T>(
+        error: RequestCancelledError(
+          message: 'Request was cancelled',
+          error: e,
+          stackTrace: s,
+        ),
+      );
+    }
+
     final response = e.response;
 
     // If the response is null, return an internal error.
@@ -119,9 +193,9 @@ final class DioNetworkInvoker implements INetworkInvoker {
 
   /// Validates the raw Dio response and maps it to a [NetworkResult].
   NetworkResult<T> _processResponse<T extends Schema>(
-      Response<dynamic> response,
-      RequestCommand<T> request,
-      ) {
+    Response<dynamic> response,
+    RequestCommand<T> request,
+  ) {
     final responseData = response.data;
     final statusCode = response.statusCode;
 
@@ -208,8 +282,8 @@ final class DioNetworkInvoker implements INetworkInvoker {
   }
 
   Future<Map<String, dynamic>> _convertMultipartFiles(
-      Map<String, dynamic> data,
-      ) async {
+    Map<String, dynamic> data,
+  ) async {
     final dioFormDataMap = <String, dynamic>{};
     for (final entry in data.entries) {
       final key = entry.key;
