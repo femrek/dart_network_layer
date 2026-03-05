@@ -40,3 +40,4 @@ build/
 .DS_Store
 
 generated-output/
+spec_samples/temp*
