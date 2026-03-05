@@ -33,7 +33,8 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
         if (type == null) return true;
         return DART_PRIMITIVES.contains(type)
                 || type.startsWith("Map<")
-                || type.startsWith("List<");
+                || type.startsWith("List<")
+                || type.startsWith("Set<");
     }
 
     public DartNetworkClientCodegen() {
@@ -247,8 +248,9 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
                     // Handle List<...> body params: extract inner type for import,
                     // and mark with vendor extension so the template can serialize properly
-                    if (bodyDataType.startsWith("List<")) {
-                        String innerType = bodyDataType.substring(5, bodyDataType.length() - 1);
+                    if (bodyDataType.startsWith("List<") || bodyDataType.startsWith("Set<")) {
+                        int prefixLen = bodyDataType.startsWith("Set<") ? 4 : 5;
+                        String innerType = bodyDataType.substring(prefixLen, bodyDataType.length() - 1);
                         String innerFile = toSnakeCaseFilename(innerType);
                         op.vendorExtensions.put("x-body-type-file", innerFile);
                         op.vendorExtensions.put("x-is-body-list", true);
@@ -282,6 +284,21 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
                 // Check if operation has a JSON body
                 boolean hasJsonBody = op.bodyParam != null && !op.isMultipart;
                 op.vendorExtensions.put("x-has-json-body", hasJsonBody);
+
+                // Check if the body param type is a Dart built-in (primitive/Map/List of primitives)
+                // so the template can skip calling .toJson() on it
+                if (hasJsonBody && op.bodyParam != null) {
+                    String bodyDataType = op.bodyParam.dataType;
+                    boolean isBodyPrimitive;
+                    if (bodyDataType.startsWith("List<") || bodyDataType.startsWith("Set<")) {
+                        int prefixLen = bodyDataType.startsWith("Set<") ? 4 : 5;
+                        String innerType = bodyDataType.substring(prefixLen, bodyDataType.length() - 1);
+                        isBodyPrimitive = isDartBuiltinType(innerType);
+                    } else {
+                        isBodyPrimitive = isDartBuiltinType(bodyDataType);
+                    }
+                    op.vendorExtensions.put("x-is-body-primitive", isBodyPrimitive);
+                }
 
                 // Check if operation has multipart form data
                 op.vendorExtensions.put("x-is-multipart", op.isMultipart);

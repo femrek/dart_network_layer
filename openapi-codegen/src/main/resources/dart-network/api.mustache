@@ -41,10 +41,20 @@ class {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema extends JsonRequ
 
   @override
   {{#vendorExtensions.x-is-body-list}}
+  {{#vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data;
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{^vendorExtensions.x-is-body-primitive}}
   dynamic toJsonPayload() => data.map((e) => e.toJson()).toList();
+  {{/vendorExtensions.x-is-body-primitive}}
   {{/vendorExtensions.x-is-body-list}}
   {{^vendorExtensions.x-is-body-list}}
+  {{#vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data;
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{^vendorExtensions.x-is-body-primitive}}
   dynamic toJsonPayload() => data.toJson();
+  {{/vendorExtensions.x-is-body-primitive}}
   {{/vendorExtensions.x-is-body-list}}
 }
 
