@@ -141,18 +141,23 @@ public class GenerateExample {
     }
 
     private static @NonNull CodegenConfigurator getCodegenConfigurator(String inputSpec, String outputDir, String generatorName) {
+        // Derive the package name from the spec filename (without extension), converted to snake_case
+        String specFileName = new File(inputSpec).getName();
+        String specBaseName = specFileName.substring(0, specFileName.lastIndexOf('.'));
+        String pubName = specBaseName.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
+
         CodegenConfigurator configurator = new CodegenConfigurator();
         configurator.setGeneratorName(generatorName);
         configurator.setInputSpec(inputSpec);
         configurator.setOutputDir(outputDir);
-        configurator.setPackageName("pet_store_api");
+        configurator.setPackageName(pubName);
         configurator.setApiPackage("api");
         configurator.setModelPackage("model");
 
         // Add additional properties
-        configurator.addAdditionalProperty("pubName", "pet_store_api");
+        configurator.addAdditionalProperty("pubName", pubName);
         configurator.addAdditionalProperty("pubVersion", "1.0.0");
-        configurator.addAdditionalProperty("pubDescription", "Pet Store API Client generated with " + generatorName);
+        configurator.addAdditionalProperty("pubDescription", "API Client for " + specBaseName + " generated with " + generatorName);
 
         return configurator;
     }
