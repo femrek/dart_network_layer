@@ -133,24 +133,22 @@ class {{{vendorExtensions.x-operation-id-pascal}}}Command extends {{x-dart-base-
     {{#pathParams}}
     p = p.replaceAll({{=<% %>=}}'{<% baseName %>}'<%={{ }}=%>, {{#isString}}{{{paramName}}}{{/isString}}{{^isString}}{{{paramName}}}.toString(){{/isString}});
     {{/pathParams}}
-    {{#vendorExtensions.x-has-query-params}}
-    final queryParts = <String>[];
-    {{#queryParams}}
-    {{#required}}
-    queryParts.add('${Uri.encodeQueryComponent(r'{{{baseName}}}')}=${Uri.encodeQueryComponent({{{paramName}}}.toString())}');
-    {{/required}}
-    {{^required}}
-    if ({{{paramName}}} != null) {
-      queryParts.add('${Uri.encodeQueryComponent(r'{{{baseName}}}')}=${Uri.encodeQueryComponent({{{paramName}}}.toString())}');
-    }
-    {{/required}}
-    {{/queryParams}}
-    if (queryParts.isNotEmpty) {
-      p = '$p?${queryParts.join('&')}';
-    }
-    {{/vendorExtensions.x-has-query-params}}
     return p;
   }
+
+  {{#vendorExtensions.x-has-query-params}}
+  @override
+  List<QueryParameter> get queryParameters => [
+    {{#queryParams}}
+    {{#required}}
+    QueryParameter(key: r'{{{baseName}}}', value: {{{paramName}}}),
+    {{/required}}
+    {{^required}}
+    if ({{{paramName}}} != null) QueryParameter(key: r'{{{baseName}}}', value: {{{paramName}}}),
+    {{/required}}
+    {{/queryParams}}
+  ];
+  {{/vendorExtensions.x-has-query-params}}
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.{{{vendorExtensions.x-http-method-enum}}};

@@ -142,7 +142,7 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
      * Converts a name to a snake_case filename, stripping any leading underscores.
      * This ensures that auto-generated inline schema names (which may start with '_')
      * do not produce Dart files with leading underscores (which would make them private).
-     *
+     * <p>
      * Also inserts underscores between letter-to-digit and digit-to-letter transitions
      * so that e.g. "StreamsPost201Response" becomes "streams_post_201_response"
      * rather than "streams_post201_response".
