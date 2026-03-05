@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart' show ListFormat, ListParam;
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
 import 'package:http_test_server/http_test_server.dart';
 import 'package:test/test.dart';
 
+import 'data/response/response_test_user.dart';
 import 'data/test_paths.dart';
 
 void main() {
@@ -13,7 +15,7 @@ void main() {
     late DioNetworkInvoker networkInvoker;
 
     tearDown(() async {
-      await server.close(force: true);
+      await server.close();
     });
 
     group('JsonRequestSchema', () {
@@ -55,7 +57,7 @@ void main() {
               paths: ['/api/users/123'],
               method: 'PUT',
             ),
-            handler: (request) async=> '{"id": "123", "success": true}',
+            handler: (request) async => '{"id": "123", "success": true}',
           ),
         ]);
 
@@ -86,7 +88,7 @@ void main() {
               paths: ['/api/upload'],
               method: 'POST',
             ),
-            handler: (request) async=> '{"id": "upload-123", "success": true}',
+            handler: (request) async => '{"id": "upload-123", "success": true}',
           ),
         ]);
 
@@ -118,7 +120,7 @@ void main() {
               paths: ['/api/upload-file'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "file-456", "success": true}';
             },
           ),
@@ -155,7 +157,7 @@ void main() {
               paths: ['/api/upload-multiple'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "multi-789", "success": true, "count": 3}';
             },
           ),
@@ -204,7 +206,7 @@ void main() {
               paths: ['/api/text'],
               method: 'POST',
             ),
-            handler: (request) async=> 'Text received successfully',
+            handler: (request) async => 'Text received successfully',
           ),
         ]);
 
@@ -231,7 +233,7 @@ void main() {
               paths: ['/api/xml'],
               method: 'POST',
             ),
-            handler: (request) async=> 'XML processed',
+            handler: (request) async => 'XML processed',
           ),
         ]);
 
@@ -259,7 +261,7 @@ void main() {
               paths: ['/api/binary'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "binary-001", "success": true}';
             },
           ),
@@ -298,7 +300,7 @@ void main() {
               paths: ['/api/image'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "img-002", "success": true}';
             },
           ),
@@ -367,7 +369,7 @@ void main() {
               paths: ['/api/large-stream'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "large-stream-002", "success": true}';
             },
           ),
@@ -402,7 +404,7 @@ void main() {
               paths: ['/api/dynamic'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "dynamic-001", "success": true}';
             },
           ),
@@ -432,7 +434,7 @@ void main() {
               paths: ['/api/dynamic-list'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"id": "list-001", "success": true}';
             },
           ),
@@ -462,7 +464,7 @@ void main() {
               paths: ['/api/dynamic-string'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return 'Dynamic string processed';
             },
           ),
@@ -490,7 +492,8 @@ void main() {
               paths: [TestPaths.testUser],
               method: 'GET',
             ),
-            handler: (request) async=> '{"id": "1", "name": "test", "age": 20}',
+            handler: (request) async =>
+                '{"id": "1", "name": "test", "age": 20}',
           ),
         ]);
 
@@ -517,7 +520,7 @@ void main() {
               paths: ['/api/users/123'],
               method: 'DELETE',
             ),
-            handler: (request) async=> '{"success": true}',
+            handler: (request) async => '{"success": true}',
           ),
         ]);
 
@@ -544,7 +547,7 @@ void main() {
               paths: ['/api/auth'],
               method: 'POST',
             ),
-            handler: (request) async=> '{"token": "abc123", "success": true}',
+            handler: (request) async => '{"token": "abc123", "success": true}',
           ),
         ]);
 
@@ -573,7 +576,7 @@ void main() {
               paths: ['/api/validate'],
               method: 'POST',
             ),
-            handler: (request) async{
+            handler: (request) async {
               return '{"error": "Invalid data", "code": "VALIDATION_ERROR"}';
             },
             responseStatusCode: 400,
@@ -599,6 +602,8 @@ void main() {
       });
     });
   });
+
+  _queryParamTests();
 }
 
 // ============================================================================
@@ -1377,6 +1382,371 @@ class AuthResponseFactory extends JsonSchemaFactory<AuthResponse> {
       success: map['success'] as bool,
     );
   }
+}
+
+// ignore_for_file: avoid-importing-entrypoint-exports
+
+// ---------------------------------------------------------------------------
+// Query parameter tests
+// ---------------------------------------------------------------------------
+
+void _queryParamTests() {
+  group('Query parameters', () {
+    late TestServer server;
+    late DioNetworkInvoker networkInvoker;
+
+    tearDown(() async {
+      await server.close();
+    });
+
+    test('single query parameter is forwarded in the URL', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(
+              req.uri.queryParameters['filter'],
+              'active',
+              reason: 'filter query param should be "active"',
+            );
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'filter', value: 'active'),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('multiple query parameters are all forwarded', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(req.uri.queryParameters['page'], '2');
+            expect(req.uri.queryParameters['size'], '10');
+            expect(req.uri.queryParameters['sort'], 'name');
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'page', value: 2),
+          QueryParameter(key: 'size', value: 10),
+          QueryParameter(key: 'sort', value: 'name'),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('no query parameters produces a clean URL', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(
+              req.uri.queryParameters,
+              isEmpty,
+              reason: 'No query parameters should be appended',
+            );
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const []),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('null query parameter value is sent as empty string', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(
+              req.uri.queryParameters.containsKey('optional'),
+              isTrue,
+              reason: 'key with null value should still appear in query string',
+            );
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'optional', value: null),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    // -----------------------------------------------------------------------
+    // List query parameter tests
+    // -----------------------------------------------------------------------
+
+    test('list value sends repeated keys (multi format)', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            final tags = req.uri.queryParametersAll['tags'];
+            expect(
+              tags,
+              containsAll(['dart', 'flutter', 'test']),
+              reason: 'list value should send each element as a repeated key',
+            );
+            expect(tags!.length, 3);
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'tags', value: ['dart', 'flutter', 'test']),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('ListParam with multi format sends repeated keys', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            final ids = req.uri.queryParametersAll['ids'];
+            expect(
+              ids,
+              containsAll(['1', '2', '3']),
+              reason: 'ListParam(multi) should produce repeated keys',
+            );
+            expect(ids!.length, 3);
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: [
+          QueryParameter(
+            key: 'ids',
+            value: ListParam<int>([1, 2, 3], ListFormat.multi),
+          ),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('ListParam with csv format sends comma-separated values', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            final raw = req.uri.queryParameters['roles'];
+            expect(
+              raw,
+              'admin,user,moderator',
+              reason: 'ListParam(csv) should produce a '
+                  'single comma-separated value',
+            );
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: [
+          QueryParameter(
+            key: 'roles',
+            value: ListParam<String>(
+              ['admin', 'user', 'moderator'],
+              ListFormat.csv,
+            ),
+          ),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('duplicate keys are merged into repeated query params', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            final status = req.uri.queryParametersAll['status'];
+            expect(
+              status,
+              containsAll(['active', 'pending']),
+              reason: 'duplicate keys should be merged into repeated params',
+            );
+            expect(status!.length, 2);
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'status', value: 'active'),
+          QueryParameter(key: 'status', value: 'pending'),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('list param mixed with scalar query parameters', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(req.uri.queryParameters['page'], '1');
+            final statuses = req.uri.queryParametersAll['status'];
+            expect(statuses, containsAll(['active', 'pending']));
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'page', value: 1),
+          QueryParameter(key: 'status', value: ['active', 'pending']),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+
+    test('empty list value does not append key to URL', () async {
+      server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: (req) => req.method == 'GET' && req.uri.path == '/test/user',
+          handler: (req) async {
+            expect(
+              req.uri.queryParametersAll.containsKey('tags'),
+              isFalse,
+              reason: 'empty list should not append the key to the URL',
+            );
+            req.response
+              ..statusCode = 200
+              ..write('{"id":"1","name":"test","age":20}');
+            return req.response;
+          },
+        ),
+      ]);
+
+      networkInvoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await networkInvoker.request(
+        _RequestWithQueryParams(params: const [
+          QueryParameter(key: 'tags', value: <String>[]),
+        ]),
+      );
+
+      expect(result, isA<SuccessResponseResult>());
+    });
+  });
+}
+
+class _RequestWithQueryParams extends RequestCommand<ResponseTestUser> {
+  _RequestWithQueryParams({required this.params});
+
+  final List<QueryParameter> params;
+
+  @override
+  String get path => '/test/user';
+
+  @override
+  List<QueryParameter> get queryParameters => params;
+
+  @override
+  SchemaFactory<ResponseTestUser> get defaultResponseFactory =>
+      ResponseTestUserFactory();
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }
 
 class ErrorResponse extends Schema {

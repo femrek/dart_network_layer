@@ -1,6 +1,7 @@
 export 'src/enums/http_request_method.dart';
 export 'src/error/network_error.dart';
 export 'src/i_network_invoker.dart';
+export 'src/request/query_parameter.dart';
 export 'src/request/request_command.dart';
 export 'src/response/response_result.dart';
 export 'src/schema/multipart_file_schema.dart';

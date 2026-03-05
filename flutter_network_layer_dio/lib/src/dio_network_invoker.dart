@@ -84,6 +84,7 @@ final class DioNetworkInvoker implements INetworkInvoker {
       final response = await dio.request<dynamic>(
         request.path,
         data: payload,
+        queryParameters: convertQueryParameters(request.queryParameters),
         onSendProgress: (int sent, int total) {
           request.updateProgress(sent, total, isSend: true);
           request.onSendProgressUpdate?.call(sent, total);

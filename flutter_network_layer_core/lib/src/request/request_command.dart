@@ -1,4 +1,5 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
+import 'package:flutter_network_layer_core/src/request/query_parameter.dart';
 import 'package:flutter_network_layer_core/src/request/request_managing_mixin.dart';
 
 /// The callback for the progress of the request. Can be used to trace uploading
@@ -34,6 +35,9 @@ abstract class RequestCommand<T extends Schema> with RequestManagingMixin<T> {
   /// The payload data of the request. Applicable in the form of Json, form data
   /// or string
   RequestSchema get payload => const EmptyRequestSchema();
+
+  /// The query parameters of the request.
+  List<QueryParameter> get queryParameters => const [];
 
   /// The headers of the request.
   Map<String, dynamic> get headers => const {};
