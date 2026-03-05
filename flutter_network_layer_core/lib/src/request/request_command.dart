@@ -1,5 +1,4 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
-import 'package:flutter_network_layer_core/src/request/query_parameter.dart';
 import 'package:flutter_network_layer_core/src/request/request_managing_mixin.dart';
 
 /// The callback for the progress of the request. Can be used to trace uploading
