@@ -1,10 +1,10 @@
-# Flutter Network Layer
+# Dart Network Layer
 
 **dart_network_layer_core:** [GitHub][gh_dart_network_layer_core] | [pub.dev][pd_dart_network_layer_core]
 
 # dart_network_layer_core
 
-The core package of the Flutter Network Layer project.
+The core package of the Dart Network Layer project.
 
 Provides the frame for the following implementations:
 

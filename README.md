@@ -1,4 +1,4 @@
-# Flutter Network Layer
+# Dart Network Layer
 
 A package set to use as a network layer for Flutter projects.
 
