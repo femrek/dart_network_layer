@@ -23,7 +23,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await RequestTestUser().invoke(networkManager);
+      final response = await networkManager.request(RequestTestUser());
 
       switch (response) {
         case SuccessResponseResult(:final data):

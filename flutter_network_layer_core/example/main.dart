@@ -6,7 +6,7 @@ void main() async {
   final networkManager = NetworkManager();
   await networkManager.init('https://example.com');
 
-  final response = await RequestExample().invoke(networkManager);
+  final response = await networkManager.request(RequestExample());
   switch (response) {
     case SuccessResponseResult(:final data):
       print(data.message);

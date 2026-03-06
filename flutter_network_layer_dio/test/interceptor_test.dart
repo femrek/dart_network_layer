@@ -69,7 +69,7 @@ void main() async {
 
       final networkManager = DioNetworkInvoker.fromDio(dio);
 
-      final response = await request.invoke(networkManager);
+      final response = await networkManager.request(request);
 
       expect(onRequestRun, isTrue, reason: 'onRequest should run');
       expect(onResponseRun, isTrue, reason: 'onResponse should run');
