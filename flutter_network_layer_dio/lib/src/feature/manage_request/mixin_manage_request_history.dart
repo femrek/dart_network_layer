@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
 import 'package:flutter_network_layer_dio/src/feature/manage_request/base_request_managing_network_invoker.dart';
-import 'package:flutter_network_layer_dio/src/model/request_history_entry.dart';
 import 'package:meta/meta.dart';
 
 /// Mixin that tracks a history of completed network requests.
@@ -26,7 +25,7 @@ mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
     assert(status.end,
         'resultRequestProgress should only be called with an end status');
 
-    final progress = progressesSnapshot.removeProgress(request)
+    final progress = progresses.removeProgress(request)
       ?..endRequest(status);
     if (progress != null && _maxHistoryLength != 0) {
       _requestHistory.add(RequestHistoryEntry.fromProgress(progress));

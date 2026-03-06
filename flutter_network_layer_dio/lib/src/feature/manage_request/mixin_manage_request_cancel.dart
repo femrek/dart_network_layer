@@ -15,6 +15,7 @@ mixin MixinManageRequestCancel on BaseRequestManagingNetworkInvoker {
   /// performs a harmless no-op, eliminating any window where both a cancel call
   /// and the `finally` block could race to act on the same token.
   @protected
+  @visibleForTesting
   final Map<RequestCommand, CancelToken> requestMap = {};
 
   /// Sets up a cancel token for the given request and registers it in
@@ -26,9 +27,6 @@ mixin MixinManageRequestCancel on BaseRequestManagingNetworkInvoker {
     request.onCancel = () => cancelRequest(request);
     return token;
   }
-
-  /// Returns a list of all currently processing commands.
-  List<RequestCommand> get activeRequests => requestMap.keys.toList();
 
   /// Cancels a specific request if it is currently active.
   ///

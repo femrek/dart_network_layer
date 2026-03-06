@@ -160,7 +160,7 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect(
-        networkManager.activeRequests.length,
+        networkManager.requestMap.length,
         2,
         reason: 'Both requests should be active before cancelAll',
       );
@@ -191,7 +191,7 @@ void main() {
         reason: 'Second request error should be RequestCancelledError',
       );
       expect(
-        networkManager.activeRequests,
+        networkManager.requestMap,
         isEmpty,
         reason: 'No active requests should remain after cancelAll',
       );
@@ -216,7 +216,7 @@ void main() {
       final request = RequestTestUser();
 
       expect(
-        networkManager.activeRequests,
+        networkManager.requestMap,
         isEmpty,
         reason: 'No active requests before sending',
       );
@@ -226,7 +226,7 @@ void main() {
       // The request is registered synchronously inside `request()` before the
       // first await, so it should already be active here.
       expect(
-        networkManager.activeRequests,
+        networkManager.requestMap.keys,
         contains(request),
         reason: 'Request should be active while in-flight',
       );
@@ -234,7 +234,7 @@ void main() {
       await responseFuture;
 
       expect(
-        networkManager.activeRequests,
+        networkManager.requestMap.keys,
         isNot(contains(request)),
         reason: 'Request should be removed from active after completion',
       );

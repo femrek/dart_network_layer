@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
+import 'package:flutter_network_layer_dio/src/model/aggregated_request_state_impl.dart';
 import 'package:http_test_server/http_test_server.dart';
 import 'package:test/test.dart';
 
@@ -107,9 +108,9 @@ void main() {
   // AggregatedProgressState
   // -------------------------------------------------------------------------
   group('AggregatedProgressState', () {
-    late AggregatedProgressState agg;
+    late AggregatedRequestStateImpl agg;
 
-    setUp(() => agg = AggregatedProgressState());
+    setUp(() => agg = AggregatedRequestStateImpl());
 
     test('getOrCreateProgress creates a pending entry on first call', () {
       final req = RequestTestUser();
@@ -212,7 +213,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final snapshots = <AggregatedProgressState>[];
+      final snapshots = <AggregatedRequestState>[];
       invoker.onUpdateRequestProgress = snapshots.add;
 
       await invoker.request(RequestTestUser());
@@ -240,7 +241,7 @@ void main() {
 
       final request = RequestTestUser();
 
-      AggregatedProgressState? lastSnapshot;
+      AggregatedRequestState? lastSnapshot;
       invoker.onUpdateRequestProgress = (s) => lastSnapshot = s;
 
       await invoker.request(request);
@@ -274,7 +275,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      final snapshots = <AggregatedProgressState>[];
+      final snapshots = <AggregatedRequestState>[];
       invoker.onUpdateRequestProgress = snapshots.add;
 
       final future = invoker.request(request);
