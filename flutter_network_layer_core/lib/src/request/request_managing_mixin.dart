@@ -1,25 +1,25 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 
 /// A mixin to add request canceling capability to a [RequestCommand].
-mixin RequestManagingMixin<T extends Schema> {
+mixin RequestManagingMixin {
   void Function()? _onCancel;
-  double _sentProgress = 0;
-  double _receivedProgress = 0;
 
   /// Cancels the in-flight request associated with this command.
   ///
   /// Call this method at any time after the request has been handed to an
   /// invoker (e.g. via [RequestCommand.invoke] or
   /// [INetworkInvoker.request]) and before it completes. The invoker will
-  /// abort the HTTP call and return a [NetworkErrorResult] whose [error] is a
-  /// [RequestCancelledError].
+  /// abort the HTTP call and return a [NetworkErrorResult] whose
+  /// [NetworkErrorResult.error] is a [RequestCancelledError].
   ///
   /// **Lifecycle states and their effects:**
   ///
   /// | State | Effect of calling `cancel()` |
   /// |---|---|
   /// | Not yet submitted to an invoker | No-op — [_onCancel] is `null`. |
+  // ignore: lines_longer_than_80_chars
   /// | In-flight | Invoker aborts the request; result becomes `NetworkErrorResult<RequestCancelledError>`. |
+  // ignore: lines_longer_than_80_chars
   /// | Completed or already cancelled | Throws [RequestAlreadyCancelledError]. |
   ///
   /// **Throws**
@@ -46,6 +46,8 @@ mixin RequestManagingMixin<T extends Schema> {
     _onCancel?.call();
   }
 
+  /// INTERNAL: DO NOT USE OUTSIDE OF INVOKER IMPLEMENTATIONS.
+  ///
   /// Internal setter used by the invoker to attach (or replace) the
   /// cancellation logic for this command.
   ///
@@ -58,21 +60,4 @@ mixin RequestManagingMixin<T extends Schema> {
   ///
   /// This setter is not intended to be called from application code.
   set onCancel(void Function() callback) => _onCancel = callback;
-
-  /// Getter for send progress.
-  double get sentProgress => _sentProgress;
-
-  /// Getter for receive progress.
-  double get receivedProgress => _receivedProgress;
-
-  /// Helper to update progress (used by Invoker)
-  void updateProgress(int count, int total, {required bool isSend}) {
-    if (total <= 0) return;
-    final progress = count / total;
-    if (isSend) {
-      _sentProgress = progress;
-    } else {
-      _receivedProgress = progress;
-    }
-  }
 }

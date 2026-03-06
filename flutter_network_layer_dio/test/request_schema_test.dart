@@ -1584,7 +1584,7 @@ void _queryParamTests() {
 
       final result = await networkInvoker.request(
         _RequestWithQueryParams(params: [
-          QueryParameter(
+          const QueryParameter(
             key: 'ids',
             value: ListParam<int>([1, 2, 3], ListFormat.multi),
           ),
@@ -1620,7 +1620,7 @@ void _queryParamTests() {
 
       final result = await networkInvoker.request(
         _RequestWithQueryParams(params: [
-          QueryParameter(
+          const QueryParameter(
             key: 'roles',
             value: ListParam<String>(
               ['admin', 'user', 'moderator'],

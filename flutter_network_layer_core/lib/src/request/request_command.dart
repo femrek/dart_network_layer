@@ -1,5 +1,6 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 import 'package:flutter_network_layer_core/src/request/request_managing_mixin.dart';
+import 'package:flutter_network_layer_core/src/request/request_result_mixin.dart';
 
 /// The callback for the progress of the request. Can be used to trace uploading
 /// or downloading data.
@@ -12,7 +13,8 @@ typedef OnProgressCallback = void Function(int done, int total);
 /// callbacks, etc.
 ///
 /// [T] is the type of the successful response model.
-abstract class RequestCommand<T extends Schema> with RequestManagingMixin<T> {
+abstract class RequestCommand<T extends Schema>
+    with RequestManagingMixin, RequestResultMixin<T> {
   /// The path of the request.
   String get path;
 
