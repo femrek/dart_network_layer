@@ -53,14 +53,14 @@ public class DartNetworkClientCodegen extends AbstractDartCodegen {
 
         sourceFolder = "";
 
-        // Map 'file' type to MultipartFileSchema from flutter_network_layer_core
+        // Map 'file' type to MultipartFileSchema from dart_network_layer_core
         typeMapping.put("file", "MultipartFileSchema");
         typeMapping.put("File", "MultipartFileSchema");
         typeMapping.put("binary", "MultipartFileSchema");
 
-        // Remove http-related imports, add flutter_network_layer_core
+        // Remove http-related imports, add dart_network_layer_core
         importMapping.clear();
-        importMapping.put("MultipartFileSchema", "package:flutter_network_layer_core/flutter_network_layer_core.dart");
+        importMapping.put("MultipartFileSchema", "package:dart_network_layer_core/dart_network_layer_core.dart");
     }
 
     @Override

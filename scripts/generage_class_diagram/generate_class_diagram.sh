@@ -7,8 +7,8 @@
 # copy source code to a temp folder
 rm -rf temp
 mkdir temp
-cp -r ../../flutter_network_layer_dio/lib temp
-cp -r ../../flutter_network_layer_core/lib temp
+cp -r ../../dart_network_layer_dio/lib temp
+cp -r ../../dart_network_layer_core/lib temp
 
 # fund absolute path of the temp folder
 TEMP_FOLDER=$(pwd)

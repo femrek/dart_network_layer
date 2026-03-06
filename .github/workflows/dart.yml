@@ -19,24 +19,24 @@ jobs:
 
       # Install dependencies for each package
       - name: Install dependencies for core
-        run: dart pub get --no-example -C flutter_network_layer_core
+        run: dart pub get --no-example -C dart_network_layer_core
       - name: Install dependencies for dio impl
-        run: dart pub get --no-example -C flutter_network_layer_dio
+        run: dart pub get --no-example -C dart_network_layer_dio
 
       # Verify that the libraries are error-free
       - name: Verify formatting for core
-        run: dart format --output=none --set-exit-if-changed flutter_network_layer_core/lib
+        run: dart format --output=none --set-exit-if-changed dart_network_layer_core/lib
       - name: Verify formatting for dio impl
-        run: dart format --output=none --set-exit-if-changed flutter_network_layer_dio/lib
+        run: dart format --output=none --set-exit-if-changed dart_network_layer_dio/lib
 
       # Analyze the source code
       - name: Analyze project source for core
-        run: dart analyze flutter_network_layer_core/lib
+        run: dart analyze dart_network_layer_core/lib
       - name: Analyze project source for dio impl
-        run: dart analyze flutter_network_layer_dio/lib
+        run: dart analyze dart_network_layer_dio/lib
 
       # Run tests
       - name: Run tests for core
-        run: cd flutter_network_layer_core && dart test
+        run: cd dart_network_layer_core && dart test
       - name: Run tests for dio implementation
-        run: cd flutter_network_layer_dio && dart test
+        run: cd dart_network_layer_dio && dart test

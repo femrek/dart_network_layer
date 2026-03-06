@@ -1,5 +1,5 @@
-name: flutter_network_layer
-description: "Test the flutter_network_layer_core and its all implementations."
+name: dart_network_layer
+description: "Test the dart_network_layer_core and its all implementations."
 publish_to: 'none'
 version: 0.7.1
 
@@ -7,16 +7,16 @@ environment:
   sdk: ^3.6.0
 
 workspace:
-  - flutter_network_layer_core
-  - flutter_network_layer_dio
+  - dart_network_layer_core
+  - dart_network_layer_dio
 
 dev_dependencies:
   test: ^1.25.14
   http_test_server: ^0.1.0
   very_good_analysis: ^9.0.0
-  flutter_network_layer_dio:
-    path: ./flutter_network_layer_dio
+  dart_network_layer_dio:
+    path: ./dart_network_layer_dio
 
 pubspec_overrides:
-  flutter_network_layer_core:
-    path: ./flutter_network_layer_core
+  dart_network_layer_core:
+    path: ./dart_network_layer_core

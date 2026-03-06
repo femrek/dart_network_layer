@@ -21,9 +21,9 @@ with file_path.open("r", encoding="utf-8") as f:
 # Update package version
 content = re.sub(r"^version:\s*.*$", f"version: {new_version}", content, flags=re.MULTILINE)
 
-# Update flutter_network_layer_core dependency
+# Update dart_network_layer_core dependency
 content = re.sub(
-    r"(flutter_network_layer_core:\s*)\^?\S+",
+    r"(dart_network_layer_core:\s*)\^?\S+",
     rf"\1^{new_version}",
     content,
     flags=re.MULTILINE

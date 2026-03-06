@@ -4,20 +4,19 @@ A package set to use as a network layer for Flutter projects.
 
 ## Getting Started
 
-Visit [flutter_network_layer_dio][gh_flutter_network_layer_dio] ([pub.dev][pd_flutter_network_layer_dio])
-
+Visit [dart_network_layer_dio][gh_dart_network_layer_dio] ([pub.dev][pd_dart_network_layer_dio])
 
 ## Examples
 
 - [Flutter example with Dio implementation][gh_example_flutter_dio] is an example Flutter project that shows how to
-  use `flutter_network_layer_dio` in a Flutter project.
+  use `dart_network_layer_dio` in a Flutter project.
 
 ## Example Class Diagram
 
 <img width="1266" alt="class diagram" src="https://github.com/user-attachments/assets/1c10872a-8c3d-4fb5-9d26-221ccac74c85" />
 
 Figure: Class diagram of an example flutter application (Production section in the figure) with
-flutter_network_layer_core and flutter_network_layer_dio.
+dart_network_layer_core and dart_network_layer_dio.
 
 ## License
 
@@ -45,15 +44,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-[gh_flutter_network_layer_core]: https://github.com/femrek/flutter_network_layer/tree/main/flutter_network_layer_core
+[gh_dart_network_layer_core]: https://github.com/femrek/dart_network_layer/tree/main/dart_network_layer_core
 
-[pd_flutter_network_layer_core]: https://pub.dev/packages/flutter_network_layer_core
+[pd_dart_network_layer_core]: https://pub.dev/packages/dart_network_layer_core
 
-[gh_flutter_network_layer_dio]: https://github.com/femrek/flutter_network_layer/tree/main/flutter_network_layer_dio
+[gh_dart_network_layer_dio]: https://github.com/femrek/dart_network_layer/tree/main/dart_network_layer_dio
 
-[pd_flutter_network_layer_dio]: https://pub.dev/packages/flutter_network_layer_dio
+[pd_dart_network_layer_dio]: https://pub.dev/packages/dart_network_layer_dio
 
-[gh_example_flutter_dio]: https://github.com/femrek/flutter_network_layer/tree/main/example_flutter_dio
+[gh_example_flutter_dio]: https://github.com/femrek/dart_network_layer/tree/main/example_flutter_dio
 
 
 
