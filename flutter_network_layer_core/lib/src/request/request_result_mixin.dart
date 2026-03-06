@@ -1,4 +1,5 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
+import 'package:meta/meta.dart';
 
 /// Mixin that stores the result of a completed network request.
 ///
@@ -17,6 +18,7 @@ mixin RequestResultMixin<T extends Schema> {
   /// invoker calls this method once the request is completed (either
   /// successfully or with an error) to store the result in the command for
   /// later retrieval.
+  @mustCallSuper
   // ignore: use_setters_to_change_properties internal
   void finalizeRequest(NetworkResult<T> result) {
     _result = result;

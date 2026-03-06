@@ -1,4 +1,5 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
+import 'package:meta/meta.dart';
 
 /// A mixin to add request canceling capability to a [RequestCommand].
 mixin RequestManagingMixin {
@@ -59,5 +60,6 @@ mixin RequestManagingMixin {
   ///    throws [RequestAlreadyCancelledError], preventing stale cancellations.
   ///
   /// This setter is not intended to be called from application code.
+  @mustCallSuper
   set onCancel(void Function() callback) => _onCancel = callback;
 }
