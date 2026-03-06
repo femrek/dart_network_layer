@@ -1,6 +1,6 @@
 name: flutter_network_layer_dio
 description: "Dio implementation for flutter_network_layer_core. Uses the dio package to make network requests."
-version: 0.7.1
+version: 1.0.0-dev4
 homepage: https://github.com/femrek/flutter_network_layer/tree/main/flutter_network_layer_dio
 
 resolution: workspace
@@ -9,10 +9,12 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  flutter_network_layer_core: ^0.7.1
+  flutter_network_layer_core: ^1.0.0-dev4
   dio: ^5.7.0
+  http_parser: ^4.1.2
+  meta: ^1.18.1
 
 dev_dependencies:
   test: ^1.25.14
-  http_test_server: ^0.1.0
+  http_test_server: ^0.1.1
   very_good_analysis: ^9.0.0

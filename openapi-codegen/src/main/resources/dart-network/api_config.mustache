@@ -1,0 +1,30 @@
+{{>header}}
+
+/// Configuration and metadata for the generated API client.
+///
+/// This class provides access to API metadata extracted from the OpenAPI specification,
+/// including base URL, API version, and other useful information.
+abstract final class ApiConfig {
+  ApiConfig._();
+
+  /// The title of the API.
+  static const String apiTitle = '{{appName}}';
+
+  /// The version of the API.
+  static const String apiVersion = '{{appVersion}}';
+
+  /// The description of the API.
+  static const String apiDescription = '''{{appDescription}}''';
+  {{#servers}}
+
+  /// {{{description}}}{{^description}}{{{url}}}{{/description}}
+  static const String {{{vendorExtensions.x-dart-server-var-name}}} = '{{{url}}}';
+  {{/servers}}
+
+  /// List of all available server URLs.
+  static const List<String> serverUrls = [
+    {{#servers}}
+    {{{vendorExtensions.x-dart-server-var-name}}},
+    {{/servers}}
+  ];
+}

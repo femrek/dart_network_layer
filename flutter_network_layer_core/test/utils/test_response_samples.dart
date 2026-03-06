@@ -1,17 +1,12 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 
-final class ResponseTest1 extends ResponseModel {
+final class ResponseTest1 extends Schema {
   ResponseTest1({required this.field1});
 
   final String field1;
-
-  @override
-  String toLogString() {
-    return 'ResponseTest1(field1: $field1)';
-  }
 }
 
-class ResponseTest1Factory extends JsonResponseFactory<ResponseTest1> {
+class ResponseTest1Factory extends JsonSchemaFactory<ResponseTest1> {
   factory ResponseTest1Factory() => _instance;
 
   ResponseTest1Factory._internal();
@@ -30,7 +25,7 @@ class ResponseTest1Factory extends JsonResponseFactory<ResponseTest1> {
   }
 }
 
-final class ResponseTestError extends ResponseModel {
+final class ResponseTestError extends Schema {
   ResponseTestError({
     this.message,
     this.errorField,
@@ -38,15 +33,10 @@ final class ResponseTestError extends ResponseModel {
 
   final String? message;
   final String? errorField;
-
-  @override
-  String toLogString() {
-    return 'ResponseTestError(message: $message, errorField: $errorField)';
-  }
 }
 
 final class ResponseTestErrorFactory
-    extends JsonResponseFactory<ResponseTestError> {
+    extends JsonSchemaFactory<ResponseTestError> {
   factory ResponseTestErrorFactory() => _instance;
 
   ResponseTestErrorFactory._internal();

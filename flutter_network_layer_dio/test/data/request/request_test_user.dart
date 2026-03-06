@@ -3,16 +3,14 @@ import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 import '../response/response_test_user.dart';
 import '../test_paths.dart';
 
-class RequestTestUser
-    extends RequestCommand<ResponseTestUser, IgnoredResponseModel> {
+class RequestTestUser extends RequestCommand<ResponseTestUser> {
   @override
   String get path => TestPaths.testUser;
 
   @override
-  final ResponseFactory<ResponseTestUser> responseFactory =
+  SchemaFactory<ResponseTestUser> get defaultResponseFactory =>
       ResponseTestUserFactory();
 
   @override
-  final ResponseFactory<IgnoredResponseModel> errorResponseFactory =
-      IgnoredResponseModelFactory();
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }

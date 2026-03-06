@@ -7,59 +7,53 @@ void main() async {
   await networkManager.init('https://example.com');
 
   final response = await networkManager.request(RequestExample());
-  response.when(
-    success: (response) {
-      print(response.data.message);
-    },
-    error: (response) {
-      print('Error: ${response.message}');
-    },
-  );
+  switch (response) {
+    case SuccessResponseResult(:final data):
+      print(data.message);
+    case SpecifiedResponseResult(:final statusCode):
+      print('Error response received with status: $statusCode');
+    case NetworkErrorResult(:final error):
+      print('Network Error: ${error.message}');
+  }
 }
 
 /// A dummy network manager that returns a dummy response.
 class NetworkManager implements INetworkInvoker {
-  @override
   Future<void> init(String baseUrl) async {}
 
   @override
-  Future<ResponseResult<T, E>>
-      request<T extends ResponseModel, E extends ResponseModel>(
-          RequestCommand<T, E> request) async {
+  Future<NetworkResult<T>> request<T extends Schema>(
+      RequestCommand<T> request) async {
     final dummyResponseJson = <String, dynamic>{'message': 'Hello, World!'};
 
-    return request.responseFactory.when<ResponseResult<T, E>>(
-      json: (JsonResponseFactory<T> json) {
-        final dummyResponse = json.fromJson(dummyResponseJson);
-        return SuccessResponseResult(
-          statusCode: 200,
-          data: dummyResponse,
-        );
-      },
-      custom: (CustomResponseFactory<T> custom) {
-        return ErrorResponseResult.noResponse(
+    return switch (request.defaultResponseFactory) {
+      JsonSchemaFactory<T>(:final fromJson) => () {
+          final dummyResponse = fromJson(dummyResponseJson);
+          return SuccessResponseResult(
+            statusCode: 200,
+            data: dummyResponse,
+          );
+        }(),
+      StringSchemaFactory<T>() => NetworkErrorResult(
           error: NetworkErrorInvalidResponseType(
             message: 'The sample model is not a JSON response model.',
             stackTrace: StackTrace.current,
+            response: null,
+            statusCode: 0,
           ),
-        );
-      },
-    );
-  }
-
-  @override
-  OnNetworkLog get onLog => _onLog;
-
-  void _onLog(NetworkLog log) {
-    print('${log.type}: ${log.message}');
+        ),
+      DynamicSchemaFactory<T>(:final from) => () {
+          final response = from(dummyResponseJson);
+          return SuccessResponseResult(
+            statusCode: 200,
+            data: response,
+          );
+        }()
+    };
   }
 }
 
-class RequestExample
-    implements RequestCommand<ResponseExample, IgnoredResponseModel> {
-  @override
-  Map<String, dynamic> get payload => const {};
-
+class RequestExample extends RequestCommand<ResponseExample> {
   @override
   Map<String, dynamic> get headers => const {};
 
@@ -67,47 +61,34 @@ class RequestExample
   HttpRequestMethod get method => HttpRequestMethod.get;
 
   @override
-  OnProgressCallback? onReceiveProgressUpdate;
+  OnProgressCallback? get onReceiveProgressUpdate => null;
 
   @override
-  OnProgressCallback? onSendProgressUpdate;
+  OnProgressCallback? get onSendProgressUpdate => null;
 
   @override
   String get path => '/example';
 
   @override
-  RequestPayloadType get payloadType => RequestPayloadType.other;
-
-  @override
-  final ResponseFactory<ResponseExample> responseFactory =
+  SchemaFactory<ResponseExample> get defaultResponseFactory =>
       ResponseExampleFactory();
 
   @override
-  final ResponseFactory<IgnoredResponseModel> errorResponseFactory =
-      IgnoredResponseModelFactory();
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 
   @override
   String toString() {
     return 'RequestExample{path: $path, '
         'method: $method, '
-        'payloadType: $payloadType, '
         'data: $payload, '
         'headers: $headers, '
         'onSendProgressUpdate: $onSendProgressUpdate, '
         'onReceiveProgressUpdate: $onReceiveProgressUpdate, '
-        'responseFactory: $responseFactory}';
-  }
-
-  @override
-  String toLogString() {
-    return 'RequestExample GET $path '
-        'Payload Type: $payloadType '
-        'Headers: $headers '
-        'Data: $payload';
+        'defaultResponseFactory: $defaultResponseFactory}';
   }
 }
 
-class ResponseExample extends ResponseModel {
+class ResponseExample extends Schema {
   const ResponseExample({required this.message});
 
   const ResponseExample.empty() : message = '';
@@ -120,7 +101,7 @@ class ResponseExample extends ResponseModel {
   }
 }
 
-class ResponseExampleFactory extends JsonResponseFactory<ResponseExample> {
+class ResponseExampleFactory extends JsonSchemaFactory<ResponseExample> {
   factory ResponseExampleFactory() => _instance;
 
   const ResponseExampleFactory._internal();

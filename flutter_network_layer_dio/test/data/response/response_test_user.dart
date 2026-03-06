@@ -1,6 +1,6 @@
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 
-class ResponseTestUser extends ResponseModel {
+class ResponseTestUser extends Schema {
   const ResponseTestUser({
     required this.id,
     required this.name,
@@ -17,7 +17,7 @@ class ResponseTestUser extends ResponseModel {
   final int age;
 }
 
-class ResponseTestUserFactory extends JsonResponseFactory<ResponseTestUser> {
+class ResponseTestUserFactory extends JsonSchemaFactory<ResponseTestUser> {
   factory ResponseTestUserFactory() => _instance;
 
   const ResponseTestUserFactory._internal();

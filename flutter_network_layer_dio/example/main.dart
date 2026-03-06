@@ -3,31 +3,26 @@
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
 
 void main() async {
-  await AppNetworkManager.networkInvoker.init(
-    'https://jsonplaceholder.typicode.com',
-  );
   final request = RequestUser(id: 1);
   final response = await AppNetworkManager.networkInvoker.request(request);
-  response.when(
-    success: (response) {
-      print('DATA: ${response.data}');
-    },
-    error: (response) {
-      print('ERROR: ${response.message}');
-    },
-  );
-}
-
-abstract final class AppNetworkManager {
-  static final INetworkInvoker networkInvoker =
-      DioNetworkInvoker(onLog: _onLog);
-
-  static void _onLog(NetworkLog log) {
-    print('[${log.type}] ${log.message}');
+  switch (response) {
+    case SuccessResponseResult(:final data):
+      print('DATA: $data');
+    case final SpecifiedResponseResult r:
+      print('ERROR: Status ${r.statusCode}');
+      print(r.data);
+    case NetworkErrorResult(:final error):
+      print('ERROR: ${error.message}');
   }
 }
 
-final class ResponseUser extends ResponseModel {
+abstract final class AppNetworkManager {
+  static final INetworkInvoker networkInvoker = DioNetworkInvoker.fromBaseUrl(
+    'https://jsonplaceholder.typicode.com',
+  );
+}
+
+final class ResponseUser extends Schema {
   const ResponseUser({
     required this.id,
     required this.name,
@@ -51,7 +46,7 @@ final class ResponseUser extends ResponseModel {
   String toString() => toJson().toString();
 }
 
-final class ResponseUserFactory extends JsonResponseFactory<ResponseUser> {
+final class ResponseUserFactory extends JsonSchemaFactory<ResponseUser> {
   factory ResponseUserFactory() => _instance;
 
   const ResponseUserFactory._internal();
@@ -70,8 +65,7 @@ final class ResponseUserFactory extends JsonResponseFactory<ResponseUser> {
   }
 }
 
-final class RequestUser
-    extends RequestCommand<ResponseUser, IgnoredResponseModel> {
+final class RequestUser extends RequestCommand<ResponseUser> {
   RequestUser({
     required this.id,
   });
@@ -82,9 +76,9 @@ final class RequestUser
   String get path => '/users/$id';
 
   @override
-  final ResponseFactory<ResponseUser> responseFactory = ResponseUserFactory();
+  SchemaFactory<ResponseUser> get defaultResponseFactory =>
+      ResponseUserFactory();
 
   @override
-  final ResponseFactory<IgnoredResponseModel> errorResponseFactory =
-      IgnoredResponseModelFactory();
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }

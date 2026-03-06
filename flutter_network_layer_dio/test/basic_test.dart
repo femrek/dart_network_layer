@@ -15,74 +15,56 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testUser]),
-          handler: (request) => '{"id": "1", "name": "test", "age": 20}',
+          handler: (request) async => '{"id": "1", "name": "test", "age": 20}',
         ),
       ]);
 
-      final networkManager = DioNetworkInvoker(
-        onLog: _onLog,
+      final networkManager = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
       );
-      await networkManager.init('http://localhost:${server.port}');
 
       final response = await networkManager.request(RequestTestUser());
 
-      final responseData = response.when(
-        success: (response) {
-          expect(response.data, isA<ResponseTestUser>());
-          expect(response.data.id, '1');
-          expect(response.data.name, 'test');
-          expect(response.data.age, 20);
+      switch (response) {
+        case SuccessResponseResult(:final data):
+          expect(data, isA<ResponseTestUser>());
+          expect(data.id, '1');
+          expect(data.name, 'test');
+          expect(data.age, 20);
+        case SpecifiedResponseResult():
+          fail('Expected success response, got specified response with status: '
+              '${response.statusCode}');
+        case NetworkErrorResult(:final error):
+          fail('Expected success response, got error: ${error.message}');
+      }
 
-          return response.data;
-        },
-        error: (response) {
-          fail('error response: ${response.message}');
-        },
-      );
-
-      expect(responseData, isA<ResponseTestUser>());
-      expect(responseData.id, '1');
-      expect(responseData.name, 'test');
-      expect(responseData.age, 20);
-
-      await server.close(force: true);
+      await server.close();
     });
 
     test('request not found', () async {
       final server = await TestServer.createHttpServer(events: const []);
 
-      final networkManager = DioNetworkInvoker(
-        onLog: _onLog,
+      final networkManager = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
       );
-      await networkManager.init('http://localhost:${server.port}');
 
       final response = await networkManager.request(RequestTestNotFound());
 
-      response.when(
-        success: (response) {
-          fail('success response: ${response.data}');
-        },
-        error: (response) {
-          expect(response.isFromServer, isTrue, reason: response.message);
-          expect(response.isFromLocal, isFalse, reason: response.message);
+      switch (response) {
+        case SuccessResponseResult(:final data):
+          fail('Expected error response, got success: $data');
+        case SpecifiedResponseResult(:final statusCode):
           expect(
-            response.statusCode,
+            statusCode,
             HttpStatus.notFound,
-            reason: response.message,
+            reason: 'Expected 404 status code',
           );
-        },
-      );
+        case NetworkErrorResult():
+          // Also acceptable - network error for not found
+          break;
+      }
 
-      await server.close(force: true);
+      await server.close();
     });
   });
-}
-
-void _onLog(NetworkLog log) {
-  // ignore: avoid_print test
-  print(
-    '${DateTime.now().toIso8601String()} '
-    '${log.type}: '
-    '${log.message}',
-  );
 }

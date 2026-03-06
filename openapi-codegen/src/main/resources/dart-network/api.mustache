@@ -1,0 +1,201 @@
+{{>header}}
+{{>part_of}}
+
+import '../../base/base_request.dart';
+
+{{#x-unique-model-imports}}
+import '../../model/{{{file}}}.dart';
+{{/x-unique-model-imports}}
+
+{{#operations}}
+{{#operation}}
+
+{{#vendorExtensions.x-is-list-return}}
+/// Response schema wrapping a list of [{{{vendorExtensions.x-return-base-type}}}].
+class {{{vendorExtensions.x-return-schema-name}}} extends Schema {
+  const {{{vendorExtensions.x-return-schema-name}}}({required this.items});
+
+  final List<{{{vendorExtensions.x-return-base-type}}}> items;
+
+  static const factory = _{{{vendorExtensions.x-return-schema-name}}}Factory();
+}
+
+class _{{{vendorExtensions.x-return-schema-name}}}Factory extends JsonSchemaFactory<{{{vendorExtensions.x-return-schema-name}}}> {
+  const _{{{vendorExtensions.x-return-schema-name}}}Factory();
+
+  @override
+  {{{vendorExtensions.x-return-schema-name}}} fromJson(dynamic json) {
+    return {{{vendorExtensions.x-return-schema-name}}}(
+      items: {{{vendorExtensions.x-return-base-type}}}.listFromJson(json),
+    );
+  }
+}
+
+{{/vendorExtensions.x-is-list-return}}
+{{#vendorExtensions.x-has-json-body}}
+/// Request schema for [{{{vendorExtensions.x-operation-id-pascal}}}Command].
+class {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema extends JsonRequestSchema {
+  const {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema({required this.data});
+
+  final {{{bodyParam.dataType}}} data;
+
+  @override
+  {{#vendorExtensions.x-is-body-list}}
+  {{#vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data;
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{^vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data.map((e) => e.toJson()).toList();
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{/vendorExtensions.x-is-body-list}}
+  {{^vendorExtensions.x-is-body-list}}
+  {{#vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data;
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{^vendorExtensions.x-is-body-primitive}}
+  dynamic toJsonPayload() => data.toJson();
+  {{/vendorExtensions.x-is-body-primitive}}
+  {{/vendorExtensions.x-is-body-list}}
+}
+
+{{/vendorExtensions.x-has-json-body}}
+{{#vendorExtensions.x-is-multipart}}
+/// Request schema for [{{{vendorExtensions.x-operation-id-pascal}}}Command] (multipart).
+class {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema extends FormDataRequestSchema {
+  const {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema({
+  {{#formParams}}
+    {{#required}}required {{/required}}this.{{{paramName}}},
+  {{/formParams}}
+  });
+
+  {{#formParams}}
+  final {{#isFile}}MultipartFileSchema{{/isFile}}{{^isFile}}{{{dataType}}}{{/isFile}}{{^required}}?{{/required}} {{{paramName}}};
+  {{/formParams}}
+
+  @override
+  Map<String, dynamic> toFormDataMapPayload() {
+    return {
+    {{#formParams}}
+      {{#required}}
+      r'{{{baseName}}}': {{{paramName}}},
+      {{/required}}
+      {{^required}}
+      if ({{{paramName}}} != null) r'{{{baseName}}}': {{{paramName}}},
+      {{/required}}
+    {{/formParams}}
+    };
+  }
+}
+
+{{/vendorExtensions.x-is-multipart}}
+{{#summary}}
+/// {{{.}}}
+{{/summary}}
+{{#notes}}
+/// {{{.}}}
+{{/notes}}
+///
+/// {{{httpMethod}}} {{{path}}}
+class {{{vendorExtensions.x-operation-id-pascal}}}Command extends {{x-dart-base-request-name}}<{{{vendorExtensions.x-return-schema-name}}}> {
+  {{{vendorExtensions.x-operation-id-pascal}}}Command({{#hasParams}}{
+  {{#allParams}}
+  {{^isBodyParam}}
+  {{^isFormParam}}
+    {{#required}}required {{/required}}this.{{{paramName}}},
+  {{/isFormParam}}
+  {{/isBodyParam}}
+  {{/allParams}}
+  {{#vendorExtensions.x-has-json-body}}
+    required {{{bodyParam.dataType}}} {{{bodyParam.paramName}}},
+  {{/vendorExtensions.x-has-json-body}}
+  {{#vendorExtensions.x-is-multipart}}
+  {{#formParams}}
+    {{#required}}required {{/required}}{{{dataType}}}{{^required}}?{{/required}} {{{paramName}}},
+  {{/formParams}}
+  {{/vendorExtensions.x-is-multipart}}
+  }{{/hasParams}}){{#vendorExtensions.x-has-json-body}} : _payload = {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema(data: {{{bodyParam.paramName}}}){{/vendorExtensions.x-has-json-body}}{{#vendorExtensions.x-is-multipart}} : _payload = {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema(
+        {{#formParams}}
+          {{{paramName}}}: {{{paramName}}},
+        {{/formParams}}
+        ){{/vendorExtensions.x-is-multipart}};
+
+  {{#allParams}}
+  {{^isBodyParam}}
+  {{^isFormParam}}
+  {{#description}}
+  /// {{{.}}}
+  {{/description}}
+  final {{{dataType}}}{{^required}}?{{/required}} {{{paramName}}};
+
+  {{/isFormParam}}
+  {{/isBodyParam}}
+  {{/allParams}}
+  {{#vendorExtensions.x-has-json-body}}
+  final {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema _payload;
+  {{/vendorExtensions.x-has-json-body}}
+  {{#vendorExtensions.x-is-multipart}}
+  final {{{vendorExtensions.x-operation-id-pascal}}}RequestSchema _payload;
+  {{/vendorExtensions.x-is-multipart}}
+
+  @override
+  String get path {
+    var p = r'{{{path}}}';
+    {{#pathParams}}
+    p = p.replaceAll({{=<% %>=}}'{<% baseName %>}'<%={{ }}=%>, {{#isString}}{{{paramName}}}{{/isString}}{{^isString}}{{{paramName}}}.toString(){{/isString}});
+    {{/pathParams}}
+    return p;
+  }
+
+  {{#vendorExtensions.x-has-query-params}}
+  @override
+  List<QueryParameter> get queryParameters => [
+    {{#queryParams}}
+    {{#required}}
+    QueryParameter(key: r'{{{baseName}}}', value: {{{paramName}}}),
+    {{/required}}
+    {{^required}}
+    if ({{{paramName}}} != null) QueryParameter(key: r'{{{baseName}}}', value: {{{paramName}}}),
+    {{/required}}
+    {{/queryParams}}
+  ];
+  {{/vendorExtensions.x-has-query-params}}
+
+  @override
+  HttpRequestMethod get method => HttpRequestMethod.{{{vendorExtensions.x-http-method-enum}}};
+
+  @override
+  SchemaFactory<{{{vendorExtensions.x-return-schema-name}}}> get defaultResponseFactory => {{{vendorExtensions.x-return-schema-name}}}.factory;
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+
+  @override
+  RequestSchema get payload =>
+  {{#vendorExtensions.x-has-json-body}}
+      _payload;
+  {{/vendorExtensions.x-has-json-body}}
+  {{#vendorExtensions.x-is-multipart}}
+      _payload;
+  {{/vendorExtensions.x-is-multipart}}
+  {{^vendorExtensions.x-has-json-body}}
+  {{^vendorExtensions.x-is-multipart}}
+      const EmptyRequestSchema();
+  {{/vendorExtensions.x-is-multipart}}
+  {{/vendorExtensions.x-has-json-body}}
+
+  {{#vendorExtensions.x-has-header-params}}
+  @override
+  Map<String, dynamic> get headers => {
+    {{#headerParams}}
+    {{#required}}
+    r'{{{baseName}}}': {{{paramName}}},
+    {{/required}}
+    {{^required}}
+    if ({{{paramName}}} != null) r'{{{baseName}}}': {{{paramName}}},
+    {{/required}}
+    {{/headerParams}}
+  };
+  {{/vendorExtensions.x-has-header-params}}
+}
+{{/operation}}
+{{/operations}}

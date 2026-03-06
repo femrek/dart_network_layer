@@ -1,17 +1,10 @@
+// The base of the network invoker.
+// ignore_for_file: one_member_abstracts
+
 import 'package:flutter_network_layer_core/flutter_network_layer_core.dart';
 
 /// The interface to manage and perform the network requests.
 abstract interface class INetworkInvoker {
-  /// Initialize the network manager. Have to be overridden by the
-  /// implementation for async initialization.
-  Future<void> init(String baseUrl);
-
   /// Performs a request and returns the response.
-  Future<ResponseResult<T, E>>
-      request<T extends ResponseModel, E extends ResponseModel>(
-          RequestCommand<T, E> request);
-
-  /// The callback function to trigger when a log is received from this
-  /// network invoker.
-  OnNetworkLog get onLog;
+  Future<NetworkResult<T>> request<T extends Schema>(RequestCommand<T> request);
 }
