@@ -1,7 +1,7 @@
 import 'package:flutter_network_layer_dio/flutter_network_layer_dio.dart';
 
 /// Aggregates progress snapshots for all active network requests.
-class AggregatedProgressState {
+final class AggregatedProgressState {
   final Map<RequestCommand, RequestProgressState> _progressMap = {};
 
   /// Returns the existing snapshot for [request], or creates a new one.
@@ -13,13 +13,15 @@ class AggregatedProgressState {
       progress: 0,
       progressPercent: 0,
       unknownTotal: false,
+      startTime: DateTime.now(),
     );
   }
 
   /// Removes the snapshot for [request] and marks progress as changed.
-  void removeProgress(RequestCommand request) {
-    _progressMap.remove(request);
-    markProgressChanged();
+  RequestProgressState? removeProgress(RequestCommand request) {
+    final result = _progressMap.remove(request);
+    if (result != null) markProgressChanged();
+    return result;
   }
 
   /// The combined total bytes across all tracked requests.

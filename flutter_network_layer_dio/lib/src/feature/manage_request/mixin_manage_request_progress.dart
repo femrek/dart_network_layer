@@ -17,9 +17,6 @@ mixin MixinManageRequestProgress on BaseRequestManagingNetworkInvoker {
     _onUpdateRequestProgress = onUpdate;
   }
 
-  /// Tracks progress for all requests.
-  final AggregatedProgressState progressesSnapshot = AggregatedProgressState();
-
   /// Updates the progress for a specific request and notifies listeners.
   @protected
   void updateAnyRequestProgress({
@@ -48,17 +45,5 @@ mixin MixinManageRequestProgress on BaseRequestManagingNetworkInvoker {
   @protected
   void createRequestProgress(RequestCommand request) {
     progressesSnapshot.getOrCreateProgress(request);
-  }
-
-  /// Updates the status of a request's progress and finalizes if ended.
-  @protected
-  void resultRequestProgress(RequestCommand request, ProgressStatus status) {
-    final progress = progressesSnapshot.getOrCreateProgress(request)
-      ..status = status;
-    if (status.end) {
-      progress
-        ..progress = progress.total
-        ..progressPercent = 1.0;
-    }
   }
 }

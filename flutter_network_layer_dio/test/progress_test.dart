@@ -41,6 +41,7 @@ void main() {
         total: 100,
         progress: 0,
         progressPercent: 0,
+        startTime: DateTime.now(),
         unknownTotal: false,
       );
     });
