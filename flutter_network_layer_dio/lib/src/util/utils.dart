@@ -43,7 +43,6 @@ Map<String, dynamic> convertQueryParameters(List<QueryParameter> data) {
       } else {
         result[key] = mergedValues;
       }
-
     } else {
       // First time seeing this key, assign it directly.
       // If it was null, result[key] becomes ''

@@ -25,8 +25,7 @@ mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
     assert(status.end,
         'resultRequestProgress should only be called with an end status');
 
-    final progress = progresses.removeProgress(request)
-      ?..endRequest(status);
+    final progress = progresses.removeProgress(request)?..endRequest(status);
     if (progress != null && _maxHistoryLength != 0) {
       _requestHistory.add(RequestHistoryEntry.fromProgress(progress));
       _notifyHistoryUpdate();
