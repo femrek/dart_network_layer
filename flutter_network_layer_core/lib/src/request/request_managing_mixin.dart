@@ -8,7 +8,7 @@ mixin RequestManagingMixin {
   /// Cancels the in-flight request associated with this command.
   ///
   /// Call this method at any time after the request has been handed to an
-  /// invoker (e.g. via [RequestCommand.invoke] or
+  /// invoker (e.g. via `RequestCommand.invoke` or
   /// [INetworkInvoker.request]) and before it completes. The invoker will
   /// abort the HTTP call and return a [NetworkErrorResult] whose
   /// [NetworkErrorResult.error] is a [RequestCancelledError].
