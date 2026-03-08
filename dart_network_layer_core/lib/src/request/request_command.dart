@@ -48,4 +48,15 @@ abstract class RequestCommand<T extends Schema>
 
   /// The callback for the progress of the response.
   OnProgressCallback? get onReceiveProgressUpdate => null;
+
+  /// How to handle binary responses.
+  ///
+  /// When non-null, the invoker will treat this request as a binary download
+  /// rather than a normal JSON/text request.
+  ///
+  /// Use [InMemoryBinaryResponse] to receive raw bytes in memory, or
+  /// [FileBinaryResponse] to save the response to a file at a specified path.
+  ///
+  /// When null (default), the response is treated as a normal response.
+  BinaryResponseType get binaryResponseType => const InMemoryBinaryResponse();
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:dart_network_layer_dio/src/feature/invoke_request/base_dio_network_invoker.dart';
@@ -35,6 +36,18 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     }
 
     try {
+      // Handle binary response types (file download or in-memory bytes)
+      // if (T is BinarySchema) doesn't work with generics.
+      // ignore: literal_only_boolean_expressions
+      if (<T>[] is List<BinarySchema>) {
+        return await _handleBinaryRequest(
+          request: request,
+          binaryType: request.binaryResponseType,
+          payload: payload,
+          cancelToken: cancelToken,
+        );
+      }
+
       final response = await dio.request<dynamic>(
         request.path,
         data: payload,
@@ -205,6 +218,105 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           error: e,
           stackTrace: s,
           response: responseData,
+        ),
+      );
+    }
+  }
+
+  /// Handles binary response requests by either downloading to a file or
+  /// receiving raw bytes in memory.
+  Future<NetworkResult<T>> _handleBinaryRequest<T extends Schema>({
+    required RequestCommand<T> request,
+    required BinaryResponseType binaryType,
+    required Object? payload,
+    required CancelToken? cancelToken,
+  }) async {
+    try {
+      switch (binaryType) {
+        case final FileBinaryResponse file:
+          final response = await dio.download(
+            request.path,
+            file.savePath,
+            data: payload,
+            queryParameters: convertQueryParameters(request.queryParameters),
+            onReceiveProgress: (int received, int total) {
+              updateAnyRequestProgress(
+                request: request,
+                count: received,
+                total: total,
+                isSend: false,
+              );
+            },
+            cancelToken: cancelToken,
+            options: Options(
+              method: request.method.value,
+              headers: request.headers,
+            ),
+          );
+          final statusCode = response.statusCode;
+          if (statusCode == null) {
+            return NetworkErrorResult<T>(
+              error: NetworkError(
+                message: 'Response status code is null',
+                stackTrace: StackTrace.current,
+              ),
+            );
+          }
+          return SuccessResponseResult<T>(
+            data: FileBinarySchema(filePath: file.savePath) as T,
+            statusCode: statusCode,
+          );
+        case InMemoryBinaryResponse():
+          final response = await dio.request<List<int>>(
+            request.path,
+            data: payload,
+            queryParameters: convertQueryParameters(request.queryParameters),
+            onSendProgress: (int sent, int total) {
+              updateAnyRequestProgress(
+                request: request,
+                count: sent,
+                total: total,
+                isSend: true,
+              );
+            },
+            onReceiveProgress: (int received, int total) {
+              updateAnyRequestProgress(
+                request: request,
+                count: received,
+                total: total,
+                isSend: false,
+              );
+            },
+            cancelToken: cancelToken,
+            options: Options(
+              method: request.method.value,
+              headers: request.headers,
+              responseType: ResponseType.bytes,
+            ),
+          );
+          final statusCode = response.statusCode;
+          if (statusCode == null) {
+            return NetworkErrorResult<T>(
+              error: NetworkError(
+                message: 'Response status code is null',
+                stackTrace: StackTrace.current,
+              ),
+            );
+          }
+          final bytes = Uint8List.fromList(response.data ?? []);
+          return SuccessResponseResult<T>(
+            data: InMemoryBinarySchema(bytes: bytes) as T,
+            statusCode: statusCode,
+          );
+      }
+    } on DioException catch (e, s) {
+      return _handleDioException(e, s, request);
+    } on Exception catch (e, s) {
+      return NetworkErrorResult<T>(
+        error: NetworkError(
+          message: 'Binary request failed',
+          error: e,
+          stackTrace: s,
         ),
       );
     }
