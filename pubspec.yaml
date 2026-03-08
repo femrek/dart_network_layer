@@ -1,7 +1,7 @@
 name: dart_network_layer
 description: "Test the dart_network_layer_core and its all implementations."
 publish_to: 'none'
-version: 1.0.0-dev5
+version: 1.0.0-dev6
 
 environment:
   sdk: ^3.6.0
