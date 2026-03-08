@@ -1,6 +1,6 @@
 name: dart_network_layer_core
 description: "Core library for dart_network_layer. Includes base classes of dart_network_layer project."
-version: 1.0.0-dev6
+version: 1.0.0-dev7
 homepage: https://github.com/femrek/dart_network_layer/tree/main/dart_network_layer_core
 
 resolution: workspace

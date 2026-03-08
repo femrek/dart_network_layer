@@ -1,4 +1,8 @@
-## 1.0.0-dev5
+## 1.0.0-dev7
+
+- Fix `meta` dependency constraint changed from `^1.18.1` to `any` to avoid version conflict with Flutter SDK.
+
+## 1.0.0-dev6
 
 - Add binary response support.
 

@@ -1,6 +1,6 @@
 name: dart_network_layer_dio
 description: "Dio implementation for dart_network_layer_core. Uses the dio package to make network requests."
-version: 1.0.0-dev6
+version: 1.0.0-dev7
 homepage: https://github.com/femrek/dart_network_layer/tree/main/dart_network_layer_dio
 
 resolution: workspace
@@ -9,7 +9,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  dart_network_layer_core: ^1.0.0-dev6
+  dart_network_layer_core: ^1.0.0-dev7
   dio: ^5.9.2
   meta: any
 
