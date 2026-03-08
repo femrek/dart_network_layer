@@ -1,0 +1,14 @@
+#
+# AUTO-GENERATED FILE, DO NOT MODIFY!
+#
+
+name: 'openapi'
+version: '1.0.0'
+description: 'OpenAPI API client'
+homepage: 'homepage'
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+dependencies:
+  dart_network_layer_core: ^1.0.0-dev6
+dev_dependencies:
+  test: '>=1.21.6 <2.0.0'
