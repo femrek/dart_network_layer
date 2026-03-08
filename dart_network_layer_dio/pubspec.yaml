@@ -10,9 +10,8 @@ environment:
 
 dependencies:
   dart_network_layer_core: ^1.0.0-dev6
-  dio: ^5.7.0
-  http_parser: ^4.1.2
-  meta: ^1.18.1
+  dio: ^5.9.2
+  meta: any
 
 dev_dependencies:
   test: ^1.25.14

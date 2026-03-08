@@ -9,7 +9,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  meta: ^1.18.1
+  meta: any
 
 dev_dependencies:
   http: ^1.2.2

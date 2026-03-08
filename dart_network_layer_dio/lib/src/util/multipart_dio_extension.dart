@@ -1,13 +1,13 @@
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 
 /// Extension to convert [MultipartFileSchema] to Dio's [MultipartFile].
 extension MultipartDioExtension on MultipartFileSchema {
   /// Converts the [MultipartFileSchema] to Dio's [MultipartFile].
   Future<MultipartFile> toDioMultipartFile() {
     final contentType = this.contentType;
-    final mediaType = contentType != null ? MediaType.parse(contentType) : null;
+    final mediaType =
+        contentType != null ? DioMediaType.parse(contentType) : null;
 
     switch (this) {
       case final ByteMultipartFileSchema f:
