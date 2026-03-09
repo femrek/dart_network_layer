@@ -184,7 +184,7 @@ void main() {
       await server.close();
     });
 
-    test('failed request is recorded with error status', () async {
+    test('failed request is recorded with unsuccessful status', () async {
       final server = await TestServer.createHttpServer(events: [
         RawServerEvent(
           matcher: ServerEvent.standardMatcher(
@@ -193,6 +193,36 @@ void main() {
           handler: (req) async {
             req.response.statusCode = HttpStatus.internalServerError;
             req.response.write('error');
+            return req.response;
+          },
+        ),
+      ]);
+
+      final invoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      await invoker.request(RequestTestUser());
+
+      expect(invoker.requestHistory, hasLength(1));
+      expect(
+        invoker.requestHistory.first.status,
+        ProgressStatus.unsuccessful,
+        reason: 'server error should produce an error history entry',
+      );
+
+      await server.close();
+    });
+
+    test('failed request is recorded with error status', () async {
+      final server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testUser],
+          ),
+          handler: (req) async {
+            req.response.statusCode = HttpStatus.ok;
+            req.response.write('invalid json');
             return req.response;
           },
         ),
