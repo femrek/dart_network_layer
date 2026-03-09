@@ -4,6 +4,14 @@ import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:dart_network_layer_dio/src/feature/manage_request/base_request_managing_network_invoker.dart';
 import 'package:meta/meta.dart';
 
+/// Callback for updates to the request history list. Provides the current list
+/// of completed request entries.
+///
+/// See also [MixinManageRequestHistory.maxHistoryLength] for controlling the
+/// size of the history list and [MixinManageRequestHistory.requestHistory] for
+/// accessing the current history entries anytime.
+typedef OnHistoryUpdateCallback = void Function(List<RequestHistoryEntry>);
+
 /// Mixin that tracks a history of completed network requests.
 ///
 /// Maintains a capped, unmodifiable list of [RequestHistoryEntry] items,
@@ -11,6 +19,12 @@ import 'package:meta/meta.dart';
 mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
   final List<RequestHistoryEntry> _requestHistory = [];
   int? _maxHistoryLength = 64;
+  OnHistoryUpdateCallback? _onHistoryUpdate;
+
+  /// Sets the callback to be invoked when the request history is updated.
+  set onHistoryUpdate(OnHistoryUpdateCallback? onUpdate) {
+    _onHistoryUpdate = onUpdate;
+  }
 
   /// An unmodifiable view of all completed request history entries.
   ///
@@ -51,5 +65,6 @@ mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
     if (maxLength != null && _requestHistory.length > maxLength) {
       _requestHistory.removeRange(0, _requestHistory.length - maxLength);
     }
+    _onHistoryUpdate?.call(requestHistory);
   }
 }

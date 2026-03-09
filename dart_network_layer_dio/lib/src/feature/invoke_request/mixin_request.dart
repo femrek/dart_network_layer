@@ -17,8 +17,8 @@ mixin MixinRequest on BaseDioNetworkInvoker {
   @override
   Future<NetworkResult<T>> request<T extends Schema>(
       RequestCommand<T> request) async {
-    final result = await _request(request);
-    _setProgressStatus(request, result);
+    final result = await _request<T>(request);
+    _setProgressStatus<T>(request, result);
     request.finalizeRequest(result);
     return result;
   }
@@ -40,7 +40,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       // if (T is BinarySchema) doesn't work with generics.
       // ignore: literal_only_boolean_expressions
       if (<T>[] is List<BinarySchema>) {
-        return await _handleBinaryRequest(
+        return await _handleBinaryRequest<T>(
           request: request,
           binaryType: request.binaryResponseType,
           payload: payload,
@@ -67,14 +67,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
         ),
       );
 
-      return _processResponse(response, request);
+      return _processResponse<T>(response, request);
     } on DioException catch (e, s) {
-      return _handleDioException(e, s, request);
-    } on Exception catch (e, s) {
+      return _handleDioException<T>(e, s, request);
+    } on Object catch (e, s) {
       return NetworkErrorResult<T>(
         error: NetworkError(
-          message: 'Request failed',
-          error: e,
+          message: 'Request failed: $e',
+          error: e is Exception ? e : Exception(e.toString()),
           stackTrace: s,
         ),
       );
@@ -111,7 +111,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
 
     // If the response is null, return an internal error.
     if (response == null) {
-      return NetworkErrorResult(
+      return NetworkErrorResult<T>(
         error: NetworkError(
           message: 'Request failed: $e',
           error: e,
@@ -123,7 +123,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     final statusCode = response.statusCode;
     // If the response status code is null, return an internal error.
     if (statusCode == null) {
-      return NetworkErrorResult(
+      return NetworkErrorResult<T>(
         error: NetworkError(
           message: 'No status code in response',
           error: e,
@@ -210,12 +210,12 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           responseData: responseData,
         );
       }
-    } on Exception catch (e, s) {
+    } on Object catch (e, s) {
       return NetworkErrorResult<T>(
         error: NetworkErrorInvalidResponseType(
           message: 'Failed to process response',
           statusCode: statusCode,
-          error: e,
+          error: e is Exception ? e : Exception(e.toString()),
           stackTrace: s,
           response: responseData,
         ),
@@ -310,12 +310,12 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           );
       }
     } on DioException catch (e, s) {
-      return _handleDioException(e, s, request);
-    } on Exception catch (e, s) {
+      return _handleDioException<T>(e, s, request);
+    } on Object catch (e, s) {
       return NetworkErrorResult<T>(
         error: NetworkError(
-          message: 'Binary request failed',
-          error: e,
+          message: 'Binary request failed: $e',
+          error: e is Exception ? e : Exception(e.toString()),
           stackTrace: s,
         ),
       );
@@ -376,7 +376,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
             case const (Map) || const (List):
               json = responseData;
             default:
-              return NetworkErrorResult(
+              return NetworkErrorResult<T>(
                 error: NetworkErrorInvalidResponseType(
                   message: 'Invalid response type for JsonResponseFactory: '
                       '${responseData.runtimeType}',
@@ -394,19 +394,19 @@ mixin MixinRequest on BaseDioNetworkInvoker {
               statusCode: statusCode,
             );
           } else {
-            return SpecifiedResponseResult(
+            return SpecifiedResponseResult<T>(
               data: data,
               statusCode: statusCode,
               type: f.type,
             );
           }
-        } on FormatException catch (e, s) {
+        } on Object catch (e, s) {
           return NetworkErrorResult<T>(
             error: NetworkErrorInvalidResponseType(
               message: 'Failed to parse response',
               statusCode: statusCode,
               response: responseData,
-              error: e,
+              error: e is Exception ? e : Exception(e.toString()),
               stackTrace: s,
             ),
           );
@@ -421,7 +421,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
                 statusCode: statusCode,
               );
             } else {
-              return SpecifiedResponseResult(
+              return SpecifiedResponseResult<T>(
                 data: data,
                 statusCode: statusCode,
                 type: f.type,
@@ -446,7 +446,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
             statusCode: statusCode,
           );
         } else {
-          return SpecifiedResponseResult(
+          return SpecifiedResponseResult<T>(
             data: data,
             statusCode: statusCode,
             type: f.type,
@@ -464,7 +464,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
         if (dio.options.validateStatus(r.statusCode)) {
           resultRequestProgress(request, ProgressStatus.success);
         } else {
-          resultRequestProgress(request, ProgressStatus.error);
+          resultRequestProgress(request, ProgressStatus.unsuccessful);
         }
       case final NetworkErrorResult<T> r:
         switch (r.error) {

@@ -4,7 +4,7 @@ import 'package:dart_network_layer_dio/src/feature/invoke_request/mixin_request.
 import 'package:dio/dio.dart';
 
 /// The network manager class for managing api communication.
-final class DioNetworkInvoker extends BaseDioNetworkInvoker
+class DioNetworkInvoker extends BaseDioNetworkInvoker
     with MixinRequest
     implements INetworkInvoker {
   /// Create a new instance of [DioNetworkInvoker] with the given [baseUrl].

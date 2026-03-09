@@ -12,6 +12,9 @@ enum ProgressStatus {
   /// The request completed successfully.
   success(end: true),
 
+  /// The request completed with an unsuccessful status code (e.g. 4xx or 5xx).
+  unsuccessful(end: true),
+
   /// The request failed with an error.
   error(end: true),
 

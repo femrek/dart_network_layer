@@ -44,6 +44,9 @@ mixin MixinManageRequestProgress on BaseRequestManagingNetworkInvoker {
   /// Creates a progress entry for a new request.
   @protected
   void createRequestProgress(RequestCommand request) {
-    progresses.getOrCreateProgress(request);
+    progresses
+      ..getOrCreateProgress(request)
+      ..markProgressChanged();
+    _onUpdateRequestProgress?.call(progresses);
   }
 }
