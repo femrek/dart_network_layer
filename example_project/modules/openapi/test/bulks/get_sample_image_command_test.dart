@@ -11,17 +11,17 @@ import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
 
-/// tests for TablesGetTableApi
+/// tests for BulksGetSampleImageApi
 void main() {
-  // final instance = TablesGetTableApi();
+  // final instance = BulksGetSampleImageApi();
 
-  group('tests for TablesGetTableApi', () {
-    // GetOne: Get single entity by ID
+  group('tests for BulksGetSampleImageApi', () {
+    // Get Sample Image
     //
-    // Retrieves a single entity by its unique identifier. Implements ra-spring-data-provider's getOne operation. 
+    // Returns a static PNG image from server resources. Tests binary image responses.
     //
-    //Future<TableDTO> getTable(int id) async
-    test('test getTable', () async {
+    //Future<MultipartFileSchema> getSampleImage() async
+    test('test getSampleImage', () async {
       // TODO
     });
 

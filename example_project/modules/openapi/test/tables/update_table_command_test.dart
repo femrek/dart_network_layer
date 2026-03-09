@@ -20,7 +20,7 @@ void main() {
     //
     // Updates an existing entity with the provided field values. Implements ra-spring-data-provider's update operation with support for partial updates. Only the fields provided in the request body will be updated. 
     //
-    //Future<Table> updateTable(int id, Map<String, Object> requestBody) async
+    //Future<TableDTO> updateTable(int id, Map<String, Object> requestBody) async
     test('test updateTable', () async {
       // TODO
     });

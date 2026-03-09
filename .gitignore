@@ -32,3 +32,35 @@ build/
 
 # CI/CD
 temp_change_log
+
+# Additional recommended ignores
+
+# Keep the example app's lockfile tracked (we want to commit it for reproducible example builds)
+!example_project/pubspec.lock
+
+# CocoaPods - ignore installed Pods (but keep Podfile / Podfile.lock tracked for apps unless you choose otherwise)
+**/Pods/
+example_project/ios/Pods/
+example_project/macos/Pods/
+
+# Flutter / Pub cache
+.pub/
+.pub-cache/
+.packages
+
+# Xcode/user specific
+xcuserdata/
+*.xcuserstate
+
+# Generated Xcode configs (optional)
+# example_project/ios/Flutter/Generated.xcconfig
+# example_project/macos/Flutter/Generated.xcconfig
+
+# Example app build outputs
+example_project/build/
+example_project/.dart_tool/
+
+# OpenAPI generator (optional - enable if you do NOT want to commit generated client sources)
+# example_project/modules/openapi/.openapi-generator/
+# example_project/modules/openapi/lib/
+# example_project/modules/openapi/doc/

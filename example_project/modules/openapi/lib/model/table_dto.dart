@@ -9,9 +9,9 @@
 
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
-class Table extends Schema {
-  /// Returns a new [Table] instance.
-  Table({
+class TableDTO extends Schema {
+  /// Returns a new [TableDTO] instance.
+  TableDTO({
     this.id,
     this.name,
     this.capacity,
@@ -50,11 +50,11 @@ class Table extends Schema {
   ///
   final String? status;
 
-  /// The factory instance for creating [Table] from JSON.
-  static const factory = TableFactory();
+  /// The factory instance for creating [TableDTO] from JSON.
+  static const factory = TableDTOFactory();
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Table &&
+  bool operator ==(Object other) => identical(this, other) || other is TableDTO &&
     other.id == id &&
     other.name == name &&
     other.capacity == capacity &&
@@ -69,7 +69,7 @@ class Table extends Schema {
     (status == null ? 0 : status!.hashCode);
 
   @override
-  String toString() => 'Table[id=$id, name=$name, capacity=$capacity, status=$status]';
+  String toString() => 'TableDTO[id=$id, name=$name, capacity=$capacity, status=$status]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -96,10 +96,10 @@ class Table extends Schema {
     return json;
   }
 
-  /// Returns a new [Table] instance and imports its values from
+  /// Returns a new [TableDTO] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static Table? fromJson(dynamic value) {
+  static TableDTO? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -108,13 +108,13 @@ class Table extends Schema {
       // Note 2: this code is stripped in release mode!
       assert(() {
         requiredKeys.forEach((key) {
-          assert(json.containsKey(key), 'Required key "Table[$key]" is missing from JSON.');
-          assert(json[key] != null, 'Required key "Table[$key]" has a null value in JSON.');
+          assert(json.containsKey(key), 'Required key "TableDTO[$key]" is missing from JSON.');
+          assert(json[key] != null, 'Required key "TableDTO[$key]" has a null value in JSON.');
         });
         return true;
       }());
 
-      return Table(
+      return TableDTO(
         id: json[r'id'] is int ? json[r'id'] as int : null,
         name: json[r'name'] is String ? json[r'name'] as String : null,
         capacity: json[r'capacity'] is int ? json[r'capacity'] as int : null,
@@ -124,11 +124,11 @@ class Table extends Schema {
     return null;
   }
 
-  static List<Table> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <Table>[];
+  static List<TableDTO> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TableDTO>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = Table.fromJson(row);
+        final value = TableDTO.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -137,12 +137,12 @@ class Table extends Schema {
     return result.toList(growable: growable);
   }
 
-  static Map<String, Table> mapFromJson(dynamic json) {
-    final map = <String, Table>{};
+  static Map<String, TableDTO> mapFromJson(dynamic json) {
+    final map = <String, TableDTO>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = Table.fromJson(entry.value);
+        final value = TableDTO.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -151,14 +151,14 @@ class Table extends Schema {
     return map;
   }
 
-  // maps a json object with a list of Table-objects as value to a dart map
-  static Map<String, List<Table>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<Table>>{};
+  // maps a json object with a list of TableDTO-objects as value to a dart map
+  static Map<String, List<TableDTO>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TableDTO>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = Table.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TableDTO.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -169,11 +169,11 @@ class Table extends Schema {
   };
 }
 
-/// Factory for creating [Table] instances from JSON data.
-class TableFactory extends JsonSchemaFactory<Table> {
-  const TableFactory();
+/// Factory for creating [TableDTO] instances from JSON data.
+class TableDTOFactory extends JsonSchemaFactory<TableDTO> {
+  const TableDTOFactory();
 
   @override
-  Table fromJson(dynamic json) => Table.fromJson(json)!;
+  TableDTO fromJson(dynamic json) => TableDTO.fromJson(json)!;
 }
 

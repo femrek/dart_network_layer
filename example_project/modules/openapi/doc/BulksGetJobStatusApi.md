@@ -5,11 +5,11 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getJobStatus**](BulksGetJobStatusApi.md#) | **GET** /api/v1/dummy/status/{jobId} | Get Job Status
+[**getJobStatus**](BulksGetJobStatusApi.md#) | **GET** /api/v1/bulk/status/{jobId} | Get Job Status
 
 
 # **getJobStatus**

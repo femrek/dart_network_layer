@@ -5,11 +5,11 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**bulkDownload**](BulksBulkDownloadApi.md#) | **GET** /api/v1/dummy/download/{datasetId} | Bulk Download Data
+[**bulkDownload**](BulksBulkDownloadApi.md#) | **GET** /api/v1/bulk/download/{datasetId} | Bulk Download Data
 
 
 # **bulkDownload**

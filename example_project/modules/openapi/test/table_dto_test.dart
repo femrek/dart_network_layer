@@ -10,11 +10,11 @@
 import 'package:openapi/api.dart';
 import 'package:test/test.dart';
 
-// tests for Table
+// tests for TableDTO
 void main() {
-  // final instance = Table();
+  // final instance = TableDTO();
 
-  group('test Table', () {
+  group('test TableDTO', () {
     // int id
     test('to test the property `id`', () async {
       // TODO

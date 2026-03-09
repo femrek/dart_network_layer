@@ -11,14 +11,14 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
-import '../../model/table.dart';
+import '../../model/table_dto.dart';
 
 
-/// Response schema wrapping a list of [Table].
+/// Response schema wrapping a list of [TableDTO].
 class GetManyTablesResponseSchema extends Schema {
   const GetManyTablesResponseSchema({required this.items});
 
-  final List<Table> items;
+  final List<TableDTO> items;
 
   static const factory = _GetManyTablesResponseSchemaFactory();
 }
@@ -29,7 +29,7 @@ class _GetManyTablesResponseSchemaFactory extends JsonSchemaFactory<GetManyTable
   @override
   GetManyTablesResponseSchema fromJson(dynamic json) {
     return GetManyTablesResponseSchema(
-      items: Table.listFromJson(json),
+      items: TableDTO.listFromJson(json),
     );
   }
 }

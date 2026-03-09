@@ -5,7 +5,7 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **updateTable**
-> Table updateTable(id, requestBody)
+> TableDTO updateTable(id, requestBody)
 
 Update: Update an existing entity
 
@@ -44,7 +44,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Table**](Table.md)
+[**TableDTO**](TableDTO.md)
 
 ### Authorization
 

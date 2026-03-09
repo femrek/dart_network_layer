@@ -20,7 +20,7 @@ void main() {
     //
     // Retrieves a paginated list of entities with support for sorting and filtering. Implements ra-spring-data-provider's getList operation.  This method returns a subset of entities based on the pagination parameters (_start and _end). The results can be sorted by any field in ascending or descending order. Custom filters can be applied through additional query parameters passed in allParams.  The response includes an X-Total-Count header containing the total number of entities matching the filter criteria (not just the current page). This header is essential for ra-spring-data-provider to calculate pagination correctly.  Example: GET /api/posts?_start=0&_end=10&_sort=title&_order=ASC&status=published 
     //
-    //Future<List<Table>> listTables(int start, int end, Map<String, String> allParams, { String sort, String order, String embed }) async
+    //Future<List<TableDTO>> listTables(int start, int end, Map<String, String> allParams, { String sort, String order, String embed }) async
     test('test listTables', () async {
       // TODO
     });

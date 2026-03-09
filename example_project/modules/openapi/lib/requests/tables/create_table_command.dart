@@ -11,7 +11,7 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
-import '../../model/table.dart';
+import '../../model/table_dto.dart';
 import '../../model/table_create_dto.dart';
 
 
@@ -29,7 +29,7 @@ class CreateTableRequestSchema extends JsonRequestSchema {
 /// Creates a new entity with the provided data. Implements ra-spring-data-provider's create operation. Returns the created entity with generated ID and server-side defaults. 
 ///
 /// POST /api/v1/tables
-class CreateTableCommand extends OpenapiDefinitionBaseRequest<Table> {
+class CreateTableCommand extends OpenapiDefinitionBaseRequest<TableDTO> {
   CreateTableCommand({
     required TableCreateDTO tableCreateDTO,
   }) : _payload = CreateTableRequestSchema(data: tableCreateDTO);
@@ -48,7 +48,7 @@ class CreateTableCommand extends OpenapiDefinitionBaseRequest<Table> {
   HttpRequestMethod get method => HttpRequestMethod.post;
 
   @override
-  SchemaFactory<Table> get defaultResponseFactory => Table.factory;
+  SchemaFactory<TableDTO> get defaultResponseFactory => TableDTO.factory;
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;

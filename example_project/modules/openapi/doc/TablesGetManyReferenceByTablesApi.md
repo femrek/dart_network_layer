@@ -5,7 +5,7 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **getManyReferenceByTables**
-> List<Table> getManyReferenceByTables(target, targetId, start, end, allParams, sort, order, embed)
+> List<TableDTO> getManyReferenceByTables(target, targetId, start, end, allParams, sort, order, embed)
 
 GetManyReference: Get entities that reference another entity
 
@@ -56,7 +56,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**List<Table>**](Table.md)
+[**List<TableDTO>**](TableDTO.md)
 
 ### Authorization
 

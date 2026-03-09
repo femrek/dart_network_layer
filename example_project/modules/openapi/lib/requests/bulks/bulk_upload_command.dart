@@ -37,7 +37,7 @@ class BulkUploadRequestSchema extends FormDataRequestSchema {
 /// Bulk Upload Data
 /// Uploads a bulk data file along with metadata. Tests multipart/form-data with mixed parts.
 ///
-/// POST /api/v1/dummy/upload
+/// POST /api/v1/bulk/upload
 class BulkUploadCommand extends OpenapiDefinitionBaseRequest<UploadResponse> {
   BulkUploadCommand({
     required MultipartFileSchema file,
@@ -52,7 +52,7 @@ class BulkUploadCommand extends OpenapiDefinitionBaseRequest<UploadResponse> {
 
   @override
   String get path {
-    var p = r'/api/v1/dummy/upload';
+    var p = r'/api/v1/bulk/upload';
     return p;
   }
 

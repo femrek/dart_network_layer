@@ -55,13 +55,14 @@ try {
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*BulksBulkDownloadApi* | [**bulkDownload**](doc//BulksBulkDownloadApi.md#) | **GET** /api/v1/dummy/download/{datasetId} | Bulk Download Data
-*BulksBulkUploadApi* | [**bulkUpload**](doc//BulksBulkUploadApi.md#) | **POST** /api/v1/dummy/upload | Bulk Upload Data
-*BulksGetJobStatusApi* | [**getJobStatus**](doc//BulksGetJobStatusApi.md#) | **GET** /api/v1/dummy/status/{jobId} | Get Job Status
+*BulksBulkDownloadApi* | [**bulkDownload**](doc//BulksBulkDownloadApi.md#) | **GET** /api/v1/bulk/download/{datasetId} | Bulk Download Data
+*BulksBulkUploadApi* | [**bulkUpload**](doc//BulksBulkUploadApi.md#) | **POST** /api/v1/bulk/upload | Bulk Upload Data
+*BulksGetJobStatusApi* | [**getJobStatus**](doc//BulksGetJobStatusApi.md#) | **GET** /api/v1/bulk/status/{jobId} | Get Job Status
+*BulksGetSampleImageApi* | [**getSampleImage**](doc//BulksGetSampleImageApi.md#) | **GET** /api/v1/bulk/image | Get Sample Image
 *ComplexesGetWidgetsApi* | [**getWidgets**](doc//ComplexesGetWidgetsApi.md#) | **GET** /api/v1/complex-json/widgets | Get Polymorphic UI Widgets
 *ComplexesPatchRecordApi* | [**patchRecord**](doc//ComplexesPatchRecordApi.md#) | **PATCH** /api/v1/complex-json/records/{id} | Partial Update (PATCH)
 *ComplexesProcessCategoryTreeApi* | [**processCategoryTree**](doc//ComplexesProcessCategoryTreeApi.md#) | **POST** /api/v1/complex-json/categories/tree | Create Category Tree
@@ -81,8 +82,8 @@ Class | Method | HTTP request | Description
  - [ButtonWidget](doc//ButtonWidget.md)
  - [CategoryNode](doc//CategoryNode.md)
  - [ErrorResponse](doc//ErrorResponse.md)
- - [Table](doc//Table.md)
  - [TableCreateDTO](doc//TableCreateDTO.md)
+ - [TableDTO](doc//TableDTO.md)
  - [TextWidget](doc//TextWidget.md)
  - [UploadMetadata](doc//UploadMetadata.md)
  - [UploadResponse](doc//UploadResponse.md)

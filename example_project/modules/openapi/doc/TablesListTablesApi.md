@@ -5,7 +5,7 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **listTables**
-> List<Table> listTables(start, end, allParams, sort, order, embed)
+> List<TableDTO> listTables(start, end, allParams, sort, order, embed)
 
 GetList: Get paginated list of entities with filtering
 
@@ -52,7 +52,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**List<Table>**](Table.md)
+[**List<TableDTO>**](TableDTO.md)
 
 ### Authorization
 

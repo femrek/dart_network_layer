@@ -1,4 +1,4 @@
-# openapi.model.Table
+# openapi.model.TableDTO
 
 ## Load the model package
 ```dart

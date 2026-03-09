@@ -11,7 +11,7 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
-import '../../model/table.dart';
+import '../../model/table_dto.dart';
 
 
 /// Request schema for [UpdateTableCommand].
@@ -28,7 +28,7 @@ class UpdateTableRequestSchema extends JsonRequestSchema {
 /// Updates an existing entity with the provided field values. Implements ra-spring-data-provider's update operation with support for partial updates. Only the fields provided in the request body will be updated. 
 ///
 /// PUT /api/v1/tables/{id}
-class UpdateTableCommand extends OpenapiDefinitionBaseRequest<Table> {
+class UpdateTableCommand extends OpenapiDefinitionBaseRequest<TableDTO> {
   UpdateTableCommand({
     required this.id,
     required Map<String, Object> requestBody,
@@ -52,7 +52,7 @@ class UpdateTableCommand extends OpenapiDefinitionBaseRequest<Table> {
   HttpRequestMethod get method => HttpRequestMethod.put;
 
   @override
-  SchemaFactory<Table> get defaultResponseFactory => Table.factory;
+  SchemaFactory<TableDTO> get defaultResponseFactory => TableDTO.factory;
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;

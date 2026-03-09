@@ -20,7 +20,7 @@ void main() {
     //
     // Retrieves multiple specific entities by their unique identifiers. Implements ra-spring-data-provider's getMany operation.  Unlike getList, this operation does not use pagination. It simply returns all entities with the specified IDs. This is commonly used when the client needs to fetch multiple specific records, such as when displaying relationships or selected items.  If an ID doesn't exist, it is typically omitted from the response rather than returning an error. The order of returned entities may not match the order of requested IDs.  Example: GET /api/posts/many?id=1&id=5&id=12 
     //
-    //Future<List<Table>> getManyTables(List<int> id) async
+    //Future<List<TableDTO>> getManyTables(List<int> id) async
     test('test getManyTables', () async {
       // TODO
     });

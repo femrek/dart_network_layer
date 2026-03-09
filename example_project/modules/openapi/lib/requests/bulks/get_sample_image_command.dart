@@ -11,44 +11,33 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
-
-
-/// Bulk Download Data
-/// Downloads a generated bulk dataset. Tests binary octet-stream responses.
+/// Get Sample Image
+/// Returns a static PNG image from server resources. Tests binary image responses.
 ///
-/// GET /api/v1/bulk/download/{datasetId}
-class BulkDownloadCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
-  BulkDownloadCommand({
-    required this.datasetId,
-    this.binaryResponseType = const InMemoryBinaryResponse(),
-  });
-
-  /// ID of the dataset to download
-  final String datasetId;
-
+/// GET /api/v1/bulk/image
+class GetSampleImageCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
+  GetSampleImageCommand(
+      {this.binaryResponseType = const InMemoryBinaryResponse()});
 
   @override
   final BinaryResponseType binaryResponseType;
 
   @override
   String get path {
-    var p = r'/api/v1/bulk/download/{datasetId}';
-    p = p.replaceAll('{datasetId}', datasetId);
+    var p = r'/api/v1/bulk/image';
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.get;
 
   @override
-  SchemaFactory<BinarySchema> get defaultResponseFactory => InMemoryBinarySchema.factory;
+  SchemaFactory<BinarySchema> get defaultResponseFactory =>
+      InMemoryBinarySchema.factory;
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 
   @override
-  RequestSchema get payload =>
-      const EmptyRequestSchema();
-
+  RequestSchema get payload => const EmptyRequestSchema();
 }

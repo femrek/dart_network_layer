@@ -20,7 +20,7 @@ void main() {
     //
     // Creates a new entity with the provided data. Implements ra-spring-data-provider's create operation. Returns the created entity with generated ID and server-side defaults. 
     //
-    //Future<Table> createTable(TableCreateDTO tableCreateDTO) async
+    //Future<TableDTO> createTable(TableCreateDTO tableCreateDTO) async
     test('test createTable', () async {
       // TODO
     });

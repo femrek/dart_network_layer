@@ -1,6 +1,6 @@
 OPENAPI_CODEGEN_VERSION := 7.20.0
 OPENAPI_CODEGEN_JAR := ./openapi-generator-cli-$(OPENAPI_CODEGEN_VERSION).jar
-CUSTOM_CODEGEN_VERSION := 0.1.4
+CUSTOM_CODEGEN_VERSION := 0.1.7
 CUSTOM_CODEGEN_JAR := ./openapi-dart-network-codegen-$(CUSTOM_CODEGEN_VERSION).jar
 SPEC_FILE_NAME := ./openapi-spec.json
 SPEC_FILE_URL := https://dummyapi.femrek.dev/v3/api-docs
@@ -26,12 +26,8 @@ download-codegen-if-not-exists:
 
 download-openapi-spec:
 	# Check if the OpenAPI spec file exists, and download it if it doesn't
-	if [ ! -f $(SPEC_FILE_NAME) ]; then \
-	    echo "OpenAPI spec file not found. Downloading..."; \
-	    curl -fL -o $(SPEC_FILE_NAME) $(SPEC_FILE_URL); \
-	else \
-	    echo "OpenAPI spec file already exists."; \
-	fi
+	echo "OpenAPI spec file Downloading..."; \
+	curl -fL -o $(SPEC_FILE_NAME) $(SPEC_FILE_URL); \
 
 generate: download-openapi-cli-if-not-exists download-codegen-if-not-exists download-openapi-spec
 	$(eval OUTPUT_DIR := ./modules/openapi)

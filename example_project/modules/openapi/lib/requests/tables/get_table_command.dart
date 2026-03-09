@@ -11,14 +11,14 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
-import '../../model/table.dart';
+import '../../model/table_dto.dart';
 
 
 /// GetOne: Get single entity by ID
 /// Retrieves a single entity by its unique identifier. Implements ra-spring-data-provider's getOne operation. 
 ///
 /// GET /api/v1/tables/{id}
-class GetTableCommand extends OpenapiDefinitionBaseRequest<Table> {
+class GetTableCommand extends OpenapiDefinitionBaseRequest<TableDTO> {
   GetTableCommand({
     required this.id,
   });
@@ -40,7 +40,7 @@ class GetTableCommand extends OpenapiDefinitionBaseRequest<Table> {
   HttpRequestMethod get method => HttpRequestMethod.get;
 
   @override
-  SchemaFactory<Table> get defaultResponseFactory => Table.factory;
+  SchemaFactory<TableDTO> get defaultResponseFactory => TableDTO.factory;
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;

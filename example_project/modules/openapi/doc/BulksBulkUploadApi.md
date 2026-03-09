@@ -5,11 +5,11 @@
 import 'package:openapi/api.dart';
 ```
 
-All URIs are relative to *http://dummyapi.femrek.dev*
+All URIs are relative to *https://dummyapi.femrek.dev*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**bulkUpload**](BulksBulkUploadApi.md#) | **POST** /api/v1/dummy/upload | Bulk Upload Data
+[**bulkUpload**](BulksBulkUploadApi.md#) | **POST** /api/v1/bulk/upload | Bulk Upload Data
 
 
 # **bulkUpload**
@@ -53,7 +53,7 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: multipart/form-data
- - **Accept**: application/json
+ - **Accept**: */*, application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
