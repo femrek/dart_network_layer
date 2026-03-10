@@ -25,8 +25,6 @@ class DeleteManyTablesCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema
   /// List of entity IDs to delete
   final List<int>? id;
 
-
-
   @override
   String get path {
     var p = r'/api/v1/tables';
@@ -45,10 +43,14 @@ class DeleteManyTablesCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema
   SchemaFactory<AnyDataSchema> get defaultResponseFactory => AnyDataSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: AnyDataSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

@@ -50,23 +50,16 @@ class ListTablesCommand extends OpenapiDefinitionBaseRequest<ListTablesResponseS
 
   /// Starting index for pagination (0-based, inclusive)
   final int start;
-
   /// Ending index for pagination (0-based, exclusive)
   final int end;
-
   /// Additional query parameters for filtering by entity fields
   final Map<String, String> allParams;
-
   /// Field name to sort by
   final String? sort;
-
   /// Sort direction (ASC or DESC)
   final String? order;
-
   /// Optional parameter to embed related resources (implementation-specific)
   final String? embed;
-
-
 
   @override
   String get path {
@@ -91,10 +84,14 @@ class ListTablesCommand extends OpenapiDefinitionBaseRequest<ListTablesResponseS
   SchemaFactory<ListTablesResponseSchema> get defaultResponseFactory => ListTablesResponseSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: ListTablesResponseSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

@@ -52,29 +52,20 @@ class GetManyReferenceByTablesCommand extends OpenapiDefinitionBaseRequest<GetMa
 
   /// Name of the field that references the target entity
   final String target;
-
   /// ID of the target entity being referenced
   final String targetId;
-
   /// Starting index for pagination (0-based, inclusive)
   final int start;
-
   /// Ending index for pagination (0-based, exclusive)
   final int end;
-
   /// Additional query parameters for filtering
   final Map<String, String> allParams;
-
   /// Field name to sort by
   final String? sort;
-
   /// Sort direction (ASC or DESC)
   final String? order;
-
   /// Optional parameter to embed related resources (implementation-specific)
   final String? embed;
-
-
 
   @override
   String get path {
@@ -101,10 +92,14 @@ class GetManyReferenceByTablesCommand extends OpenapiDefinitionBaseRequest<GetMa
   SchemaFactory<GetManyReferenceByTablesResponseSchema> get defaultResponseFactory => GetManyReferenceByTablesResponseSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: GetManyReferenceByTablesResponseSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

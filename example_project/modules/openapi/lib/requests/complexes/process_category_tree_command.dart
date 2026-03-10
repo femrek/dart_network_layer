@@ -33,15 +33,14 @@ class ProcessCategoryTreeCommand extends OpenapiDefinitionBaseRequest<CategoryNo
     required CategoryNode categoryNode,
   }) : _payload = ProcessCategoryTreeRequestSchema(data: categoryNode);
 
-  final ProcessCategoryTreeRequestSchema _payload;
 
+  final ProcessCategoryTreeRequestSchema _payload;
 
   @override
   String get path {
     var p = r'/api/v1/complex-json/categories/tree';
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.post;
@@ -50,10 +49,14 @@ class ProcessCategoryTreeCommand extends OpenapiDefinitionBaseRequest<CategoryNo
   SchemaFactory<CategoryNode> get defaultResponseFactory => CategoryNode.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: CategoryNode.factory,
+  };
 
   @override
   RequestSchema get payload =>
       _payload;
-
 }

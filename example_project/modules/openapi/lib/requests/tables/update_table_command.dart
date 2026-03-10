@@ -39,14 +39,12 @@ class UpdateTableCommand extends OpenapiDefinitionBaseRequest<TableDTO> {
 
   final UpdateTableRequestSchema _payload;
 
-
   @override
   String get path {
     var p = r'/api/v1/tables/{id}';
     p = p.replaceAll('{id}', id.toString());
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.put;
@@ -55,10 +53,14 @@ class UpdateTableCommand extends OpenapiDefinitionBaseRequest<TableDTO> {
   SchemaFactory<TableDTO> get defaultResponseFactory => TableDTO.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: TableDTO.factory,
+  };
 
   @override
   RequestSchema get payload =>
       _payload;
-
 }

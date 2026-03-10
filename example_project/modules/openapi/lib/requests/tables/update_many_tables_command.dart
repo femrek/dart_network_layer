@@ -38,7 +38,6 @@ class UpdateManyTablesCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema
 
   final UpdateManyTablesRequestSchema _payload;
 
-
   @override
   String get path {
     var p = r'/api/v1/tables';
@@ -57,10 +56,14 @@ class UpdateManyTablesCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema
   SchemaFactory<AnyDataSchema> get defaultResponseFactory => AnyDataSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: AnyDataSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       _payload;
-
 }

@@ -26,8 +26,6 @@ class GetWidgetsCommand extends OpenapiDefinitionBaseRequest<WidgetPaginationRes
   /// Page number
   final int? page;
 
-
-
   @override
   String get path {
     var p = r'/api/v1/complex-json/widgets';
@@ -46,10 +44,14 @@ class GetWidgetsCommand extends OpenapiDefinitionBaseRequest<WidgetPaginationRes
   SchemaFactory<WidgetPaginationResponse> get defaultResponseFactory => WidgetPaginationResponse.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: WidgetPaginationResponse.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

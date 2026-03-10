@@ -37,14 +37,12 @@ class PatchRecordCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema> {
 
   final PatchRecordRequestSchema _payload;
 
-
   @override
   String get path {
     var p = r'/api/v1/complex-json/records/{id}';
     p = p.replaceAll('{id}', id);
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.patch;
@@ -53,10 +51,14 @@ class PatchRecordCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema> {
   SchemaFactory<AnyDataSchema> get defaultResponseFactory => AnyDataSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: AnyDataSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       _payload;
-
 }

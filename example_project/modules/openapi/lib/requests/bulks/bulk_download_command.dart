@@ -11,6 +11,7 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
+import '../../model/error_response.dart';
 
 
 /// Bulk Download Data
@@ -26,7 +27,6 @@ class BulkDownloadCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
   /// ID of the dataset to download
   final String datasetId;
 
-
   @override
   final BinaryResponseType binaryResponseType;
 
@@ -37,7 +37,6 @@ class BulkDownloadCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
     return p;
   }
 
-
   @override
   HttpRequestMethod get method => HttpRequestMethod.get;
 
@@ -45,10 +44,15 @@ class BulkDownloadCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
   SchemaFactory<BinarySchema> get defaultResponseFactory => InMemoryBinarySchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: InMemoryBinarySchema.factory,
+    404: ErrorResponse.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

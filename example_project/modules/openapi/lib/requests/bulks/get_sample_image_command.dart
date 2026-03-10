@@ -11,13 +11,16 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 import '../../base/base_request.dart';
 
+import '../../model/error_response.dart';
+
+
 /// Get Sample Image
 /// Returns a static PNG image from server resources. Tests binary image responses.
 ///
 /// GET /api/v1/bulk/image
 class GetSampleImageCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
-  GetSampleImageCommand(
-      {this.binaryResponseType = const InMemoryBinaryResponse()});
+  GetSampleImageCommand({this.binaryResponseType = const InMemoryBinaryResponse()});
+
 
   @override
   final BinaryResponseType binaryResponseType;
@@ -32,12 +35,18 @@ class GetSampleImageCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
   HttpRequestMethod get method => HttpRequestMethod.get;
 
   @override
-  SchemaFactory<BinarySchema> get defaultResponseFactory =>
-      InMemoryBinarySchema.factory;
+  SchemaFactory<BinarySchema> get defaultResponseFactory => InMemoryBinarySchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
 
   @override
-  RequestSchema get payload => const EmptyRequestSchema();
+  Map<int, SchemaFactory> get responseFactories => {
+    200: InMemoryBinarySchema.factory,
+    500: ErrorResponse.factory,
+  };
+
+  @override
+  RequestSchema get payload =>
+      const EmptyRequestSchema();
 }

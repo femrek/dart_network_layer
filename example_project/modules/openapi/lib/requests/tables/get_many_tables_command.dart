@@ -46,8 +46,6 @@ class GetManyTablesCommand extends OpenapiDefinitionBaseRequest<GetManyTablesRes
   /// List of entity IDs to retrieve
   final List<int> id;
 
-
-
   @override
   String get path {
     var p = r'/api/v1/tables/many';
@@ -66,10 +64,14 @@ class GetManyTablesCommand extends OpenapiDefinitionBaseRequest<GetManyTablesRes
   SchemaFactory<GetManyTablesResponseSchema> get defaultResponseFactory => GetManyTablesResponseSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: GetManyTablesResponseSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

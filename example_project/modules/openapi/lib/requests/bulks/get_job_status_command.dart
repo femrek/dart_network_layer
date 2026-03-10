@@ -77,11 +77,8 @@ class GetJobStatusCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema> {
   });
 
   final String jobId;
-
   /// Detail level required
   final GetJobStatusLevelEnum? level;
-
-
 
   @override
   String get path {
@@ -102,10 +99,14 @@ class GetJobStatusCommand extends OpenapiDefinitionBaseRequest<AnyDataSchema> {
   SchemaFactory<AnyDataSchema> get defaultResponseFactory => AnyDataSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: AnyDataSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }

@@ -13,6 +13,7 @@ import '../../base/base_request.dart';
 
 import '../../model/upload_response.dart';
 import '../../model/upload_metadata.dart';
+import '../../model/error_response.dart';
 
 
 /// Request schema for [BulkUploadCommand] (multipart).
@@ -47,15 +48,14 @@ class BulkUploadCommand extends OpenapiDefinitionBaseRequest<UploadResponse> {
           metadata: metadata,
         );
 
-  final BulkUploadRequestSchema _payload;
 
+  final BulkUploadRequestSchema _payload;
 
   @override
   String get path {
     var p = r'/api/v1/bulk/upload';
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.post;
@@ -64,10 +64,15 @@ class BulkUploadCommand extends OpenapiDefinitionBaseRequest<UploadResponse> {
   SchemaFactory<UploadResponse> get defaultResponseFactory => UploadResponse.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    202: UploadResponse.factory,
+    400: ErrorResponse.factory,
+  };
 
   @override
   RequestSchema get payload =>
       _payload;
-
 }

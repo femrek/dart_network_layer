@@ -25,15 +25,12 @@ class DeleteTableCommand extends OpenapiDefinitionBaseRequest<IgnoredSchema> {
   /// Unique identifier of the entity to delete
   final int id;
 
-
-
   @override
   String get path {
     var p = r'/api/v1/tables/{id}';
     p = p.replaceAll('{id}', id.toString());
     return p;
   }
-
 
   @override
   HttpRequestMethod get method => HttpRequestMethod.delete;
@@ -42,10 +39,14 @@ class DeleteTableCommand extends OpenapiDefinitionBaseRequest<IgnoredSchema> {
   SchemaFactory<IgnoredSchema> get defaultResponseFactory => IgnoredSchema.factory;
 
   @override
-  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+  SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
+
+  @override
+  Map<int, SchemaFactory> get responseFactories => {
+    200: IgnoredSchema.factory,
+  };
 
   @override
   RequestSchema get payload =>
       const EmptyRequestSchema();
-
 }
