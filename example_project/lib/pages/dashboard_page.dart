@@ -42,10 +42,10 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  void _historyUpdate(List<RequestHistoryEntry> history) {
+  void _historyUpdate(RequestHistoryEntry? addedEntry) {
     if (mounted) {
       setState(() {
-        _history = history;
+        _history = _invoker.requestHistory;
       });
     }
   }

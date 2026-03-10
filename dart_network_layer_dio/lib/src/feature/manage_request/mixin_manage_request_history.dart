@@ -4,13 +4,18 @@ import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:dart_network_layer_dio/src/feature/manage_request/base_request_managing_network_invoker.dart';
 import 'package:meta/meta.dart';
 
-/// Callback for updates to the request history list. Provides the current list
-/// of completed request entries.
+/// Callback for updates to the request history list.
+///
+/// Provides the added [RequestHistoryEntry], if a new entry was added.
+///
+/// If the function is called without new entry (e.g. when trimming the history
+/// after changing [maxHistoryLength]), the parameter will be `null`.
+///
 ///
 /// See also [MixinManageRequestHistory.maxHistoryLength] for controlling the
 /// size of the history list and [MixinManageRequestHistory.requestHistory] for
 /// accessing the current history entries anytime.
-typedef OnHistoryUpdateCallback = void Function(List<RequestHistoryEntry>);
+typedef OnHistoryUpdateCallback = void Function(RequestHistoryEntry?);
 
 /// Mixin that tracks a history of completed network requests.
 ///
@@ -41,8 +46,9 @@ mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
 
     final progress = progresses.removeProgress(request)?..endRequest(status);
     if (progress != null && _maxHistoryLength != 0) {
-      _requestHistory.add(RequestHistoryEntry.fromProgress(progress));
-      _notifyHistoryUpdate();
+      final historyEntry = RequestHistoryEntry.fromProgress(progress);
+      _requestHistory.add(historyEntry);
+      _notifyHistoryUpdate(historyEntry);
     }
   }
 
@@ -57,14 +63,14 @@ mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
 
   set maxHistoryLength(int? length) {
     _maxHistoryLength = length;
-    _notifyHistoryUpdate();
+    _notifyHistoryUpdate(null);
   }
 
-  void _notifyHistoryUpdate() {
+  void _notifyHistoryUpdate(RequestHistoryEntry? added) {
     final maxLength = _maxHistoryLength;
     if (maxLength != null && _requestHistory.length > maxLength) {
       _requestHistory.removeRange(0, _requestHistory.length - maxLength);
     }
-    _onHistoryUpdate?.call(requestHistory);
+    _onHistoryUpdate?.call(added);
   }
 }
