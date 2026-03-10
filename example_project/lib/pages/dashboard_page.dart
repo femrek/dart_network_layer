@@ -1,7 +1,7 @@
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:example_project/widgets/aggregated_info_section.dart';
-import 'package:example_project/widgets/request_buttons_section.dart';
 import 'package:example_project/widgets/request_monitor_list.dart';
+import 'package:example_project/widgets/requests/request_buttons_section.dart';
 import 'package:flutter/material.dart';
 
 /// The main dashboard page that shows request buttons and request monitoring.

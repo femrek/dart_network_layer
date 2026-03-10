@@ -1,4 +1,4 @@
-import 'package:example_project/config/app_repos.dart';
+import 'package:example_project/network/app_repos.dart';
 import 'package:example_project/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 

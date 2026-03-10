@@ -1,6 +1,6 @@
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:dio/dio.dart';
-import 'package:example_project/config/custom_network_invoker.dart';
+import 'package:example_project/network/custom_network_invoker.dart';
 import 'package:openapi/api.dart';
 
 /// Holds all the repositories of the app, which are used to access data from
