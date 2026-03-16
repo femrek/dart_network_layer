@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 /// Displays aggregated meta information about all currently progressing
 /// requests.
 class AggregatedInfoSection extends StatelessWidget {
+  /// Creates an instance of [AggregatedInfoSection] with the given [state].
   const AggregatedInfoSection({required this.state, super.key});
 
+  /// The aggregated request state containing information about all currently
+  /// progressing requests, such as their total progress and count.
   final AggregatedRequestState? state;
 
   @override

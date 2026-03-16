@@ -1,12 +1,16 @@
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 import 'package:flutter/material.dart';
 
+/// A dialog that shows the details of a network request and its response.
 class RequestDetailDialog extends StatelessWidget {
+  /// Creates an instance of [RequestDetailDialog] with the given [data].
   const RequestDetailDialog({
     required this.data,
     super.key,
   });
 
+  /// The request history entry containing all the details of the request and
+  /// response to be displayed in the dialog.
   final RequestHistoryEntry data;
 
   @override
