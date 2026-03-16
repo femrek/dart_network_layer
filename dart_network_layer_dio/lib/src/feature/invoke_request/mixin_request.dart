@@ -19,7 +19,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       RequestCommand<T> request) async {
     final result = await _request<T>(request);
     _setProgressStatus<T>(request, result);
-    request.finalizeRequest(result);
+    request.result = result;
     return result;
   }
 
@@ -36,40 +36,90 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     }
 
     try {
-      // Handle binary response types (file download or in-memory bytes)
-      // if (T is BinarySchema) doesn't work with generics.
+      late final Response<dynamic> response;
+      String? downloadedFilePath;
+      final binaryResponseType = request.binaryResponseType;
+
+      // `T is FileBinarySchema` is always false for generic type parameters.
+      // Use a generic-list type probe to detect concrete `T` at runtime.
       // ignore: literal_only_boolean_expressions
-      if (<T>[] is List<BinarySchema>) {
-        return await _handleBinaryRequest<T>(
-          request: request,
-          binaryType: request.binaryResponseType,
-          payload: payload,
+      if (<T>[] is List<FileBinarySchema>) {
+        if (binaryResponseType is! FileBinaryResponse) {
+          return NetworkErrorResult<T>(
+            error: NetworkError(
+              message: 'Invalid binary response type for FileBinarySchema. '
+                  'Expected FileBinaryResponse.',
+              stackTrace: StackTrace.current,
+            ),
+          );
+        }
+
+        response = await dio.download(
+          request.path,
+          binaryResponseType.savePath,
+          data: payload,
+          queryParameters: convertQueryParameters(request.queryParameters),
+          onReceiveProgress: (int received, int total) {
+            updateAnyRequestProgress(
+              request: request,
+              count: received,
+              total: total,
+              isSend: false,
+            );
+          },
           cancelToken: cancelToken,
+          options: Options(
+            method: request.method.value,
+            headers: request.headers,
+          ),
+        );
+        downloadedFilePath = binaryResponseType.savePath;
+      } else {
+        late final ResponseType responseType;
+
+        // if (T is BinarySchema) doesn't work with generics.
+        // ignore: literal_only_boolean_expressions
+        if (<T>[] is List<BinarySchema>) {
+          if (binaryResponseType is InMemoryBinaryResponse) {
+            responseType = ResponseType.bytes;
+          } else if (binaryResponseType is StreamBinaryResponse) {
+            responseType = ResponseType.stream;
+          } else {
+            responseType = ResponseType.plain;
+          }
+        } else {
+          responseType = ResponseType.plain;
+        }
+
+        response = await dio.request<dynamic>(
+          request.path,
+          data: payload,
+          queryParameters: convertQueryParameters(request.queryParameters),
+          onSendProgress: (int sent, int total) {
+            updateAnyRequestProgress(
+                request: request, count: sent, total: total, isSend: true);
+          },
+          onReceiveProgress: (int received, int total) {
+            updateAnyRequestProgress(
+                request: request, count: received, total: total, isSend: false);
+          },
+          cancelToken: cancelToken,
+          options: Options(
+            method: request.method.value,
+            headers: request.headers,
+            responseType: responseType,
+          ),
         );
       }
 
-      final response = await dio.request<dynamic>(
-        request.path,
-        data: payload,
-        queryParameters: convertQueryParameters(request.queryParameters),
-        onSendProgress: (int sent, int total) {
-          updateAnyRequestProgress(
-              request: request, count: sent, total: total, isSend: true);
-        },
-        onReceiveProgress: (int received, int total) {
-          updateAnyRequestProgress(
-              request: request, count: received, total: total, isSend: false);
-        },
-        cancelToken: cancelToken,
-        options: Options(
-          method: request.method.value,
-          headers: request.headers,
-        ),
+      return await _processResponse<T>(
+        response,
+        request,
+        responseDataOverride: downloadedFilePath,
       );
-
-      return _processResponse<T>(response, request);
     } on DioException catch (e, s) {
-      return _handleDioException<T>(e, s, request);
+      // ignore: unnecessary_await_in_return : finally block
+      return await _handleDioException<T>(e, s, request);
     } on Object catch (e, s) {
       return NetworkErrorResult<T>(
         error: NetworkError(
@@ -92,11 +142,11 @@ mixin MixinRequest on BaseDioNetworkInvoker {
 
   /// Handles exceptions thrown by Dio, attempting to parse error responses
   /// defined in the request factories.
-  NetworkResult<T> _handleDioException<T extends Schema>(
+  Future<NetworkResult<T>> _handleDioException<T extends Schema>(
     DioException e,
     StackTrace s,
     RequestCommand<T> request,
-  ) {
+  ) async {
     if (CancelToken.isCancel(e)) {
       return NetworkErrorResult<T>(
         error: RequestCancelledError(
@@ -153,11 +203,12 @@ mixin MixinRequest on BaseDioNetworkInvoker {
   }
 
   /// Validates the raw Dio response and maps it to a [NetworkResult].
-  NetworkResult<T> _processResponse<T extends Schema>(
+  Future<NetworkResult<T>> _processResponse<T extends Schema>(
     Response<dynamic> response,
-    RequestCommand<T> request,
-  ) {
-    final responseData = response.data;
+    RequestCommand<T> request, {
+    dynamic responseDataOverride,
+  }) async {
+    final responseData = responseDataOverride ?? response.data;
     final statusCode = response.statusCode;
 
     // Return error if the response has no status code
@@ -176,18 +227,6 @@ mixin MixinRequest on BaseDioNetworkInvoker {
         statusCode: statusCode,
         data: const IgnoredSchema(),
         type: IgnoredSchema,
-      );
-    }
-
-    // Validate data types
-    if (responseData is! String &&
-        responseData is! Map<String, dynamic> &&
-        responseData is! List<dynamic>) {
-      return NetworkErrorResult<T>(
-        error: NetworkError(
-          message: 'Invalid response type: ${responseData.runtimeType}',
-          stackTrace: StackTrace.current,
-        ),
       );
     }
 
@@ -218,105 +257,6 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           error: e is Exception ? e : Exception(e.toString()),
           stackTrace: s,
           response: responseData,
-        ),
-      );
-    }
-  }
-
-  /// Handles binary response requests by either downloading to a file or
-  /// receiving raw bytes in memory.
-  Future<NetworkResult<T>> _handleBinaryRequest<T extends Schema>({
-    required RequestCommand<T> request,
-    required BinaryResponseType binaryType,
-    required Object? payload,
-    required CancelToken? cancelToken,
-  }) async {
-    try {
-      switch (binaryType) {
-        case final FileBinaryResponse file:
-          final response = await dio.download(
-            request.path,
-            file.savePath,
-            data: payload,
-            queryParameters: convertQueryParameters(request.queryParameters),
-            onReceiveProgress: (int received, int total) {
-              updateAnyRequestProgress(
-                request: request,
-                count: received,
-                total: total,
-                isSend: false,
-              );
-            },
-            cancelToken: cancelToken,
-            options: Options(
-              method: request.method.value,
-              headers: request.headers,
-            ),
-          );
-          final statusCode = response.statusCode;
-          if (statusCode == null) {
-            return NetworkErrorResult<T>(
-              error: NetworkError(
-                message: 'Response status code is null',
-                stackTrace: StackTrace.current,
-              ),
-            );
-          }
-          return SuccessResponseResult<T>(
-            data: FileBinarySchema(filePath: file.savePath) as T,
-            statusCode: statusCode,
-          );
-        case InMemoryBinaryResponse():
-          final response = await dio.request<List<int>>(
-            request.path,
-            data: payload,
-            queryParameters: convertQueryParameters(request.queryParameters),
-            onSendProgress: (int sent, int total) {
-              updateAnyRequestProgress(
-                request: request,
-                count: sent,
-                total: total,
-                isSend: true,
-              );
-            },
-            onReceiveProgress: (int received, int total) {
-              updateAnyRequestProgress(
-                request: request,
-                count: received,
-                total: total,
-                isSend: false,
-              );
-            },
-            cancelToken: cancelToken,
-            options: Options(
-              method: request.method.value,
-              headers: request.headers,
-              responseType: ResponseType.bytes,
-            ),
-          );
-          final statusCode = response.statusCode;
-          if (statusCode == null) {
-            return NetworkErrorResult<T>(
-              error: NetworkError(
-                message: 'Response status code is null',
-                stackTrace: StackTrace.current,
-              ),
-            );
-          }
-          final bytes = Uint8List.fromList(response.data ?? []);
-          return SuccessResponseResult<T>(
-            data: InMemoryBinarySchema(bytes: bytes) as T,
-            statusCode: statusCode,
-          );
-      }
-    } on DioException catch (e, s) {
-      return _handleDioException<T>(e, s, request);
-    } on Object catch (e, s) {
-      return NetworkErrorResult<T>(
-        error: NetworkError(
-          message: 'Binary request failed: $e',
-          error: e is Exception ? e : Exception(e.toString()),
-          stackTrace: s,
         ),
       );
     }
@@ -360,12 +300,12 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     return dioFormDataMap;
   }
 
-  NetworkResult<T> _createResult<T extends Schema>({
+  Future<NetworkResult<T>> _createResult<T extends Schema>({
     required SchemaFactory factory,
     required int statusCode,
     required dynamic responseData,
     bool isDefault = false,
-  }) {
+  }) async {
     switch (factory) {
       case final JsonSchemaFactory f:
         try {
@@ -452,7 +392,78 @@ mixin MixinRequest on BaseDioNetworkInvoker {
             type: f.type,
           );
         }
+      case final BinarySchemaFactory f:
+        // `T is ...` is not reliable for generic type parameters.
+        // Use the list-probe pattern to detect concrete generic runtime type.
+        // ignore: literal_only_boolean_expressions
+        if (<T>[] is List<StreamBinarySchema>) {
+          if (responseData is! ResponseBody) {
+            return NetworkErrorResult<T>(
+              error: NetworkErrorInvalidResponseType(
+                message: 'Invalid response type for StreamBinarySchema: '
+                    '${responseData.runtimeType}',
+                stackTrace: StackTrace.current,
+                response: responseData,
+                statusCode: statusCode,
+              ),
+            );
+          }
+          if (isDefault) {
+            return SuccessResponseResult(
+              data: f.from(responseData.stream) as T,
+              statusCode: statusCode,
+            );
+          } else {
+            return SpecifiedResponseResult<T>(
+              data: f.from(responseData.stream),
+              statusCode: statusCode,
+              type: f.type,
+            );
+          }
+        }
+        final binaryResponseData =
+            await _extractBinaryResponseData(responseData);
+        if (binaryResponseData == null) {
+          return NetworkErrorResult<T>(
+            error: NetworkErrorInvalidResponseType(
+              message: 'Invalid response type for BinarySchemaFactory: '
+                  '${responseData.runtimeType}',
+              stackTrace: StackTrace.current,
+              response: responseData,
+              statusCode: statusCode,
+            ),
+          );
+        }
+        final data = f.from(binaryResponseData);
+        if (isDefault) {
+          return SuccessResponseResult(
+            data: data as T,
+            statusCode: statusCode,
+          );
+        } else {
+          return SpecifiedResponseResult<T>(
+            data: data,
+            statusCode: statusCode,
+            type: f.type,
+          );
+        }
     }
+  }
+
+  Future<Object?> _extractBinaryResponseData(dynamic responseData) async {
+    if (responseData is List<int> || responseData is String) {
+      return responseData;
+    }
+
+    if (responseData is ResponseBody) {
+      final bytesBuilder = BytesBuilder(copy: false);
+      await for (final chunk in responseData.stream) {
+        bytesBuilder.add(chunk);
+      }
+      return bytesBuilder.takeBytes();
+    }
+
+    return null;
   }
 
   void _setProgressStatus<T extends Schema>(
@@ -474,7 +485,6 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           case NetworkError():
             resultRequestProgress(request, ProgressStatus.error);
           case RequestCancelledError():
-          case RequestAlreadyCancelledError():
             resultRequestProgress(request, ProgressStatus.cancelled);
         }
     }

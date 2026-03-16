@@ -98,31 +98,6 @@ final class RequestCancelledError extends NetworkErrorBase {
   }
 }
 
-/// The error type thrown when trying to cancel a request that has already
-/// completed or been cancelled.
-///
-/// Example:
-/// ```dart
-/// try {
-///   command.cancel();
-/// } on RequestAlreadyCancelledError catch (e) {
-///   print('Too late — request already finished: ${e.message}');
-/// }
-/// ```
-final class RequestAlreadyCancelledError extends NetworkErrorBase {
-  /// Creates a request already cancelled error.
-  const RequestAlreadyCancelledError({
-    required super.message,
-    required super.stackTrace,
-    super.error,
-  });
-
-  @override
-  String toString() {
-    return 'RequestAlreadyCancelledError: $message';
-  }
-}
-
 /// The error type for general type of errors occurred in the network invoker.
 final class NetworkError extends NetworkErrorBase {
   /// Creates a network error.

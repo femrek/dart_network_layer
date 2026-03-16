@@ -52,6 +52,8 @@ void main() {
           fail('Should not be a CustomResponseFactory');
         case DynamicSchemaFactory<UserResponse>():
           fail('Should not be a DynamicSchemaFactory');
+        case _:
+          fail('Unexpected factory type: ${factory.runtimeType}');
       }
     });
 
@@ -66,6 +68,8 @@ void main() {
           expect(factory, isA<StringSchemaFactory<PlainTextResponse>>());
         case DynamicSchemaFactory<PlainTextResponse>():
           fail('Should not be a DynamicSchemaFactory');
+        case _:
+          fail('Unexpected factory type: ${factory.runtimeType}');
       }
     });
 
@@ -147,6 +151,8 @@ void main() {
               errorFactory, isA<StringSchemaFactory<PlainTextErrorResponse>>());
         case DynamicSchemaFactory():
           fail('Should not be a DynamicSchemaFactory');
+        case _:
+          fail('Unexpected factory type: ${errorFactory.runtimeType}');
       }
     });
   });
@@ -600,6 +606,14 @@ class _TestNetworkInvoker implements INetworkInvoker {
             data: from(response.body),
             type: type,
           ),
+        BinarySchemaFactory(:final from) => () {
+            final model = from(response.bodyBytes);
+            return SpecifiedResponseResult<T>(
+              statusCode: response.statusCode,
+              data: model,
+              type: T,
+            );
+          }(),
       };
     }
 
@@ -616,6 +630,10 @@ class _TestNetworkInvoker implements INetworkInvoker {
         }(),
       DynamicSchemaFactory<T>(:final from) => () {
           final model = from(response.body);
+          return SuccessResponseResult(data: model, statusCode: 200);
+        }(),
+      BinarySchemaFactory<BinarySchema>(:final from) => () {
+          final model = from(response.bodyBytes) as T;
           return SuccessResponseResult(data: model, statusCode: 200);
         }(),
     };

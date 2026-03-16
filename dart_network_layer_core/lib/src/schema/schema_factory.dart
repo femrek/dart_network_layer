@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
 /// Base type of factory that creates instances of [Schema].
@@ -54,4 +56,80 @@ abstract class DynamicSchemaFactory<T extends Schema> extends SchemaFactory<T> {
   /// The [response] parameter is the raw response body, which can be of any
   /// type (e.g., String, Map, List, etc.).
   T from(dynamic response);
+}
+
+/// A factory that creates instances of [BinarySchema] from binary response
+/// data.
+final class BinarySchemaFactory<T extends BinarySchema>
+    extends SchemaFactory<T> {
+  /// const constructor to allow subclasses to be const.
+  const BinarySchemaFactory();
+
+  /// Converts the dynamic response to an instance of [BinarySchema].
+  T from(dynamic response) {
+    if (T == InMemoryBinarySchema) {
+      return fromBytes(response) as T;
+    }
+
+    if (T == StreamBinarySchema) {
+      if (response is Stream<Uint8List>) {
+        return fromStream(response) as T;
+      }
+      throw ArgumentError(
+        'StreamBinarySchema expects a Stream<Uint8List>, '
+        'but got ${response.runtimeType}',
+      );
+    }
+
+    if (T == FileBinarySchema) {
+      if (response is String) {
+        return fromFilePath(response) as T;
+      }
+      throw ArgumentError(
+        'FileBinarySchema expects a file path as a string, '
+        'but got ${response.runtimeType}',
+      );
+    }
+
+    if (T == RawStringBinarySchema) {
+      if (response is String) {
+        return fromString(response) as T;
+      }
+      throw ArgumentError(
+        'RawStringBinarySchema expects a plain string, '
+        'but got ${response.runtimeType}',
+      );
+    }
+
+    throw UnsupportedError('BinarySchemaFactory does not support type $T');
+  }
+
+  /// Creates an [InMemoryBinarySchema] from dynamic response data.
+  InMemoryBinarySchema fromBytes(dynamic response) {
+    if (response is Uint8List) {
+      return InMemoryBinarySchema(bytes: response);
+    }
+    if (response is List<int>) {
+      return InMemoryBinarySchema(bytes: Uint8List.fromList(response));
+    }
+    throw ArgumentError(
+      'InMemoryBinarySchemaFactory expects Uint8List or List<int>, '
+      'but got ${response.runtimeType}',
+    );
+  }
+
+  /// Creates a [StreamBinarySchema] from a stream of bytes.
+  StreamBinarySchema fromStream(Stream<Uint8List> response) {
+    return StreamBinarySchema(stream: response);
+  }
+
+  /// Creates a [FileBinarySchema] from the file.
+  FileBinarySchema fromFilePath(String fileName) {
+    return FileBinarySchema(filePath: fileName);
+  }
+
+  /// Creates a [RawStringBinarySchema] from a raw string response.
+  RawStringBinarySchema fromString(String plainString) {
+    return RawStringBinarySchema(data: plainString);
+  }
 }

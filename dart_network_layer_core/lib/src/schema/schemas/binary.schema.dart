@@ -16,7 +16,7 @@ sealed class BinarySchema extends Schema {
 /// Binary response data stored in-memory as raw bytes.
 ///
 /// This is used when [InMemoryBinaryResponse] is set on the request command.
-class InMemoryBinarySchema extends BinarySchema {
+final class InMemoryBinarySchema extends BinarySchema {
   /// Creates an instance of [InMemoryBinarySchema] with the given [bytes].
   const InMemoryBinarySchema({required this.bytes});
 
@@ -24,13 +24,27 @@ class InMemoryBinarySchema extends BinarySchema {
   final Uint8List bytes;
 
   /// The factory instance for creating [InMemoryBinarySchema] instances.
-  static const factory = InMemoryBinarySchemaFactory();
+  static const BinarySchemaFactory<InMemoryBinarySchema> factory =
+      BinarySchemaFactory<InMemoryBinarySchema>();
+}
+
+/// Binary response data received as a stream of bytes.
+final class StreamBinarySchema extends BinarySchema {
+  /// Creates an instance of [StreamBinarySchema] with the given [stream].
+  const StreamBinarySchema({required this.stream});
+
+  /// The stream of response bytes.
+  final Stream<Uint8List> stream;
+
+  /// The factory instance for creating [StreamBinarySchema] instances.
+  static const BinarySchemaFactory<StreamBinarySchema> factory =
+      BinarySchemaFactory<StreamBinarySchema>();
 }
 
 /// Binary response data saved to a file on disk.
 ///
 /// This is used when [FileBinaryResponse] is set on the request command.
-class FileBinarySchema extends BinarySchema {
+final class FileBinarySchema extends BinarySchema {
   /// Creates an instance of [FileBinarySchema] with the given [filePath].
   const FileBinarySchema({required this.filePath});
 
@@ -38,14 +52,15 @@ class FileBinarySchema extends BinarySchema {
   final String filePath;
 
   /// The factory instance for creating [FileBinarySchema] instances.
-  static const factory = FileBinarySchemaFactory();
+  static const BinarySchemaFactory<FileBinarySchema> factory =
+      BinarySchemaFactory<FileBinarySchema>();
 }
 
 /// Binary response data received as a raw string.
 ///
 /// This can be used when the binary endpoint returns text-based content
 /// (e.g., base64-encoded data or CSV).
-class RawStringBinarySchema extends BinarySchema {
+final class RawStringBinarySchema extends BinarySchema {
   /// Creates an instance of [RawStringBinarySchema] with the given [data].
   const RawStringBinarySchema({required this.data});
 
@@ -53,49 +68,6 @@ class RawStringBinarySchema extends BinarySchema {
   final String data;
 
   /// The factory instance for creating [RawStringBinarySchema] instances.
-  static const factory = RawStringBinarySchemaFactory();
-}
-
-/// Factory for creating [InMemoryBinarySchema] from dynamic response data.
-class InMemoryBinarySchemaFactory
-    extends DynamicSchemaFactory<InMemoryBinarySchema> {
-  /// Creates a const instance of [InMemoryBinarySchemaFactory].
-  const InMemoryBinarySchemaFactory();
-
-  @override
-  InMemoryBinarySchema from(dynamic response) {
-    if (response is Uint8List) {
-      return InMemoryBinarySchema(bytes: response);
-    }
-    if (response is List<int>) {
-      return InMemoryBinarySchema(bytes: Uint8List.fromList(response));
-    }
-    throw ArgumentError(
-      'InMemoryBinarySchemaFactory expects Uint8List or List<int>, '
-      'but got ${response.runtimeType}',
-    );
-  }
-}
-
-/// Factory for creating [FileBinarySchema] from a file path string.
-class FileBinarySchemaFactory extends StringSchemaFactory<FileBinarySchema> {
-  /// Creates a const instance of [FileBinarySchemaFactory].
-  const FileBinarySchemaFactory();
-
-  @override
-  FileBinarySchema fromString(String plainString) {
-    return FileBinarySchema(filePath: plainString);
-  }
-}
-
-/// Factory for creating [RawStringBinarySchema] from a raw string response.
-class RawStringBinarySchemaFactory
-    extends StringSchemaFactory<RawStringBinarySchema> {
-  /// Creates a const instance of [RawStringBinarySchemaFactory].
-  const RawStringBinarySchemaFactory();
-
-  @override
-  RawStringBinarySchema fromString(String plainString) {
-    return RawStringBinarySchema(data: plainString);
-  }
+  static const BinarySchemaFactory<RawStringBinarySchema> factory =
+      BinarySchemaFactory<RawStringBinarySchema>();
 }

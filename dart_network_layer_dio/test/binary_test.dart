@@ -22,6 +22,14 @@ final _fakePngBytes = Uint8List.fromList(
 final _genericBinaryBytes =
     Uint8List.fromList(List<int>.generate(32, (i) => i));
 
+Future<Uint8List> _collectStreamBytes(Stream<Uint8List> stream) async {
+  final builder = BytesBuilder(copy: false);
+  await for (final chunk in stream) {
+    builder.add(chunk);
+  }
+  return builder.takeBytes();
+}
+
 // ---------------------------------------------------------------------------
 // BinarySchema unit tests
 // ---------------------------------------------------------------------------
@@ -81,7 +89,7 @@ void main() {
       });
 
       test('factory builds from path string', () {
-        final schema = FileBinarySchema.factory.fromString('/tmp/test.bin');
+        final schema = FileBinarySchema.factory.fromFilePath('/tmp/test.bin');
         expect(schema, isA<FileBinarySchema>());
         expect(schema.filePath, '/tmp/test.bin');
       });
@@ -90,6 +98,29 @@ void main() {
         const schema = FileBinarySchema(filePath: '/tmp/file.bin');
         expect(schema, isA<BinarySchema>());
         expect(schema, isA<Schema>());
+      });
+    });
+
+    group('StreamBinarySchema', () {
+      test('stores stream correctly', () async {
+        final schema = StreamBinarySchema(
+          stream: Stream<Uint8List>.value(_fakePngBytes),
+        );
+        final data = await _collectStreamBytes(schema.stream);
+        expect(data, equals(_fakePngBytes));
+      });
+
+      test('factory builds from Stream<Uint8List>', () {
+        final stream = Stream<Uint8List>.value(_genericBinaryBytes);
+        final schema = StreamBinarySchema.factory.from(stream);
+        expect(schema, isA<StreamBinarySchema>());
+      });
+
+      test('factory throws on invalid type', () {
+        expect(
+          () => StreamBinarySchema.factory.from(_genericBinaryBytes),
+          throwsA(isA<ArgumentError>()),
+        );
       });
     });
 
@@ -167,7 +198,8 @@ void main() {
           fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
               'with status ${result.statusCode}');
         case NetworkErrorResult(:final error):
-          fail('Expected SuccessResponseResult, got error: ${error.message}');
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
       }
 
       await server.close();
@@ -203,7 +235,8 @@ void main() {
           fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
               'with status ${result.statusCode}');
         case NetworkErrorResult(:final error):
-          fail('Expected SuccessResponseResult, got error: ${error.message}');
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
       }
 
       await server.close();
@@ -239,7 +272,8 @@ void main() {
           fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
               'with status ${result.statusCode}');
         case NetworkErrorResult(:final error):
-          fail('Expected SuccessResponseResult, got error: ${error.message}');
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
       }
 
       await server.close();
@@ -418,7 +452,8 @@ void main() {
           fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
               'with status ${result.statusCode}');
         case NetworkErrorResult(:final error):
-          fail('Expected SuccessResponseResult, got error: ${error.message}');
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
       }
 
       await server.close();
@@ -544,7 +579,8 @@ void main() {
           fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
               'with status ${result.statusCode}');
         case NetworkErrorResult(:final error):
-          fail('Expected SuccessResponseResult, got error: ${error.message}');
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
       }
 
       await server.close();
@@ -597,6 +633,144 @@ void main() {
   });
 
   // =========================================================================
+  // Stream binary – integration tests
+  // =========================================================================
+  group('DioNetworkInvoker – StreamBinaryResponse', () {
+    test('returns StreamBinarySchema and yields all response bytes', () async {
+      final server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testBinaryStream],
+          ),
+          handler: (request) async {
+            request.response
+              ..statusCode = HttpStatus.ok
+              ..headers.contentType = ContentType.binary
+              ..add(_fakePngBytes.sublist(0, 4))
+              ..add(_fakePngBytes.sublist(4));
+            return request.response;
+          },
+        ),
+      ]);
+
+      final invoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await invoker.request(RequestTestStreamBinary());
+
+      switch (result) {
+        case SuccessResponseResult(:final data):
+          expect(data, isA<StreamBinarySchema>());
+          final allBytes = await _collectStreamBytes(data.stream);
+          expect(allBytes, equals(_fakePngBytes));
+        case SpecifiedResponseResult():
+          fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
+              'with status ${result.statusCode}');
+        case NetworkErrorResult(:final error):
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
+      }
+
+      await server.close();
+    });
+
+    test('result has correct HTTP status code (200) for stream response',
+        () async {
+      final server = await TestServer.createHttpServer(events: [
+        RawServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testBinaryStream],
+          ),
+          handler: (request) async {
+            request.response
+              ..statusCode = HttpStatus.ok
+              ..headers.contentType = ContentType.binary
+              ..add(_genericBinaryBytes);
+            return request.response;
+          },
+        ),
+      ]);
+
+      final invoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await invoker.request(RequestTestStreamBinary());
+
+      expect(result, isA<SuccessResponseResult<StreamBinarySchema>>());
+      expect(
+        (result as SuccessResponseResult<StreamBinarySchema>).statusCode,
+        HttpStatus.ok,
+      );
+
+      await server.close();
+    });
+  });
+
+  // =========================================================================
+  // Raw string binary – integration tests
+  // =========================================================================
+  group('DioNetworkInvoker – RawStringBinaryResponse', () {
+    test('returns RawStringBinarySchema with raw string payload', () async {
+      const rawPayload = 'PNG_SIGNATURE';
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testBinaryRawString],
+          ),
+          handler: (request) async => rawPayload,
+        ),
+      ]);
+
+      final invoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await invoker.request(RequestTestRawStringBinary());
+
+      switch (result) {
+        case SuccessResponseResult(:final data):
+          expect(data, isA<RawStringBinarySchema>());
+          expect(data.data, rawPayload);
+        case SpecifiedResponseResult():
+          fail('Expected SuccessResponseResult, got SpecifiedResponseResult '
+              'with status ${result.statusCode}');
+        case NetworkErrorResult(:final error):
+          fail('Expected SuccessResponseResult, got error: ${error.message}\n'
+              '${error.stackTrace}');
+      }
+
+      await server.close();
+    });
+
+    test('returns RawStringBinarySchema with empty string body', () async {
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testBinaryRawString],
+          ),
+          handler: (request) async => '',
+        ),
+      ]);
+
+      final invoker = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final result = await invoker.request(RequestTestRawStringBinary());
+
+      expect(result, isA<SuccessResponseResult<RawStringBinarySchema>>());
+      expect(
+        (result as SuccessResponseResult<RawStringBinarySchema>).data.data,
+        isEmpty,
+      );
+
+      await server.close();
+    });
+  });
+
+  // =========================================================================
   // RequestCommand configuration tests
   // =========================================================================
   group('RequestTestInMemoryBinary command configuration', () {
@@ -617,7 +791,8 @@ void main() {
 
     test('defaultResponseFactory is InMemoryBinarySchemaFactory', () {
       final cmd = RequestTestInMemoryBinary();
-      expect(cmd.defaultResponseFactory, isA<InMemoryBinarySchemaFactory>());
+      expect(cmd.defaultResponseFactory,
+          isA<BinarySchemaFactory<InMemoryBinarySchema>>());
     });
 
     test('defaultErrorResponseFactory is IgnoredSchema factory', () {
@@ -643,7 +818,34 @@ void main() {
 
     test('defaultResponseFactory is FileBinarySchemaFactory', () {
       final cmd = RequestTestFileBinary(savePath: '/tmp/x.bin');
-      expect(cmd.defaultResponseFactory, isA<FileBinarySchemaFactory>());
+      expect(cmd.defaultResponseFactory,
+          isA<BinarySchemaFactory<FileBinarySchema>>());
+    });
+  });
+
+  group('RequestTestStreamBinary command configuration', () {
+    test('default binaryResponseType is StreamBinaryResponse', () {
+      final cmd = RequestTestStreamBinary();
+      expect(cmd.binaryResponseType, isA<StreamBinaryResponse>());
+    });
+
+    test('defaultResponseFactory is StreamBinarySchemaFactory', () {
+      final cmd = RequestTestStreamBinary();
+      expect(cmd.defaultResponseFactory,
+          isA<BinarySchemaFactory<StreamBinarySchema>>());
+    });
+  });
+
+  group('RequestTestRawStringBinary command configuration', () {
+    test('default binaryResponseType is RawStringBinaryResponse', () {
+      final cmd = RequestTestRawStringBinary();
+      expect(cmd.binaryResponseType, isA<RawStringBinaryResponse>());
+    });
+
+    test('defaultResponseFactory is RawStringBinarySchemaFactory', () {
+      final cmd = RequestTestRawStringBinary();
+      expect(cmd.defaultResponseFactory,
+          isA<BinarySchemaFactory<RawStringBinarySchema>>());
     });
   });
 }

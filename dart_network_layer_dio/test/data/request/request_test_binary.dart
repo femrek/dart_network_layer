@@ -41,3 +41,40 @@ class RequestTestFileBinary extends RequestCommand<FileBinarySchema> {
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }
+
+/// Request that receives binary data as a stream of chunks.
+class RequestTestStreamBinary extends RequestCommand<StreamBinarySchema> {
+  RequestTestStreamBinary({this.path = TestPaths.testBinaryStream});
+
+  @override
+  final String path;
+
+  @override
+  BinaryResponseType get binaryResponseType => const StreamBinaryResponse();
+
+  @override
+  SchemaFactory<StreamBinarySchema> get defaultResponseFactory =>
+      StreamBinarySchema.factory;
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+}
+
+/// Request that receives binary endpoint content as raw string.
+class RequestTestRawStringBinary extends RequestCommand<RawStringBinarySchema> {
+  RequestTestRawStringBinary({this.path = TestPaths.testBinaryRawString});
+
+  @override
+  final String path;
+
+  @override
+  BinaryResponseType get binaryResponseType =>
+      const RawStringBinaryResponse('raw');
+
+  @override
+  SchemaFactory<RawStringBinarySchema> get defaultResponseFactory =>
+      RawStringBinarySchema.factory;
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+}

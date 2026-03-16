@@ -47,8 +47,6 @@ mixin RequestManagingMixin {
     _onCancel?.call();
   }
 
-  /// INTERNAL: DO NOT USE OUTSIDE OF INVOKER IMPLEMENTATIONS.
-  ///
   /// Internal setter used by the invoker to attach (or replace) the
   /// cancellation logic for this command.
   ///

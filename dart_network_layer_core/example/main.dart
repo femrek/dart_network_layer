@@ -48,7 +48,15 @@ class NetworkManager implements INetworkInvoker {
             statusCode: 200,
             data: response,
           );
-        }()
+        }(),
+      BinarySchemaFactory<BinarySchema>() => NetworkErrorResult(
+          error: NetworkErrorInvalidResponseType(
+            message: 'The sample model is not a binary response model.',
+            stackTrace: StackTrace.current,
+            response: null,
+            statusCode: 0,
+          ),
+        ),
     };
   }
 }

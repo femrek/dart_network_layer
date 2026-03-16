@@ -12,16 +12,35 @@ sealed class BinaryResponseType {
 ///
 /// Use this when you want to process the binary data directly in your
 /// application without saving it to disk.
-class InMemoryBinaryResponse extends BinaryResponseType {
+final class InMemoryBinaryResponse extends BinaryResponseType {
   /// Creates a const instance of [InMemoryBinaryResponse].
   const InMemoryBinaryResponse();
+}
+
+/// The response bytes will be returned as a stream of byte chunks.
+final class StreamBinaryResponse extends BinaryResponseType {
+  /// Creates a const instance of [StreamBinaryResponse].
+  const StreamBinaryResponse();
+}
+
+/// The response will be returned as a raw string.
+///
+/// Use this when the binary endpoint returns text-based content (e.g.,
+/// base64-encoded data or CSV) and you want to receive it as a string rather
+/// than bytes.
+final class RawStringBinaryResponse extends BinaryResponseType {
+  /// Creates an instance of [RawStringBinaryResponse].
+  const RawStringBinaryResponse(this.data);
+
+  /// The raw string response data.
+  final String data;
 }
 
 /// The response will be saved to a file at [savePath].
 ///
 /// Use this when you want to download the response directly to a file on disk.
 /// The [savePath] must be a valid writable path on the target platform.
-class FileBinaryResponse extends BinaryResponseType {
+final class FileBinaryResponse extends BinaryResponseType {
   /// Creates a [FileBinaryResponse] with the given [savePath].
   const FileBinaryResponse(this.savePath);
 

@@ -9,8 +9,8 @@ import 'package:meta/meta.dart';
 /// Provides the added [RequestHistoryEntry], if a new entry was added.
 ///
 /// If the function is called without new entry (e.g. when trimming the history
-/// after changing [maxHistoryLength]), the parameter will be `null`.
-///
+/// after changing [MixinManageRequestHistory.maxHistoryLength]), the parameter
+/// will be `null`.
 ///
 /// See also [MixinManageRequestHistory.maxHistoryLength] for controlling the
 /// size of the history list and [MixinManageRequestHistory.requestHistory] for
