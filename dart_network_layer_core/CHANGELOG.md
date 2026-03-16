@@ -1,3 +1,8 @@
+## 1.0.0-dev8
+
+- Refactor history management.
+- Improve binary response handling.
+
 ## 1.0.0-dev7
 
 - Fix `meta` dependency constraint changed from `^1.18.1` to `any` to avoid version conflict with Flutter SDK.
