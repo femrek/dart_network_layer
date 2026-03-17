@@ -1,3 +1,7 @@
+## 1.0.0-dev9
+
+- Update factories in binary schema.
+
 ## 1.0.0-dev8
 
 - Refactor history management.
