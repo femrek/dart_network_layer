@@ -9,6 +9,6 @@ homepage: 'homepage'
 environment:
   sdk: '>=3.6.0 <4.0.0'
 dependencies:
-  dart_network_layer_core: ^1.0.0-dev7
+  dart_network_layer_core: ^1.0.0-dev9
 dev_dependencies:
   test: '>=1.21.6 <2.0.0'

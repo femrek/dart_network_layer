@@ -157,17 +157,17 @@ packages:
     dependency: transitive
     description:
       name: dart_network_layer_core
-      sha256: "8f2f107f7904f3876da09f95dcb64876518b0e472bb38384dd7bc84e2db63f74"
+      sha256: "87c251132cd00062afe29a084dab061119ebaee29139ef71c86a8db8268c267e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-dev7"
+    version: "1.0.0-dev9"
   dart_network_layer_dio:
     dependency: "direct main"
     description:
       path: "../dart_network_layer_dio"
       relative: true
     source: path
-    version: "1.0.0-dev7"
+    version: "1.0.0-dev9"
   dart_style:
     dependency: transitive
     description:

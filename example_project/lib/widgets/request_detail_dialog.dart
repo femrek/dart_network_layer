@@ -33,7 +33,7 @@ class RequestDetailDialog extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Payload: ${data.request.payload}'),
             const SizedBox(height: 8),
-            Text('Response: ${_resultToString(data.request.result)}'),
+            Text('Response: ${_resultToString(data.request.response)}'),
           ],
         ),
       ),

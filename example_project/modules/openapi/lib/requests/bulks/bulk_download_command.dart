@@ -41,14 +41,14 @@ class BulkDownloadCommand extends OpenapiDefinitionBaseRequest<BinarySchema> {
   HttpRequestMethod get method => HttpRequestMethod.get;
 
   @override
-  SchemaFactory<BinarySchema> get defaultResponseFactory => InMemoryBinarySchema.factory;
+  SchemaFactory<BinarySchema> get defaultResponseFactory => BinarySchemaFactory(binaryResponseType: binaryResponseType);
 
   @override
   SchemaFactory get defaultErrorResponseFactory => AnyDataSchema.factory;
 
   @override
   Map<int, SchemaFactory> get responseFactories => {
-    200: InMemoryBinarySchema.factory,
+    200: BinarySchemaFactory(binaryResponseType: binaryResponseType),
     404: ErrorResponse.factory,
   };
 

@@ -1,6 +1,6 @@
 OPENAPI_CODEGEN_VERSION := 7.20.0
 OPENAPI_CODEGEN_JAR := ./openapi-generator-cli-$(OPENAPI_CODEGEN_VERSION).jar
-CUSTOM_CODEGEN_VERSION := 0.1.9
+CUSTOM_CODEGEN_VERSION := 0.1.10
 CUSTOM_CODEGEN_JAR := ./openapi-dart-network-codegen-$(CUSTOM_CODEGEN_VERSION).jar
 SPEC_FILE_NAME := ./openapi-spec.json
 SPEC_FILE_URL := https://dummyapi.femrek.dev/v3/api-docs
