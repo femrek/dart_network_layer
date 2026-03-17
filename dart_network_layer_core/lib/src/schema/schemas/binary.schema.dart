@@ -22,10 +22,6 @@ final class InMemoryBinarySchema extends BinarySchema {
 
   /// The raw response bytes.
   final Uint8List bytes;
-
-  /// The factory instance for creating [InMemoryBinarySchema] instances.
-  static const BinarySchemaFactory<InMemoryBinarySchema> factory =
-      BinarySchemaFactory<InMemoryBinarySchema>();
 }
 
 /// Binary response data received as a stream of bytes.
@@ -35,10 +31,6 @@ final class StreamBinarySchema extends BinarySchema {
 
   /// The stream of response bytes.
   final Stream<Uint8List> stream;
-
-  /// The factory instance for creating [StreamBinarySchema] instances.
-  static const BinarySchemaFactory<StreamBinarySchema> factory =
-      BinarySchemaFactory<StreamBinarySchema>();
 }
 
 /// Binary response data saved to a file on disk.
@@ -50,10 +42,6 @@ final class FileBinarySchema extends BinarySchema {
 
   /// The path where the file was saved.
   final String filePath;
-
-  /// The factory instance for creating [FileBinarySchema] instances.
-  static const BinarySchemaFactory<FileBinarySchema> factory =
-      BinarySchemaFactory<FileBinarySchema>();
 }
 
 /// Binary response data received as a raw string.
@@ -66,8 +54,4 @@ final class RawStringBinarySchema extends BinarySchema {
 
   /// The raw string response data.
   final String data;
-
-  /// The factory instance for creating [RawStringBinarySchema] instances.
-  static const BinarySchemaFactory<RawStringBinarySchema> factory =
-      BinarySchemaFactory<RawStringBinarySchema>();
 }

@@ -52,20 +52,29 @@ void main() {
       });
 
       test('factory builds from Uint8List', () {
-        final schema = InMemoryBinarySchema.factory.from(_fakePngBytes);
+        const factory = BinarySchemaFactory<InMemoryBinarySchema>(
+          binaryResponseType: InMemoryBinaryResponse(),
+        );
+        final schema = factory.fromBytes(_fakePngBytes);
         expect(schema, isA<InMemoryBinarySchema>());
         expect(schema.bytes, equals(_fakePngBytes));
       });
 
       test('factory builds from List<int>', () {
-        final schema = InMemoryBinarySchema.factory.from([0x01, 0x02, 0x03]);
+        const factory = BinarySchemaFactory<InMemoryBinarySchema>(
+          binaryResponseType: InMemoryBinaryResponse(),
+        );
+        final schema = factory.fromBytes([0x01, 0x02, 0x03]);
         expect(schema, isA<InMemoryBinarySchema>());
         expect(schema.bytes, hasLength(3));
       });
 
       test('factory throws on invalid type', () {
+        const factory = BinarySchemaFactory<InMemoryBinarySchema>(
+          binaryResponseType: InMemoryBinaryResponse(),
+        );
         expect(
-          () => InMemoryBinarySchema.factory.from('not bytes'),
+          () => factory.fromBytes('not bytes'),
           throwsA(isA<ArgumentError>()),
         );
       });
@@ -89,7 +98,10 @@ void main() {
       });
 
       test('factory builds from path string', () {
-        final schema = FileBinarySchema.factory.fromFilePath('/tmp/test.bin');
+        const factory = BinarySchemaFactory<FileBinarySchema>(
+          binaryResponseType: FileBinaryResponse('/tmp/test.bin'),
+        );
+        final schema = factory.fromFilePath('/tmp/test.bin');
         expect(schema, isA<FileBinarySchema>());
         expect(schema.filePath, '/tmp/test.bin');
       });
@@ -112,13 +124,19 @@ void main() {
 
       test('factory builds from Stream<Uint8List>', () {
         final stream = Stream<Uint8List>.value(_genericBinaryBytes);
-        final schema = StreamBinarySchema.factory.from(stream);
+        const factory = BinarySchemaFactory<StreamBinarySchema>(
+          binaryResponseType: StreamBinaryResponse(),
+        );
+        final schema = factory.from(stream);
         expect(schema, isA<StreamBinarySchema>());
       });
 
       test('factory throws on invalid type', () {
+        const factory = BinarySchemaFactory<StreamBinarySchema>(
+          binaryResponseType: StreamBinaryResponse(),
+        );
         expect(
-          () => StreamBinarySchema.factory.from(_genericBinaryBytes),
+          () => factory.from(_genericBinaryBytes),
           throwsA(isA<ArgumentError>()),
         );
       });
@@ -131,7 +149,10 @@ void main() {
       });
 
       test('factory builds from string', () {
-        final schema = RawStringBinarySchema.factory.fromString('hello');
+        const factory = BinarySchemaFactory<RawStringBinarySchema>(
+          binaryResponseType: RawStringBinaryResponse('raw'),
+        );
+        final schema = factory.fromString('hello');
         expect(schema, isA<RawStringBinarySchema>());
         expect(schema.data, 'hello');
       });

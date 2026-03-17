@@ -14,7 +14,7 @@ class RequestTestInMemoryBinary extends RequestCommand<InMemoryBinarySchema> {
 
   @override
   SchemaFactory<InMemoryBinarySchema> get defaultResponseFactory =>
-      InMemoryBinarySchema.factory;
+      BinarySchemaFactory(binaryResponseType: binaryResponseType);
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
@@ -36,7 +36,7 @@ class RequestTestFileBinary extends RequestCommand<FileBinarySchema> {
 
   @override
   SchemaFactory<FileBinarySchema> get defaultResponseFactory =>
-      FileBinarySchema.factory;
+      BinarySchemaFactory(binaryResponseType: binaryResponseType);
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
@@ -54,7 +54,7 @@ class RequestTestStreamBinary extends RequestCommand<StreamBinarySchema> {
 
   @override
   SchemaFactory<StreamBinarySchema> get defaultResponseFactory =>
-      StreamBinarySchema.factory;
+      BinarySchemaFactory(binaryResponseType: binaryResponseType);
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
@@ -73,7 +73,7 @@ class RequestTestRawStringBinary extends RequestCommand<RawStringBinarySchema> {
 
   @override
   SchemaFactory<RawStringBinarySchema> get defaultResponseFactory =>
-      RawStringBinarySchema.factory;
+      BinarySchemaFactory(binaryResponseType: binaryResponseType);
 
   @override
   SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;

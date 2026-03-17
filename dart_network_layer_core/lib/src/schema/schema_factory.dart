@@ -63,45 +63,41 @@ abstract class DynamicSchemaFactory<T extends Schema> extends SchemaFactory<T> {
 final class BinarySchemaFactory<T extends BinarySchema>
     extends SchemaFactory<T> {
   /// const constructor to allow subclasses to be const.
-  const BinarySchemaFactory();
+  const BinarySchemaFactory({required this.binaryResponseType});
+
+  /// The type of binary response that this factory handles.
+  final BinaryResponseType binaryResponseType;
 
   /// Converts the dynamic response to an instance of [BinarySchema].
-  T from(dynamic response) {
-    if (T == InMemoryBinarySchema) {
-      return fromBytes(response) as T;
+  BinarySchema from(dynamic response) {
+    switch (binaryResponseType) {
+      case InMemoryBinaryResponse():
+        return fromBytes(response);
+      case StreamBinaryResponse():
+        if (response is Stream<Uint8List>) {
+          return fromStream(response);
+        }
+        throw ArgumentError(
+          'StreamBinaryResponse expects a Stream<Uint8List>, '
+          'but got ${response.runtimeType}',
+        );
+      case final FileBinaryResponse fileResponse:
+        if (response is String) {
+          return fromFilePath(fileResponse.savePath);
+        }
+        throw ArgumentError(
+          'FileBinaryResponse expects a file path as a string, '
+          'but got ${response.runtimeType}',
+        );
+      case RawStringBinaryResponse():
+        if (response is String) {
+          return fromString(response);
+        }
+        throw ArgumentError(
+          'RawStringBinaryResponse expects a plain string, '
+          'but got ${response.runtimeType}',
+        );
     }
-
-    if (T == StreamBinarySchema) {
-      if (response is Stream<Uint8List>) {
-        return fromStream(response) as T;
-      }
-      throw ArgumentError(
-        'StreamBinarySchema expects a Stream<Uint8List>, '
-        'but got ${response.runtimeType}',
-      );
-    }
-
-    if (T == FileBinarySchema) {
-      if (response is String) {
-        return fromFilePath(response) as T;
-      }
-      throw ArgumentError(
-        'FileBinarySchema expects a file path as a string, '
-        'but got ${response.runtimeType}',
-      );
-    }
-
-    if (T == RawStringBinarySchema) {
-      if (response is String) {
-        return fromString(response) as T;
-      }
-      throw ArgumentError(
-        'RawStringBinarySchema expects a plain string, '
-        'but got ${response.runtimeType}',
-      );
-    }
-
-    throw UnsupportedError('BinarySchemaFactory does not support type $T');
   }
 
   /// Creates an [InMemoryBinarySchema] from dynamic response data.

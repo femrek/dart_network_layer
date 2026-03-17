@@ -40,20 +40,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       String? downloadedFilePath;
       final binaryResponseType = request.binaryResponseType;
 
-      // `T is FileBinarySchema` is always false for generic type parameters.
-      // Use a generic-list type probe to detect concrete `T` at runtime.
-      // ignore: literal_only_boolean_expressions
-      if (<T>[] is List<FileBinarySchema>) {
-        if (binaryResponseType is! FileBinaryResponse) {
-          return NetworkErrorResult<T>(
-            error: NetworkError(
-              message: 'Invalid binary response type for FileBinarySchema. '
-                  'Expected FileBinaryResponse.',
-              stackTrace: StackTrace.current,
-            ),
-          );
-        }
-
+      if (binaryResponseType is FileBinaryResponse) {
         response = await dio.download(
           request.path,
           binaryResponseType.savePath,
@@ -393,10 +380,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           );
         }
       case final BinarySchemaFactory f:
-        // `T is ...` is not reliable for generic type parameters.
-        // Use the list-probe pattern to detect concrete generic runtime type.
-        // ignore: literal_only_boolean_expressions
-        if (<T>[] is List<StreamBinarySchema>) {
+        if (f.binaryResponseType is StreamBinaryResponse) {
           if (responseData is! ResponseBody) {
             return NetworkErrorResult<T>(
               error: NetworkErrorInvalidResponseType(
