@@ -22,6 +22,11 @@ final class InMemoryBinarySchema extends BinarySchema {
 
   /// The raw response bytes.
   final Uint8List bytes;
+
+  @override
+  String toLogString() {
+    return 'InMemoryBinarySchema(bytes length: ${bytes.length} bytes)';
+  }
 }
 
 /// Binary response data received as a stream of bytes.
@@ -31,6 +36,11 @@ final class StreamBinarySchema extends BinarySchema {
 
   /// The stream of response bytes.
   final Stream<Uint8List> stream;
+
+  @override
+  String toLogString() {
+    return 'StreamBinarySchema(stream: Stream<Uint8List>)';
+  }
 }
 
 /// Binary response data saved to a file on disk.
@@ -42,6 +52,11 @@ final class FileBinarySchema extends BinarySchema {
 
   /// The path where the file was saved.
   final String filePath;
+
+  @override
+  String toLogString() {
+    return 'FileBinarySchema(filePath: $filePath)';
+  }
 }
 
 /// Binary response data received as a raw string.
@@ -54,4 +69,9 @@ final class RawStringBinarySchema extends BinarySchema {
 
   /// The raw string response data.
   final String data;
+
+  @override
+  String toLogString() {
+    return 'RawStringBinarySchema(data length: ${data.length} chars)';
+  }
 }

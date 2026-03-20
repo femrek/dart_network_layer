@@ -15,6 +15,13 @@ class AnyDataSchema extends Schema {
 
   /// The factory instance for creating [AnyDataSchema] instances.
   static const factory = _Factory();
+
+  @override
+  String toLogString() {
+    return 'AnyDataSchema('
+        'data type: ${data.runtimeType}, '
+        'data length: ${data.toString().length} chars)';
+  }
 }
 
 class _Factory extends DynamicSchemaFactory<AnyDataSchema> {

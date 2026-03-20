@@ -12,6 +12,11 @@ class IgnoredSchema extends Schema {
 
   /// The factory instance for creating [IgnoredSchema] instances.
   static const factory = _Factory();
+
+  @override
+  String toLogString() {
+    return 'IgnoredSchema()';
+  }
 }
 
 /// Factory for creating [IgnoredSchema] instances from string data.

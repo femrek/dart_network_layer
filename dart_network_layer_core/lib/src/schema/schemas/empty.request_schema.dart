@@ -21,4 +21,9 @@ final class EmptyRequestSchema extends DynamicRequestSchema {
   dynamic toPayload() {
     return null;
   }
+
+  @override
+  String toLogString() {
+    return 'EmptyRequestSchema()';
+  }
 }
