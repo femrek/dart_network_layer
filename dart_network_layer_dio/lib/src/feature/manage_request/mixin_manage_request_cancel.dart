@@ -24,7 +24,7 @@ mixin MixinManageRequestCancel on BaseRequestManagingNetworkInvoker {
   CancelToken setupCancelToken(RequestCommand request) {
     final token = CancelToken();
     requestMap[request] = token;
-    request.onCancel = () => cancelRequest(request);
+    request.setOnCancel(() => cancelRequest(request));
     return token;
   }
 

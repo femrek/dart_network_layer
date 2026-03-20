@@ -9,7 +9,7 @@ mixin RequestResultMixin<T extends Schema> {
   NetworkResult<T>? _result;
 
   /// The result of the request, or `null` if not yet completed.
-  NetworkResult<T>? get response => _result;
+  NetworkResult<T>? get result => _result;
 
   /// This is an internal setter used by the invoker to set the result of the
   /// request. It should not be used outside of invoker implementations. The
@@ -17,5 +17,6 @@ mixin RequestResultMixin<T extends Schema> {
   /// successfully or with an error) to store the result in the command for
   /// later retrieval.
   @mustCallSuper
-  set result(NetworkResult<T> result) => _result = result;
+  // ignore: use_setters_to_change_properties - method provides better control flow
+  void setResult(NetworkResult<T> result) => _result = result;
 }

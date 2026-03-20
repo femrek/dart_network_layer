@@ -43,6 +43,7 @@ mixin RequestManagingMixin {
   ///   print('Request was cancelled: ${error.message}');
   /// }
   /// ```
+  @mustCallSuper
   void cancel() {
     _onCancel?.call();
   }
@@ -59,5 +60,6 @@ mixin RequestManagingMixin {
   ///
   /// This setter is not intended to be called from application code.
   @mustCallSuper
-  set onCancel(void Function() callback) => _onCancel = callback;
+  // ignore: use_setters_to_change_properties - method provides better control flow
+  void setOnCancel(void Function() callback) => _onCancel = callback;
 }

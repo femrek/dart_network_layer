@@ -19,7 +19,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       RequestCommand<T> request) async {
     final result = await _request<T>(request);
     _setProgressStatus<T>(request, result);
-    request.result = result;
+    request.setResult(result);
     return result;
   }
 
@@ -117,13 +117,13 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       );
     } finally {
       requestMap.remove(request);
-      request.onCancel = () {
+      request.setOnCancel(() {
         throw RequestAlreadyCancelledError(
           message: 'Invalid state: Request was cancelled when it was already '
               'completed or cancelled.',
           stackTrace: StackTrace.current,
         );
-      };
+      });
     }
   }
 
