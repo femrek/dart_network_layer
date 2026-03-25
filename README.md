@@ -8,7 +8,7 @@ Visit [dart_network_layer_dio][gh_dart_network_layer_dio] ([pub.dev][pd_dart_net
 
 ## Examples
 
-- [Flutter example with Dio implementation][gh_example_flutter_dio] is an example Flutter project that shows how to
+- [This example][gh_example_flutter_dio] is an example Flutter project that shows how to
   use `dart_network_layer_dio` in a Flutter project.
 
 ## Example Class Diagram
@@ -52,7 +52,7 @@ SOFTWARE.
 
 [pd_dart_network_layer_dio]: https://pub.dev/packages/dart_network_layer_dio
 
-[gh_example_flutter_dio]: https://github.com/femrek/dart_network_layer/tree/main/example_flutter_dio
+[gh_example_flutter_dio]: https://github.com/femrek/dart_network_layer/tree/main/example_project
 
 
 
