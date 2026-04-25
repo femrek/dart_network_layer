@@ -31,7 +31,7 @@ void main() async {
       // error response test
       {
         final request = RequestTest1Error(field1: 'trigger_error');
-        final result = await invoker.request(request);
+        final result = await invoker.send(request);
 
         expect(result, isA<SpecifiedResponseResult>());
 
@@ -55,7 +55,7 @@ void main() async {
       // success response test
       {
         final request = RequestTest1(field1: 'ping');
-        final result = await invoker.request(request);
+        final result = await invoker.send(request);
 
         expect(result, isA<SuccessResponseResult>());
 
@@ -84,7 +84,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
   }
 
   @override
-  Future<NetworkResult<T>> request<T extends Schema>(
+  Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
     final response = await http.get(Uri.parse('$baseUrl${request.path}'));
 

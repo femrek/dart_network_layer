@@ -4,7 +4,7 @@ import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
 
 void main() async {
   final request = RequestUser(id: 1);
-  final response = await AppNetworkManager.networkInvoker.request(request);
+  final response = await AppNetworkManager.networkInvoker.send(request);
   switch (response) {
     case SuccessResponseResult(:final data):
       print('DATA: $data');

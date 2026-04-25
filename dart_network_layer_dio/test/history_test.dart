@@ -163,7 +163,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      await invoker.request(request);
+      await invoker.send(request);
 
       expect(
         invoker.requestHistory,
@@ -202,7 +202,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(invoker.requestHistory, hasLength(1));
       expect(
@@ -232,7 +232,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(invoker.requestHistory, hasLength(1));
       expect(
@@ -270,7 +270,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      final future = invoker.request(request);
+      final future = invoker.send(request);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
       invoker.cancelRequest(request);
@@ -301,9 +301,9 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         invoker.requestHistory,
@@ -328,7 +328,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         invoker.requestHistory.first.duration.inMicroseconds,
@@ -352,7 +352,7 @@ void main() {
         'http://localhost:${server.port}',
       )..maxHistoryLength = 0;
 
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         invoker.requestHistory,
@@ -378,9 +378,9 @@ void main() {
       )..maxHistoryLength = 2;
 
       // Third request pushes out the first.
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         invoker.requestHistory,
@@ -405,9 +405,9 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(invoker.requestHistory, hasLength(3));
 
@@ -439,9 +439,9 @@ void main() {
         'http://localhost:${server.port}',
       )..maxHistoryLength = 2;
 
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(invoker.requestHistory, hasLength(2));
 
@@ -449,8 +449,8 @@ void main() {
       invoker.maxHistoryLength = null;
 
       // New requests accumulate without limit.
-      await invoker.request(RequestTestUser());
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         invoker.requestHistory,

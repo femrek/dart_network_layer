@@ -9,13 +9,13 @@ import 'package:dio/dio.dart';
 
 /// Mixin for handling Dio network requests.
 ///
-/// Provides the [request] method to execute a [RequestCommand] and handle
+/// Provides the [send] method to execute a [RequestCommand] and handle
 /// its result, including progress and error reporting.
 mixin MixinRequest on BaseDioNetworkInvoker {
   /// Executes the given [request] and returns a [NetworkResult].
   /// Handles progress and error reporting for the request lifecycle.
   @override
-  Future<NetworkResult<T>> request<T extends Schema>(
+  Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
     final result = await _request<T>(request);
     _setProgressStatus<T>(request, result);

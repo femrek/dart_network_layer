@@ -201,7 +201,7 @@ void main() {
     test('should use defaultResponseFactory for successful JSON response',
         () async {
       final request = UserRequestSuccess();
-      final result = await invoker.request(request);
+      final result = await invoker.send(request);
 
       expect(result, isA<SuccessResponseResult<UserResponse>>());
       if (result is SuccessResponseResult<UserResponse>) {
@@ -214,7 +214,7 @@ void main() {
     test('should use defaultErrorResponseFactory for error JSON response',
         () async {
       final request = UserRequestError();
-      final result = await invoker.request(request);
+      final result = await invoker.send(request);
 
       expect(result, isA<SpecifiedResponseResult<UserResponse>>());
       if (result is SpecifiedResponseResult<UserResponse>) {
@@ -230,8 +230,8 @@ void main() {
       final userRequest = UserRequestSuccess();
       final productRequest = ProductRequestSuccess();
 
-      final userResult = await invoker.request(userRequest);
-      final productResult = await invoker.request(productRequest);
+      final userResult = await invoker.send(userRequest);
+      final productResult = await invoker.send(productRequest);
 
       expect(userResult, isA<SuccessResponseResult<UserResponse>>());
       expect(productResult, isA<SuccessResponseResult<ProductResponse>>());
@@ -246,7 +246,7 @@ void main() {
 
     test('should use custom error factory for different error types', () async {
       final request = ProductRequestError();
-      final result = await invoker.request(request);
+      final result = await invoker.send(request);
 
       expect(result, isA<SpecifiedResponseResult<ProductResponse>>());
       if (result is SpecifiedResponseResult<ProductResponse>) {
@@ -260,7 +260,7 @@ void main() {
 
     test('should use CustomResponseFactory for plain text success', () async {
       final request = PlainTextRequestSuccess();
-      final result = await invoker.request(request);
+      final result = await invoker.send(request);
 
       expect(result, isA<SuccessResponseResult<PlainTextResponse>>());
       if (result is SuccessResponseResult<PlainTextResponse>) {
@@ -271,7 +271,7 @@ void main() {
 
     test('should use CustomResponseFactory for plain text error', () async {
       final request = PlainTextRequestError();
-      final result = await invoker.request(request);
+      final result = await invoker.send(request);
 
       expect(result, isA<SpecifiedResponseResult<PlainTextResponse>>());
       if (result is SpecifiedResponseResult<PlainTextResponse>) {
@@ -576,7 +576,7 @@ class _TestNetworkInvoker implements INetworkInvoker {
   }
 
   @override
-  Future<NetworkResult<T>> request<T extends Schema>(
+  Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
     final response = await http.get(Uri.parse('$baseUrl${request.path}'));
 

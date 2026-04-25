@@ -37,7 +37,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      final responseFuture = networkManager.request(request);
+      final responseFuture = networkManager.send(request);
 
       // Give Dio a moment to actually send the request before cancelling.
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -90,7 +90,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      final responseFuture = networkManager.request(request);
+      final responseFuture = networkManager.send(request);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -154,8 +154,8 @@ void main() {
       final request1 = RequestTestUser();
       final request2 = _RequestTestAnyData();
 
-      final future1 = networkManager.request(request1);
-      final future2 = networkManager.request(request2);
+      final future1 = networkManager.send(request1);
+      final future2 = networkManager.send(request2);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
@@ -221,7 +221,7 @@ void main() {
         reason: 'No active requests before sending',
       );
 
-      final responseFuture = networkManager.request(request);
+      final responseFuture = networkManager.send(request);
 
       // The request is registered synchronously inside `request()` before the
       // first await, so it should already be active here.
@@ -256,7 +256,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      await networkManager.request(request);
+      await networkManager.send(request);
 
       // After the request completes the invoker replaces onCancel with a
       // callback that throws RequestAlreadyCancelledError (invalid state).
@@ -306,7 +306,7 @@ void main() {
       );
 
       final request = RequestTestUser();
-      final firstFuture = slowInvoker.request(request);
+      final firstFuture = slowInvoker.send(request);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
       slowInvoker.cancelRequest(request);
@@ -321,7 +321,7 @@ void main() {
 
       // Re-use the same command object for a new request on a different
       // invoker.
-      final secondResult = await fastInvoker.request(request);
+      final secondResult = await fastInvoker.send(request);
 
       expect(
         secondResult,

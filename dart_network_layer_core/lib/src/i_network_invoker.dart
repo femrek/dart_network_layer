@@ -6,5 +6,5 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 /// The interface to manage and perform the network requests.
 abstract interface class INetworkInvoker {
   /// Performs a request and returns the response.
-  Future<NetworkResult<T>> request<T extends Schema>(RequestCommand<T> request);
+  Future<NetworkResult<T>> send<T extends Schema>(RequestCommand<T> request);
 }

@@ -209,7 +209,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestInMemoryBinary());
+      final result = await invoker.send(RequestTestInMemoryBinary());
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -246,7 +246,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestInMemoryBinary());
+      final result = await invoker.send(RequestTestInMemoryBinary());
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -283,7 +283,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestInMemoryBinary());
+      final result = await invoker.send(RequestTestInMemoryBinary());
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -320,7 +320,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestInMemoryBinary());
+      final result = await invoker.send(RequestTestInMemoryBinary());
 
       expect(result, isA<SuccessResponseResult<InMemoryBinarySchema>>());
       expect(
@@ -334,7 +334,7 @@ void main() {
     test('returns NetworkErrorResult when server is unreachable', () async {
       final invoker = DioNetworkInvoker.fromBaseUrl('http://localhost:19999');
 
-      final result = await invoker.request(RequestTestInMemoryBinary());
+      final result = await invoker.send(RequestTestInMemoryBinary());
 
       expect(result, isA<NetworkErrorResult<InMemoryBinarySchema>>());
     });
@@ -363,7 +363,7 @@ void main() {
       final snapshots = <AggregatedRequestState>[];
       invoker.onUpdateRequestProgress = snapshots.add;
 
-      await invoker.request(RequestTestInMemoryBinary());
+      await invoker.send(RequestTestInMemoryBinary());
 
       expect(
         snapshots,
@@ -403,7 +403,7 @@ void main() {
       );
 
       final request = RequestTestInMemoryBinary();
-      final future = invoker.request(request);
+      final future = invoker.send(request);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
       invoker.cancelRequest(request);
@@ -459,7 +459,7 @@ void main() {
       );
 
       final result =
-          await invoker.request(RequestTestFileBinary(savePath: savePath));
+          await invoker.send(RequestTestFileBinary(savePath: savePath));
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -503,7 +503,7 @@ void main() {
       );
 
       final result =
-          await invoker.request(RequestTestFileBinary(savePath: savePath));
+          await invoker.send(RequestTestFileBinary(savePath: savePath));
 
       expect(
         result,
@@ -541,7 +541,7 @@ void main() {
       );
 
       final result =
-          await invoker.request(RequestTestFileBinary(savePath: savePath));
+          await invoker.send(RequestTestFileBinary(savePath: savePath));
 
       expect(result, isA<SuccessResponseResult<FileBinarySchema>>());
       expect(
@@ -557,7 +557,7 @@ void main() {
       final invoker = DioNetworkInvoker.fromBaseUrl('http://localhost:19998');
 
       final result =
-          await invoker.request(RequestTestFileBinary(savePath: savePath));
+          await invoker.send(RequestTestFileBinary(savePath: savePath));
 
       expect(result, isA<NetworkErrorResult<FileBinarySchema>>());
     });
@@ -589,7 +589,7 @@ void main() {
       );
 
       final result =
-          await invoker.request(RequestTestFileBinary(savePath: savePath));
+          await invoker.send(RequestTestFileBinary(savePath: savePath));
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -635,7 +635,7 @@ void main() {
       );
 
       final request = RequestTestFileBinary(savePath: savePath);
-      final future = invoker.request(request);
+      final future = invoker.send(request);
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
       invoker.cancelRequest(request);
@@ -678,7 +678,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestStreamBinary());
+      final result = await invoker.send(RequestTestStreamBinary());
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -717,7 +717,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestStreamBinary());
+      final result = await invoker.send(RequestTestStreamBinary());
 
       expect(result, isA<SuccessResponseResult<StreamBinarySchema>>());
       expect(
@@ -748,7 +748,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestRawStringBinary());
+      final result = await invoker.send(RequestTestRawStringBinary());
 
       switch (result) {
         case SuccessResponseResult(:final data):
@@ -779,7 +779,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final result = await invoker.request(RequestTestRawStringBinary());
+      final result = await invoker.send(RequestTestRawStringBinary());
 
       expect(result, isA<SuccessResponseResult<RawStringBinarySchema>>());
       expect(

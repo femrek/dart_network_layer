@@ -17,7 +17,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> '{"message": "success", "code": 200}',
+          handler: (request) async => '{"message": "success", "code": 200}',
         ),
       ]);
 
@@ -25,7 +25,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -49,7 +49,7 @@ void main() {
         StandardServerEvent(
           matcher:
               ServerEvent.standardMatcher(paths: [TestPaths.testAnyDataList]),
-          handler: (request) async=> '[{"id": 1}, {"id": 2}, {"id": 3}]',
+          handler: (request) async => '[{"id": 1}, {"id": 2}, {"id": 3}]',
         ),
       ]);
 
@@ -57,7 +57,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyDataList());
+      final response = await networkManager.send(RequestTestAnyDataList());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -77,11 +77,12 @@ void main() {
 
     test('should handle nested JSON string response with AnyDataSchema',
         () async {
-      const jsonResponse = '''{"user": {"name": "John", "age": 30}, "items": [1, 2, 3], "metadata": {"total": 100}}''';
+      const jsonResponse =
+          '''{"user": {"name": "John", "age": 30}, "items": [1, 2, 3], "metadata": {"total": 100}}''';
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> jsonResponse,
+          handler: (request) async => jsonResponse,
         ),
       ]);
 
@@ -89,7 +90,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -111,7 +112,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> '{}',
+          handler: (request) async => '{}',
         ),
       ]);
 
@@ -119,7 +120,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -141,7 +142,7 @@ void main() {
         StandardServerEvent(
           matcher:
               ServerEvent.standardMatcher(paths: [TestPaths.testAnyDataList]),
-          handler: (request) async=> '[]',
+          handler: (request) async => '[]',
         ),
       ]);
 
@@ -149,7 +150,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyDataList());
+      final response = await networkManager.send(RequestTestAnyDataList());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -170,7 +171,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> 'plain text response',
+          handler: (request) async => 'plain text response',
         ),
       ]);
 
@@ -178,7 +179,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -199,7 +200,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> '42',
+          handler: (request) async => '42',
         ),
       ]);
 
@@ -207,7 +208,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -228,7 +229,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> 'true',
+          handler: (request) async => 'true',
         ),
       ]);
 
@@ -236,7 +237,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -257,7 +258,7 @@ void main() {
       final server = await TestServer.createHttpServer(events: [
         StandardServerEvent(
           matcher: ServerEvent.standardMatcher(paths: [TestPaths.testAnyData]),
-          handler: (request) async=> 'null',
+          handler: (request) async => 'null',
         ),
       ]);
 
@@ -265,7 +266,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestAnyData());
+      final response = await networkManager.send(RequestTestAnyData());
 
       switch (response) {
         case SuccessResponseResult(:final data):

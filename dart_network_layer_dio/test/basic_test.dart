@@ -23,7 +23,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestUser());
+      final response = await networkManager.send(RequestTestUser());
 
       switch (response) {
         case SuccessResponseResult(:final data):
@@ -48,7 +48,7 @@ void main() {
         'http://localhost:${server.port}',
       );
 
-      final response = await networkManager.request(RequestTestNotFound());
+      final response = await networkManager.send(RequestTestNotFound());
 
       switch (response) {
         case SuccessResponseResult(:final data):

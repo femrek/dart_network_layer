@@ -216,7 +216,7 @@ void main() {
       final snapshots = <AggregatedRequestState>[];
       invoker.onUpdateRequestProgress = snapshots.add;
 
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
 
       expect(
         snapshots,
@@ -244,7 +244,7 @@ void main() {
       AggregatedRequestState? lastSnapshot;
       invoker.onUpdateRequestProgress = (s) => lastSnapshot = s;
 
-      await invoker.request(request);
+      await invoker.send(request);
 
       expect(lastSnapshot, isNotNull);
 
@@ -278,7 +278,7 @@ void main() {
       final snapshots = <AggregatedRequestState>[];
       invoker.onUpdateRequestProgress = snapshots.add;
 
-      final future = invoker.request(request);
+      final future = invoker.send(request);
       await Future<void>.delayed(const Duration(milliseconds: 50));
       invoker.cancelRequest(request);
 
@@ -311,7 +311,7 @@ void main() {
       invoker.onUpdateRequestProgress = (_) => callCount++;
 
       // First request — callback should fire.
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
       final countAfterFirst = callCount;
       expect(countAfterFirst, greaterThan(0));
 
@@ -320,7 +320,7 @@ void main() {
       callCount = 0;
 
       // Second request — callback must NOT fire.
-      await invoker.request(RequestTestUser());
+      await invoker.send(RequestTestUser());
       expect(callCount, 0,
           reason: 'callback should not fire after being cleared');
 

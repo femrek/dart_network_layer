@@ -13,14 +13,14 @@ class CustomNetworkInvoker extends DioNetworkInvoker {
   final Logger _log = Logger('CustomNetworkInvoker');
 
   @override
-  Future<NetworkResult<T>> request<T extends Schema>(
+  Future<NetworkResult<T>> send<T extends Schema>(
     RequestCommand<T> request,
   ) async {
     _log.info(
       'CustomNetworkInvoker: Making a request to'
       ' ${request.method} ${request.path}',
     );
-    final result = await super.request(request);
+    final result = await super.send(request);
 
     switch (result) {
       case SuccessResponseResult(:final statusCode, :final data):

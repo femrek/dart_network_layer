@@ -6,7 +6,7 @@ void main() async {
   final networkManager = NetworkManager();
   await networkManager.init('https://example.com');
 
-  final response = await networkManager.request(RequestExample());
+  final response = await networkManager.send(RequestExample());
   switch (response) {
     case SuccessResponseResult(:final data):
       print(data.message);
@@ -22,7 +22,7 @@ class NetworkManager implements INetworkInvoker {
   Future<void> init(String baseUrl) async {}
 
   @override
-  Future<NetworkResult<T>> request<T extends Schema>(
+  Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
     final dummyResponseJson = <String, dynamic>{'message': 'Hello, World!'};
 

@@ -16,7 +16,7 @@ class _BulkButtons extends StatelessWidget {
         _RequestButton(
           label: 'Bulk Download',
           icon: Icons.download,
-          onPressed: () => invoker.request(
+          onPressed: () => invoker.send(
             BulkDownloadCommand(datasetId: 'sample-dataset'),
           ),
         ),
@@ -27,7 +27,7 @@ class _BulkButtons extends StatelessWidget {
             final dir = await getApplicationCacheDirectory();
             final filePath = '${dir.path}/hn_ss.jpg';
             final file = File(filePath);
-            await invoker.request(
+            await invoker.send(
               BulkUploadCommand(
                 file: FileMultipartFileSchema(
                   filename: 'hn_ss.jpg',
@@ -45,7 +45,7 @@ class _BulkButtons extends StatelessWidget {
         _RequestButton(
           label: 'Get Job Status',
           icon: Icons.pending_actions,
-          onPressed: () => invoker.request(
+          onPressed: () => invoker.send(
             GetJobStatusCommand(jobId: '1', level: GetJobStatusLevelEnum.FULL),
           ),
         ),
@@ -55,7 +55,7 @@ class _BulkButtons extends StatelessWidget {
           onPressed: () async {
             final dir = await getApplicationCacheDirectory();
             final filePath = '${dir.path}/hn_ss.jpg';
-            await invoker.request(
+            await invoker.send(
               GetSampleImageCommand(
                 binaryResponseType: FileBinaryResponse(filePath),
               ),

@@ -40,7 +40,7 @@ void main() {
           age: 30,
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -70,7 +70,7 @@ void main() {
           name: 'Jane Doe',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -102,7 +102,7 @@ void main() {
           category: 'general',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -140,7 +140,7 @@ void main() {
           description: 'Test file upload',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -187,7 +187,7 @@ void main() {
           description: 'Multiple files upload',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponseWithCount>>());
         if (response is SuccessResponseResult<JsonResponseWithCount>) {
@@ -218,7 +218,7 @@ void main() {
           text: 'This is a plain text message',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<StringResponse>>());
         if (response is SuccessResponseResult<StringResponse>) {
@@ -244,7 +244,7 @@ void main() {
         const xmlData = '<?xml version="1.0"?><root><item>test</item></root>';
         final request = XmlRequest(xml: xmlData);
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<StringResponse>>());
         if (response is SuccessResponseResult<StringResponse>) {
@@ -284,7 +284,7 @@ void main() {
 
         final request = BinaryDataRequest(data: binaryData);
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -317,7 +317,7 @@ void main() {
 
         final request = ImageUploadRequest(imageBytes: imageBytes);
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
       });
@@ -353,7 +353,7 @@ void main() {
           dataStream: Stream.fromIterable(dataChunks),
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
         if (response is SuccessResponseResult<JsonResponse>) {
@@ -390,7 +390,7 @@ void main() {
           dataStream: largeStream(),
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
       });
@@ -422,7 +422,7 @@ void main() {
           },
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
       });
@@ -452,7 +452,7 @@ void main() {
           ],
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<JsonResponse>>());
       });
@@ -478,7 +478,7 @@ void main() {
           payload: 'This is a dynamic string',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<StringResponse>>());
       });
@@ -503,7 +503,7 @@ void main() {
 
         final request = EmptyPayloadRequest();
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<UserResponse>>());
         if (response is SuccessResponseResult<UserResponse>) {
@@ -530,7 +530,7 @@ void main() {
 
         final request = DeleteUserRequest(userId: '123');
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<DeleteResponse>>());
         if (response is SuccessResponseResult<DeleteResponse>) {
@@ -560,7 +560,7 @@ void main() {
           password: 'password123',
         );
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SuccessResponseResult<AuthResponse>>());
         if (response is SuccessResponseResult<AuthResponse>) {
@@ -589,7 +589,7 @@ void main() {
 
         final request = ValidationRequest(data: 'invalid');
 
-        final response = await networkInvoker.request(request);
+        final response = await networkInvoker.send(request);
 
         expect(response, isA<SpecifiedResponseResult<JsonResponse>>());
         if (response is SpecifiedResponseResult<JsonResponse>) {
@@ -1421,7 +1421,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'filter', value: 'active'),
         ]),
@@ -1450,7 +1450,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'page', value: 2),
           QueryParameter(key: 'size', value: 10),
@@ -1483,7 +1483,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const []),
       );
 
@@ -1512,7 +1512,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'optional', value: null),
         ]),
@@ -1549,7 +1549,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'tags', value: ['dart', 'flutter', 'test']),
         ]),
@@ -1582,7 +1582,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: [
           const QueryParameter(
             key: 'ids',
@@ -1618,7 +1618,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: [
           const QueryParameter(
             key: 'roles',
@@ -1657,7 +1657,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'status', value: 'active'),
           QueryParameter(key: 'status', value: 'pending'),
@@ -1687,7 +1687,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'page', value: 1),
           QueryParameter(key: 'status', value: ['active', 'pending']),
@@ -1719,7 +1719,7 @@ void _queryParamTests() {
         'http://localhost:${server.port}',
       );
 
-      final result = await networkInvoker.request(
+      final result = await networkInvoker.send(
         _RequestWithQueryParams(params: const [
           QueryParameter(key: 'tags', value: <String>[]),
         ]),

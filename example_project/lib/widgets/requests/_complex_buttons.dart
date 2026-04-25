@@ -16,12 +16,12 @@ class _ComplexButtons extends StatelessWidget {
         _RequestButton(
           label: 'Get Widgets',
           icon: Icons.widgets,
-          onPressed: () => invoker.request(GetWidgetsCommand(page: 1)),
+          onPressed: () => invoker.send(GetWidgetsCommand(page: 1)),
         ),
         _RequestButton(
           label: 'Patch Record #1',
           icon: Icons.auto_fix_high,
-          onPressed: () => invoker.request(
+          onPressed: () => invoker.send(
             PatchRecordCommand(
               id: '1',
               body: {'field': 'patched_value'},
@@ -31,7 +31,7 @@ class _ComplexButtons extends StatelessWidget {
         _RequestButton(
           label: 'Category Tree',
           icon: Icons.account_tree,
-          onPressed: () => invoker.request(
+          onPressed: () => invoker.send(
             ProcessCategoryTreeCommand(
               categoryNode: CategoryNode(
                 categoryName: 'Root',

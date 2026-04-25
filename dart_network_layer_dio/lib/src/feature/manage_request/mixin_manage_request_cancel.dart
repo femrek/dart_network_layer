@@ -10,7 +10,7 @@ mixin MixinManageRequestCancel on BaseRequestManagingNetworkInvoker {
   /// **Mutation protocol — always remove before cancelling:**
   /// Whenever a token needs to be cancelled, its entry must be removed from
   /// this map *first*, and only then the token itself is cancelled. This means
-  /// the `finally` block in [INetworkInvoker.request] (which also calls
+  /// the `finally` block in [INetworkInvoker.send] (which also calls
   /// `_activeRequests.remove`) will always find the slot already gone and
   /// performs a harmless no-op, eliminating any window where both a cancel call
   /// and the `finally` block could race to act on the same token.
