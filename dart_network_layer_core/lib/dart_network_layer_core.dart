@@ -4,7 +4,7 @@ export 'src/error/request_already_cancelled_error.dart';
 export 'src/i_network_invoker.dart';
 export 'src/request/query_parameter.dart';
 export 'src/request/request_command.dart';
-export 'src/response/response_result.dart';
+export 'src/response/network_result.dart';
 export 'src/schema/binary_response_type.dart';
 export 'src/schema/multipart_file_schema.dart';
 export 'src/schema/request_schema.dart';
