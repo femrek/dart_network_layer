@@ -1,4 +1,4 @@
-.PHONY: release
+.PHONY: release publish
 
 # Usage: make release v=1.0.0-dev11
 release:
@@ -22,3 +22,8 @@ release:
 	git push origin main
 	git push origin tag v$(v)
 	@echo "Version v$(v) has been updated, committed, and tagged!"
+
+publish:
+	@echo "Publishing packages..."
+	dart pub publish -C dart_network_layer_core
+	dart pub publish -C dart_network_layer_dio

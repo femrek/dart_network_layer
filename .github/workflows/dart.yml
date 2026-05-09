@@ -41,17 +41,15 @@ jobs:
       - name: Run tests for dio implementation
         run: cd dart_network_layer_dio && dart test
 
-  publish:
+  release:
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write # Needed for creating GitHub Releases
-      id-token: write # Needed for publishing to pub.dev securely via OIDC
 
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       - name: Verify version matches tag
         run: |
@@ -64,17 +62,6 @@ jobs:
           fi
           echo "Version match verified: $TAG_VERSION"
 
-      - name: Install dependencies for core
-        run: dart pub get --no-example -C dart_network_layer_core
-
-      - name: Install dependencies for dio impl
-        run: dart pub get --no-example -C dart_network_layer_dio
-
-      - name: Publish core package to pub.dev
-        run: dart pub publish --force -C dart_network_layer_core
-
-      - name: Publish dio package to pub.dev
-        run: dart pub publish --force -C dart_network_layer_dio
 
       - name: Extract Release Notes
         id: extract_notes
