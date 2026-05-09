@@ -18,5 +18,5 @@ release:
 	./scripts/update_version.sh $(v)
 	./scripts/update_changelog.sh $(v)
 	git commit -am "chore: release $(v)"
-	git tag -a $(v) -m "Release $(v)"
-	@echo "Version $(v) has been updated, committed, and tagged!"
+	git tag -a v$(v) -m "Release v$(v)"
+	@echo "Version v$(v) has been updated, committed, and tagged!"

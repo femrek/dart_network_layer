@@ -40,3 +40,49 @@ jobs:
         run: cd dart_network_layer_core && dart test
       - name: Run tests for dio implementation
         run: cd dart_network_layer_dio && dart test
+
+  publish:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for creating GitHub Releases
+      id-token: write # Needed for publishing to pub.dev securely via OIDC
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+
+      - name: Verify version matches tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PUBSPEC_VERSION=$(grep '^version: ' pubspec.yaml | sed "s/^version: //" | tr -d " '\"")
+          
+          if [ "$TAG_VERSION" != "$PUBSPEC_VERSION" ]; then
+            echo "Error: Git tag version ($TAG_VERSION) does not match pubspec.yaml version ($PUBSPEC_VERSION)"
+            exit 1
+          fi
+          echo "Version match verified: $TAG_VERSION"
+
+      - name: Install dependencies for core
+        run: dart pub get --no-example -C dart_network_layer_core
+
+      - name: Install dependencies for dio impl
+        run: dart pub get --no-example -C dart_network_layer_dio
+
+      - name: Publish core package to pub.dev
+        run: dart pub publish --force -C dart_network_layer_core
+
+      - name: Publish dio package to pub.dev
+        run: dart pub publish --force -C dart_network_layer_dio
+
+      - name: Extract Release Notes
+        id: extract_notes
+        run: |
+          # Extracts the latest release block from CHANGELOG.md (from the first '## ' up to the next '## ')
+          awk '/^## /{ if (p) { exit }; p=1; next } p{ print }' CHANGELOG.md > release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
