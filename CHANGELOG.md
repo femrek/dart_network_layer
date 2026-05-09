@@ -1,3 +1,38 @@
+## 1.0.0-dev10 - 2026-05-09
+
+
+
+### 🚀 Features
+
+- Feat: add toLogString method for improved logging in schema classes
+
+- Feat: add script to update version in pubspec.yaml files and remove existing scripts
+
+- Feat: add script to update changelogs with unreleased changes via git cliff
+
+- Feat: add Makefile with release target for versioning and changelog updates
+
+- Feat: add GitHub Actions workflow for publishing Dart packages and creating releases
+
+
+
+### 🚜 Refactor
+
+- Refactor: replace callback setters with explicit methods for request cancellation and result handling
+
+- Refactor: rename request method to send in network invoker and related classes
+
+- Refactor: rename response_result to network_result for clarity
+
+- Refactor: update SuccessResponseResult to extend SpecifiedResponseResult for improved type handling
+
+
+
+### 📚 Documentation
+
+- Docs: update README and add new guides for file handling and OpenAPI integration
+
+
 ## 0.7.1 - 2025-10-25
 
 
