@@ -1,3 +1,14 @@
+## 1.0.0-dev.10 - 2026-05-09
+
+
+
+### 🚀 Features
+
+- Feat: add git push commands for main branch and tags in release process
+
+- Feat: add publish target to Makefile and remove pub.dev publishing from GitHub Actions workflow
+
+
 ## 1.0.0-dev10 - 2026-05-09
 
 
