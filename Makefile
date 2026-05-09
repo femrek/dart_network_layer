@@ -19,6 +19,9 @@ release:
 	./scripts/update_changelog.sh $(v)
 	git commit -am "chore: release $(v)"
 	git tag -a v$(v) -m "Release v$(v)"
+	@echo "Publishing packages..."
+	dart pub publish -C dart_network_layer_core
+	dart pub publish -C dart_network_layer_dio
 	git push origin main
 	git push origin tag v$(v)
 	@echo "Version v$(v) has been updated, committed, and tagged!"
