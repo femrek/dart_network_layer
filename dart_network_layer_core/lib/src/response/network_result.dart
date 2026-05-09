@@ -20,23 +20,6 @@ sealed class ResponseResult<T extends Schema> extends NetworkResult<T> {
   final int statusCode;
 }
 
-/// The standard response result of a request.
-final class SuccessResponseResult<T extends Schema> extends ResponseResult<T> {
-  /// Creates a success response result.
-  ///
-  /// [data] is the payload of the response. It must be an [Schema] and
-  /// not null. An empty response model can be used if there is no data.
-  /// [statusCode] is the status code of the response. Mostly, it is 200 for
-  /// success responses.
-  SuccessResponseResult({
-    required this.data,
-    required super.statusCode,
-  });
-
-  /// The payload of the response.
-  final T data;
-}
-
 /// A response result for specific status codes that are handled differently.
 ///
 /// This is used when the response matches a status code in
@@ -61,6 +44,28 @@ final class SpecifiedResponseResult<T extends Schema>
   ///
   /// This is specified on response factories of the request command.
   final Type type;
+}
+
+/// The standard response result of a request.
+final class SuccessResponseResult<T extends Schema>
+    extends SpecifiedResponseResult<T> {
+  /// Creates a success response result.
+  ///
+  /// [data] is the payload of the response. It must be an [Schema] and
+  /// not null. An empty response model can be used if there is no data.
+  /// [statusCode] is the status code of the response. Mostly, it is 200 for
+  /// success responses.
+  SuccessResponseResult({
+    required this.data,
+    required super.statusCode,
+  }) : super(
+          data: data,
+          type: T,
+        );
+
+  @override
+  // ignore: overridden_fields : The data field is overridden to have the correct type.
+  final T data;
 }
 
 /// The error response result of a request, if no response is received from the
