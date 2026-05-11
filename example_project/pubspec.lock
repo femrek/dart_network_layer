@@ -167,7 +167,7 @@ packages:
       path: "../dart_network_layer_dio"
       relative: true
     source: path
-    version: "1.0.0-dev9"
+    version: "1.0.0-dev.10"
   dart_style:
     dependency: transitive
     description:
