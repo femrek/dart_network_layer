@@ -223,14 +223,24 @@ mixin MixinRequest on BaseDioNetworkInvoker {
       // Respond assuming success factory is the default if specific one isn't
       // found.
       if (specifiedResponseFactory == null) {
-        return _createResult(
+        return await _createResult<T>(
           factory: request.defaultResponseFactory,
           statusCode: statusCode,
           responseData: responseData,
           isDefault: true,
         );
       } else {
-        return _createResult(
+        final defaultResult = await _createResult<T>(
+          factory: request.defaultResponseFactory,
+          statusCode: statusCode,
+          responseData: responseData,
+          isDefault: true,
+        );
+        if (defaultResult is! NetworkErrorResult<T>) {
+          return defaultResult;
+        }
+
+        return await _createResult<T>(
           factory: specifiedResponseFactory,
           statusCode: statusCode,
           responseData: responseData,
