@@ -1,3 +1,14 @@
+## 1.0.0-dev.11 - 2026-05-11
+
+
+
+### 🚀 Features
+
+- Feat: add package publishing commands to Makefile
+
+- Feat: enhance result creation logic in mixin_request.dart to handle default responses more robustly
+
+
 ## 1.0.0-dev.10 - 2026-05-09
 
 
