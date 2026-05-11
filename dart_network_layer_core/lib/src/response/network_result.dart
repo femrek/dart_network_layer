@@ -35,6 +35,7 @@ final class SpecifiedResponseResult<T extends Schema>
     required super.statusCode,
     required this.data,
     required this.type,
+    required this.headers,
   });
 
   /// The response data parsed using the specified factory.
@@ -44,6 +45,9 @@ final class SpecifiedResponseResult<T extends Schema>
   ///
   /// This is specified on response factories of the request command.
   final Type type;
+
+  /// The HTTP response headers.
+  final Map<String, List<String>> headers;
 }
 
 /// The standard response result of a request.
@@ -58,6 +62,7 @@ final class SuccessResponseResult<T extends Schema>
   SuccessResponseResult({
     required this.data,
     required super.statusCode,
+    required super.headers,
   }) : super(
           data: data,
           type: T,

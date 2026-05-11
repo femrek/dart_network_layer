@@ -32,6 +32,7 @@ class NetworkManager implements INetworkInvoker {
           return SuccessResponseResult(
             statusCode: 200,
             data: dummyResponse,
+            headers: {},
           );
         }(),
       StringSchemaFactory<T>() => NetworkErrorResult(
@@ -47,6 +48,7 @@ class NetworkManager implements INetworkInvoker {
           return SuccessResponseResult(
             statusCode: 200,
             data: response,
+            headers: {},
           );
         }(),
       BinarySchemaFactory<BinarySchema>() => NetworkErrorResult(

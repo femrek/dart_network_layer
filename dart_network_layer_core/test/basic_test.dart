@@ -102,6 +102,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
                 statusCode: response.statusCode,
                 data: model,
                 type: type,
+                headers: {},
               );
             }(),
           StringSchemaFactory(:final fromString, :final type) => () {
@@ -110,6 +111,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
                 statusCode: response.statusCode,
                 data: model,
                 type: type,
+                headers: {},
               );
             }(),
           DynamicSchemaFactory(:final from, :final type) =>
@@ -117,6 +119,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
               statusCode: response.statusCode,
               data: from(response.body),
               type: type,
+              headers: {},
             ),
           BinarySchemaFactory(:final from) => () {
               final model = from(response.bodyBytes);
@@ -124,6 +127,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
                 statusCode: response.statusCode,
                 data: model,
                 type: T,
+                headers: {},
               );
             }(),
         };
@@ -138,6 +142,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
               statusCode: response.statusCode,
               data: model,
               type: type,
+              headers: {},
             );
           }(),
         StringSchemaFactory(:final fromString, :final type) => () {
@@ -146,6 +151,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
               statusCode: response.statusCode,
               data: model,
               type: type,
+              headers: {},
             );
           }(),
         DynamicSchemaFactory(:final from, :final type) =>
@@ -153,6 +159,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
             statusCode: response.statusCode,
             data: from(response.body),
             type: type,
+            headers: {},
           ),
         BinarySchemaFactory(:final from) => () {
             final model = from(response.bodyBytes);
@@ -160,6 +167,7 @@ class _SampleNetworkInvoker implements INetworkInvoker {
               statusCode: response.statusCode,
               data: model,
               type: T,
+              headers: {},
             );
           }(),
       };
@@ -171,19 +179,35 @@ class _SampleNetworkInvoker implements INetworkInvoker {
       JsonSchemaFactory<T>(:final fromJson) => () {
           final jsonData = jsonDecode(body);
           final model = fromJson(jsonData);
-          return SuccessResponseResult(data: model, statusCode: 200);
+          return SuccessResponseResult(
+            data: model,
+            statusCode: 200,
+            headers: {},
+          );
         }(),
       StringSchemaFactory<T>(:final fromString) => () {
           final model = fromString(body);
-          return SuccessResponseResult(data: model, statusCode: 200);
+          return SuccessResponseResult(
+            data: model,
+            statusCode: 200,
+            headers: {},
+          );
         }(),
       DynamicSchemaFactory<T>(:final from) => () {
           final model = from(body);
-          return SuccessResponseResult(data: model, statusCode: 200);
+          return SuccessResponseResult(
+            data: model,
+            statusCode: 200,
+            headers: {},
+          );
         }(),
       BinarySchemaFactory<BinarySchema>(:final from) => () {
           final model = from(response.bodyBytes) as T;
-          return SuccessResponseResult(data: model, statusCode: 200);
+          return SuccessResponseResult(
+            data: model,
+            statusCode: 200,
+            headers: {},
+          );
         }(),
     };
   }

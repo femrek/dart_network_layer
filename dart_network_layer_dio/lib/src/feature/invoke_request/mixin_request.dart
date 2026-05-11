@@ -170,6 +170,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     }
 
     final responseData = response.data;
+    final headers = response.headers;
     final specifiedResponseFactory = request.responseFactories[statusCode];
 
     // Respond assuming error factory is the default if specific one isn't
@@ -179,12 +180,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
         factory: request.defaultErrorResponseFactory,
         statusCode: statusCode,
         responseData: responseData,
+        headers: headers,
       );
     } else {
       return _createResult(
         factory: specifiedResponseFactory,
         statusCode: statusCode,
         responseData: responseData,
+        headers: headers,
       );
     }
   }
@@ -197,6 +200,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
   }) async {
     final responseData = responseDataOverride ?? response.data;
     final statusCode = response.statusCode;
+    final headers = response.headers;
 
     // Return error if the response has no status code
     if (statusCode == null) {
@@ -214,6 +218,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
         statusCode: statusCode,
         data: const IgnoredSchema(),
         type: IgnoredSchema,
+        headers: headers.map,
       );
     }
 
@@ -227,6 +232,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           factory: request.defaultResponseFactory,
           statusCode: statusCode,
           responseData: responseData,
+          headers: headers,
           isDefault: true,
         );
       } else {
@@ -234,6 +240,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           factory: request.defaultResponseFactory,
           statusCode: statusCode,
           responseData: responseData,
+          headers: headers,
           isDefault: true,
         );
         if (defaultResult is! NetworkErrorResult<T>) {
@@ -244,6 +251,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           factory: specifiedResponseFactory,
           statusCode: statusCode,
           responseData: responseData,
+          headers: headers,
         );
       }
     } on Object catch (e, s) {
@@ -301,6 +309,7 @@ mixin MixinRequest on BaseDioNetworkInvoker {
     required SchemaFactory factory,
     required int statusCode,
     required dynamic responseData,
+    required Headers headers,
     bool isDefault = false,
   }) async {
     switch (factory) {
@@ -329,12 +338,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
             return SuccessResponseResult(
               data: data as T,
               statusCode: statusCode,
+              headers: headers.map,
             );
           } else {
             return SpecifiedResponseResult<T>(
               data: data,
               statusCode: statusCode,
               type: f.type,
+              headers: headers.map,
             );
           }
         } on Object catch (e, s) {
@@ -356,12 +367,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
               return SuccessResponseResult(
                 data: data as T,
                 statusCode: statusCode,
+                headers: headers.map,
               );
             } else {
               return SpecifiedResponseResult<T>(
                 data: data,
                 statusCode: statusCode,
                 type: f.type,
+                headers: headers.map,
               );
             }
           default:
@@ -381,12 +394,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           return SuccessResponseResult(
             data: data as T,
             statusCode: statusCode,
+            headers: headers.map,
           );
         } else {
           return SpecifiedResponseResult<T>(
             data: data,
             statusCode: statusCode,
             type: f.type,
+            headers: headers.map,
           );
         }
       case final BinarySchemaFactory f:
@@ -406,12 +421,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
             return SuccessResponseResult(
               data: f.from(responseData.stream) as T,
               statusCode: statusCode,
+              headers: headers.map,
             );
           } else {
             return SpecifiedResponseResult<T>(
               data: f.from(responseData.stream),
               statusCode: statusCode,
               type: f.type,
+              headers: headers.map,
             );
           }
         }
@@ -433,12 +450,14 @@ mixin MixinRequest on BaseDioNetworkInvoker {
           return SuccessResponseResult(
             data: data as T,
             statusCode: statusCode,
+            headers: headers.map,
           );
         } else {
           return SpecifiedResponseResult<T>(
             data: data,
             statusCode: statusCode,
             type: f.type,
+            headers: headers.map,
           );
         }
     }
