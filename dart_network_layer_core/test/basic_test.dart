@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_test_server/http_test_server.dart';
 import 'package:test/test.dart';
 
+import 'utils/test_network_invoker.dart';
 import 'utils/test_request_samples.dart';
 import 'utils/test_response_samples.dart';
 
@@ -25,7 +23,7 @@ void main() async {
         ),
       ]);
 
-      final invoker = _SampleNetworkInvoker(port: server.port);
+      final invoker = TestNetworkInvoker(port: server.port);
       await invoker.init('http://${server.server.address.address}');
 
       // error response test
@@ -69,146 +67,32 @@ void main() async {
       }
     });
   });
-}
 
-class _SampleNetworkInvoker implements INetworkInvoker {
-  _SampleNetworkInvoker({
-    required this.port,
-  });
+  group('invoker of request object', () {
+    test('Request with invoker', () async {
+      // run the server
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(paths: ['/test_with_invoker']),
+          handler: (request) async => '{"field1": "pong"}',
+        ),
+      ]);
 
-  final int port;
-  late final String baseUrl;
+      final request = RequestTestWithInvoker(
+          field1: 'ping',
+          port: server.port,
+          host: 'http://${server.server.address.address}');
+      final result = await request.send();
 
-  Future<void> init(String baseUrl) async {
-    this.baseUrl = '$baseUrl:$port';
-  }
+      expect(result, isA<SuccessResponseResult>());
 
-  @override
-  Future<NetworkResult<T>> send<T extends Schema>(
-      RequestCommand<T> request) async {
-    final response = await http.get(Uri.parse('$baseUrl${request.path}'));
-
-    // Check if there's a specified factory for this status code
-    final specifiedFactory = request.responseFactories[response.statusCode];
-
-    if (response.statusCode != 200) {
-      if (specifiedFactory != null) {
-        // Use the specified factory for this status code
-        return switch (specifiedFactory) {
-          JsonSchemaFactory(:final fromJson, :final type) => () {
-              final jsonData = jsonDecode(response.body);
-              final model = fromJson(jsonData);
-              return SpecifiedResponseResult<T>(
-                statusCode: response.statusCode,
-                data: model,
-                type: type,
-                headers: {},
-              );
-            }(),
-          StringSchemaFactory(:final fromString, :final type) => () {
-              final model = fromString(response.body);
-              return SpecifiedResponseResult<T>(
-                statusCode: response.statusCode,
-                data: model,
-                type: type,
-                headers: {},
-              );
-            }(),
-          DynamicSchemaFactory(:final from, :final type) =>
-            SpecifiedResponseResult<T>(
-              statusCode: response.statusCode,
-              data: from(response.body),
-              type: type,
-              headers: {},
-            ),
-          BinarySchemaFactory(:final from) => () {
-              final model = from(response.bodyBytes);
-              return SpecifiedResponseResult<T>(
-                statusCode: response.statusCode,
-                data: model,
-                type: T,
-                headers: {},
-              );
-            }(),
-        };
+      // result type check
+      if (result is SuccessResponseResult<ResponseTest1>) {
+        expect(result.data.field1, 'pong');
+        expect(result.statusCode, 200);
+      } else {
+        fail('Expected SuccessResponseResult but got ${result.runtimeType}');
       }
-
-      // Use default error response factory
-      return switch (request.defaultErrorResponseFactory) {
-        JsonSchemaFactory(:final fromJson, :final type) => () {
-            final jsonData = jsonDecode(response.body);
-            final model = fromJson(jsonData);
-            return SpecifiedResponseResult<T>(
-              statusCode: response.statusCode,
-              data: model,
-              type: type,
-              headers: {},
-            );
-          }(),
-        StringSchemaFactory(:final fromString, :final type) => () {
-            final model = fromString(response.body);
-            return SpecifiedResponseResult<T>(
-              statusCode: response.statusCode,
-              data: model,
-              type: type,
-              headers: {},
-            );
-          }(),
-        DynamicSchemaFactory(:final from, :final type) =>
-          SpecifiedResponseResult<T>(
-            statusCode: response.statusCode,
-            data: from(response.body),
-            type: type,
-            headers: {},
-          ),
-        BinarySchemaFactory(:final from) => () {
-            final model = from(response.bodyBytes);
-            return SpecifiedResponseResult<T>(
-              statusCode: response.statusCode,
-              data: model,
-              type: T,
-              headers: {},
-            );
-          }(),
-      };
-    }
-
-    final body = response.body;
-
-    return switch (request.defaultResponseFactory) {
-      JsonSchemaFactory<T>(:final fromJson) => () {
-          final jsonData = jsonDecode(body);
-          final model = fromJson(jsonData);
-          return SuccessResponseResult(
-            data: model,
-            statusCode: 200,
-            headers: {},
-          );
-        }(),
-      StringSchemaFactory<T>(:final fromString) => () {
-          final model = fromString(body);
-          return SuccessResponseResult(
-            data: model,
-            statusCode: 200,
-            headers: {},
-          );
-        }(),
-      DynamicSchemaFactory<T>(:final from) => () {
-          final model = from(body);
-          return SuccessResponseResult(
-            data: model,
-            statusCode: 200,
-            headers: {},
-          );
-        }(),
-      BinarySchemaFactory<BinarySchema>(:final from) => () {
-          final model = from(response.bodyBytes) as T;
-          return SuccessResponseResult(
-            data: model,
-            statusCode: 200,
-            headers: {},
-          );
-        }(),
-    };
-  }
+    });
+  });
 }

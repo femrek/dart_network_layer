@@ -1,5 +1,6 @@
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 
+import 'test_network_invoker.dart';
 import 'test_response_samples.dart';
 
 final class _RequestTest1Schema extends JsonRequestSchema {
@@ -77,4 +78,34 @@ final class RequestTest1Error extends RequestCommand<ResponseTest1> {
   Map<int, SchemaFactory> get responseFactories => {
         400: ResponseTestErrorFactory(),
       };
+}
+
+final class RequestTestWithInvoker extends RequestCommand<ResponseTest1> {
+  RequestTestWithInvoker({
+    required String field1,
+    required int port,
+    required String host,
+  })  : _schema = _RequestTest1Schema(field1: field1),
+        invoker = TestNetworkInvoker(
+          port: port,
+          host: host,
+        );
+
+  final _RequestTest1Schema _schema;
+
+  @override
+  RequestSchema get payload => _schema;
+
+  @override
+  String get path => '/test_with_invoker';
+
+  @override
+  SchemaFactory<ResponseTest1> get defaultResponseFactory =>
+      ResponseTest1Factory();
+
+  @override
+  final INetworkInvoker? invoker;
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }

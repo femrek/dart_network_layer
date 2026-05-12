@@ -1,4 +1,5 @@
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
+import 'package:dart_network_layer_core/src/request/request_invoker_mixin.dart';
 import 'package:dart_network_layer_core/src/request/request_managing_mixin.dart';
 import 'package:dart_network_layer_core/src/request/request_result_mixin.dart';
 
@@ -14,7 +15,7 @@ typedef OnProgressCallback = void Function(int done, int total);
 ///
 /// [T] is the type of the successful response model.
 abstract class RequestCommand<T extends Schema>
-    with RequestManagingMixin, RequestResultMixin<T> {
+    with RequestManagingMixin, RequestResultMixin<T>, RequestInvokerMixin<T> {
   /// The path of the request.
   String get path;
 
