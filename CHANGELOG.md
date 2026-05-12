@@ -1,3 +1,14 @@
+## 1.0.0-dev.12 - 2026-05-12
+
+
+
+### 🚀 Features
+
+- Feat: add headers support to response result.
+
+- Feat: implement RequestInvokerMixin for enhanced request handling
+
+
 ## 1.0.0-dev.11 - 2026-05-11
 
 
