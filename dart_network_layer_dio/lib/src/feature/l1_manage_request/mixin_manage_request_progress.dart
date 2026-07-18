@@ -1,14 +1,14 @@
 import 'dart:math';
 
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
-import 'package:dart_network_layer_dio/src/feature/base/base0_manage_request_network_invoker.dart';
+import 'package:dart_network_layer_dio/src/feature/base/base0_network_invoker_manage_request.dart';
 import 'package:meta/meta.dart';
 
 /// Callback for progress updates across all requests.
 typedef OnProgressUpdateCallback = void Function(AggregatedRequestState);
 
 /// Mixin for managing request progress and notifying listeners.
-mixin MixinManageRequestProgress on Base0RequestManagingNetworkInvoker {
+mixin MixinManageRequestProgress on Base0NetworkInvokerRequestManaging {
   /// Internal callback for progress updates.
   OnProgressUpdateCallback? _onUpdateRequestProgress;
 

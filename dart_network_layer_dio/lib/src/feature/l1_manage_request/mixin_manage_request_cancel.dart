@@ -1,10 +1,10 @@
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
-import 'package:dart_network_layer_dio/src/feature/base/base0_manage_request_network_invoker.dart';
+import 'package:dart_network_layer_dio/src/feature/base/base0_network_invoker_manage_request.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
 /// A mixin to add request canceling capability to a [RequestCommand].
-mixin MixinManageRequestCancel on Base0RequestManagingNetworkInvoker {
+mixin MixinManageRequestCancel on Base0NetworkInvokerRequestManaging {
   /// Holds active cancel tokens mapped to their specific command.
   ///
   /// **Mutation protocol — always remove before cancelling:**

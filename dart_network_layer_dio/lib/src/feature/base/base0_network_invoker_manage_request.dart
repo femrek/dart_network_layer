@@ -1,6 +1,4 @@
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
-import 'package:dart_network_layer_dio/src/feature/base/base1_invoke_request_network_invoker.dart';
-import 'package:dart_network_layer_dio/src/feature/base/base2_dio_network_invoker.dart';
 import 'package:dart_network_layer_dio/src/model/aggregated_request_state_impl.dart';
 import 'package:meta/meta.dart';
 
@@ -17,13 +15,7 @@ import 'package:meta/meta.dart';
 /// This class should not be used directly. Subclasses add specific
 /// implementation details (progress management, cancellation, request
 /// execution, etc.).
-///
-/// **Hierarchy:**
-/// - [Base0RequestManagingNetworkInvoker] (base0) - request state tracking
-/// - [Base1InvokeRequestNetworkInvoker] (base1) - progress/cancel/history
-/// - [Base2DioNetworkInvoker] (base2) - request execution
-/// - [DioNetworkInvoker] (concrete) - public API with factories
-abstract class Base0RequestManagingNetworkInvoker implements INetworkInvoker {
+abstract class Base0NetworkInvokerRequestManaging implements INetworkInvoker {
   /// Tracks progress for all active requests.
   ///
   /// This [AggregatedRequestStateImpl] maintains the state of every
