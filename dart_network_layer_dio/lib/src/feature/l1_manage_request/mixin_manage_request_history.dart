@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
-import 'package:dart_network_layer_dio/src/feature/manage_request/base_request_managing_network_invoker.dart';
+import 'package:dart_network_layer_dio/src/feature/base/base0_manage_request_network_invoker.dart';
 import 'package:meta/meta.dart';
 
 /// Callback for updates to the request history list.
@@ -21,7 +21,7 @@ typedef OnHistoryUpdateCallback = void Function(RequestHistoryEntry?);
 ///
 /// Maintains a capped, unmodifiable list of [RequestHistoryEntry] items,
 /// each recorded when a request reaches a terminal [ProgressStatus].
-mixin MixinManageRequestHistory on BaseRequestManagingNetworkInvoker {
+mixin MixinManageRequestHistory on Base0RequestManagingNetworkInvoker {
   final List<RequestHistoryEntry> _requestHistory = [];
   int? _maxHistoryLength = 64;
   OnHistoryUpdateCallback? _onHistoryUpdate;

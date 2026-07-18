@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_network_layer_dio/dart_network_layer_dio.dart';
-import 'package:dart_network_layer_dio/src/feature/invoke_request/base_dio_network_invoker.dart';
+import 'package:dart_network_layer_dio/src/feature/base/base1_invoke_request_network_invoker.dart';
 import 'package:dart_network_layer_dio/src/util/multipart_dio_extension.dart';
 import 'package:dart_network_layer_dio/src/util/utils.dart';
 import 'package:dio/dio.dart';
@@ -11,7 +11,7 @@ import 'package:dio/dio.dart';
 ///
 /// Provides the [send] method to execute a [RequestCommand] and handle
 /// its result, including progress and error reporting.
-mixin MixinRequest on BaseDioNetworkInvoker {
+mixin MixinRequest on Base1InvokeRequestNetworkInvoker {
   /// Executes the given [request] and returns a [NetworkResult].
   /// Handles progress and error reporting for the request lifecycle.
   @override
