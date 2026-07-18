@@ -17,13 +17,13 @@ mixin MixinRequest on BaseDioNetworkInvoker {
   @override
   Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
-    final result = await _request<T>(request);
+    final result = await _send<T>(request);
     _setProgressStatus<T>(request, result);
     request.setResult(result);
     return result;
   }
 
-  Future<NetworkResult<T>> _request<T extends Schema>(
+  Future<NetworkResult<T>> _send<T extends Schema>(
       RequestCommand<T> request) async {
     final cancelToken = setupCancelToken(request);
     createRequestProgress(request);
