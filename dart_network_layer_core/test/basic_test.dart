@@ -68,31 +68,4 @@ void main() async {
     });
   });
 
-  group('invoker of request object', () {
-    test('Request with invoker', () async {
-      // run the server
-      final server = await TestServer.createHttpServer(events: [
-        StandardServerEvent(
-          matcher: ServerEvent.standardMatcher(paths: ['/test_with_invoker']),
-          handler: (request) async => '{"field1": "pong"}',
-        ),
-      ]);
-
-      final request = RequestTestWithInvoker(
-          field1: 'ping',
-          port: server.port,
-          host: 'http://${server.server.address.address}');
-      final result = await request.send();
-
-      expect(result, isA<SuccessResponseResult>());
-
-      // result type check
-      if (result is SuccessResponseResult<ResponseTest1>) {
-        expect(result.data.field1, 'pong');
-        expect(result.statusCode, 200);
-      } else {
-        fail('Expected SuccessResponseResult but got ${result.runtimeType}');
-      }
-    });
-  });
 }

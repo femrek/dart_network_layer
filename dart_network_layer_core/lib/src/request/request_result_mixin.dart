@@ -16,7 +16,7 @@ mixin RequestResultMixin<T extends Schema> {
   /// invoker calls this method once the request is completed (either
   /// successfully or with an error) to store the result in the command for
   /// later retrieval.
-  @mustCallSuper
+  @internal
   // ignore: use_setters_to_change_properties - method provides better control flow
   void setResult(NetworkResult<T> result) => _result = result;
 }

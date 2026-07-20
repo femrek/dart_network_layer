@@ -2,7 +2,7 @@ import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 import 'package:meta/meta.dart';
 
 /// A mixin to add request canceling capability to a [RequestCommand].
-mixin RequestManagingMixin {
+mixin RequestCancelMixin {
   void Function()? _onCancel;
 
   /// Cancels the in-flight request associated with this command.
@@ -43,7 +43,6 @@ mixin RequestManagingMixin {
   ///   print('Request was cancelled: ${error.message}');
   /// }
   /// ```
-  @mustCallSuper
   void cancel() {
     _onCancel?.call();
   }
@@ -59,7 +58,7 @@ mixin RequestManagingMixin {
   ///    throws [RequestAlreadyCancelledError], preventing stale cancellations.
   ///
   /// This setter is not intended to be called from application code.
-  @mustCallSuper
+  @internal
   // ignore: use_setters_to_change_properties - method provides better control flow
   void setOnCancel(void Function() callback) => _onCancel = callback;
 }
