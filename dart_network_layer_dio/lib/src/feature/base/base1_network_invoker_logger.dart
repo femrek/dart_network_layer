@@ -3,12 +3,12 @@ import 'package:dart_network_layer_dio/src/feature/base/base0_network_invoker_ma
 import 'package:dart_network_layer_dio/src/feature/l1_manage_request/mixin_manage_request_cancel.dart';
 import 'package:dart_network_layer_dio/src/feature/l1_manage_request/mixin_manage_request_history.dart';
 import 'package:dart_network_layer_dio/src/feature/l1_manage_request/mixin_manage_request_progress.dart';
-import 'package:dio/dio.dart';
+import 'package:logging/logging.dart';
 
-/// First-level implementation of request management for Dio invokers.
+/// Second-level implementation of request management for network invokers.
 ///
-/// This abstract class represents the first layer of actual implementation
-/// by extending [Base0NetworkInvokerRequestManaging] and adding request
+/// This abstract class represents the second layer of the network invoker
+/// hierarchy. It extends [Base0NetworkInvokerRequestManaging] and adds request
 /// lifecycle management capabilities.
 ///
 /// **Mixins added:**
@@ -18,28 +18,17 @@ import 'package:dio/dio.dart';
 ///
 /// **Responsibilities:**
 /// - Integrate progress, cancellation, and history tracking
-/// - Hold the [dio] instance for HTTP operations
-/// - Serve as a bridge between state management and request execution
-///
-/// This class should not be instantiated directly. Use
-/// [DioNetworkInvoker] instead.
-abstract class Base1NetworkInvokerInvokeRequest
+/// - Hold the optional [logger] instance
+abstract class Base1NetworkInvokerLogger
     extends Base0NetworkInvokerRequestManaging
     with
         MixinManageRequestProgress,
         MixinManageRequestCancel,
         MixinManageRequestHistory
     implements INetworkInvoker {
-  /// Creates a new instance with the provided [dio] instance.
-  ///
-  /// The [dio] instance is used by all request management mixins to
-  /// perform HTTP operations and access configuration options.
-  Base1NetworkInvokerInvokeRequest(this.dio);
+  /// Creates a new instance with an optional [logger].
+  Base1NetworkInvokerLogger({this.logger});
 
-  /// Dio instance used for all HTTP network requests.
-  ///
-  /// This instance is shared across all request management operations
-  /// and provides HTTP client functionality, configuration, and
-  /// interceptor support.
-  final Dio dio;
+  /// The Logger instance to use in logging operations.
+  Logger? logger;
 }

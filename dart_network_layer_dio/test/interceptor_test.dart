@@ -67,7 +67,7 @@ void main() async {
         ),
       );
 
-      final networkManager = DioNetworkInvoker.fromDio(dio);
+      final networkManager = DioNetworkInvoker(dio: dio);
 
       final response = await networkManager.send(request);
 
@@ -130,7 +130,7 @@ void main() async {
         ),
       );
 
-      final networkManager = DioNetworkInvoker.fromDio(dio);
+      final networkManager = DioNetworkInvoker(dio: dio);
 
       final response = await networkManager.send(request);
 

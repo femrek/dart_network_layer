@@ -127,6 +127,6 @@ final dio = Dio(BaseOptions(
   responseType: ResponseType.plain,
 ));
 
-final invoker = DioNetworkInvoker.fromDio(dio);
+final invoker = DioNetworkInvoker(dio: dio);
 ```
 

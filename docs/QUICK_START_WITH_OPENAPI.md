@@ -35,7 +35,7 @@ final dio = Dio(
   ),
 );
 
-final invoker = DioNetworkInvoker.fromDio(dio);
+final invoker = DioNetworkInvoker(dio: dio);
 ```
 
 ## 3) Send generated commands

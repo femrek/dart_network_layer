@@ -1,5 +1,6 @@
 import 'package:dart_network_layer_core/dart_network_layer_core.dart';
 import 'package:dart_network_layer_core/src/request/request_invoker_mixin.dart';
+import 'package:dart_network_layer_core/src/request/request_logging_mixin.dart';
 import 'package:dart_network_layer_core/src/request/request_managing_mixin.dart';
 import 'package:dart_network_layer_core/src/request/request_result_mixin.dart';
 
@@ -15,9 +16,26 @@ typedef OnProgressCallback = void Function(int done, int total);
 ///
 /// [T] is the type of the successful response model.
 abstract class RequestCommand<T extends Schema>
-    with RequestManagingMixin, RequestResultMixin<T>, RequestInvokerMixin<T> {
+    with
+        RequestManagingMixin,
+        RequestLoggingMixin,
+        RequestResultMixin<T>,
+        RequestInvokerMixin<T> {
+  /// The method of the request. GET, POST, PUT, DELETE, etc.
+  HttpRequestMethod get method => HttpRequestMethod.get;
+
   /// The path of the request.
   String get path;
+
+  /// The query parameters of the request.
+  List<QueryParameter> get queryParameters => const [];
+
+  /// The headers of the request.
+  Map<String, dynamic> get headers => const {};
+
+  /// The payload data of the request. Applicable in the form of Json, form data
+  /// or string
+  RequestSchema get payload => const EmptyRequestSchema();
 
   /// The factory instance to deserialize the response.
   SchemaFactory<T> get defaultResponseFactory;
@@ -30,19 +48,6 @@ abstract class RequestCommand<T extends Schema>
   /// the server returns a 400 status code, the error response factory can be
   /// different from the one for 500 status code.
   Map<int, SchemaFactory> get responseFactories => const {};
-
-  /// The method of the request. GET, POST, PUT, DELETE, etc.
-  HttpRequestMethod get method => HttpRequestMethod.get;
-
-  /// The payload data of the request. Applicable in the form of Json, form data
-  /// or string
-  RequestSchema get payload => const EmptyRequestSchema();
-
-  /// The query parameters of the request.
-  List<QueryParameter> get queryParameters => const [];
-
-  /// The headers of the request.
-  Map<String, dynamic> get headers => const {};
 
   /// The callback for the progress of the request.
   OnProgressCallback? get onSendProgressUpdate => null;
@@ -60,4 +65,31 @@ abstract class RequestCommand<T extends Schema>
   ///
   /// When null (default), the response is treated as a normal response.
   BinaryResponseType get binaryResponseType => const InMemoryBinaryResponse();
+
+  /// returns the string representation of the request command, including the
+  /// method, path, headers, etc.
+  String logString({
+    bool includeHeaderValues = false,
+    bool includePayload = false,
+    bool includeQueryParameterValues = false,
+  }) {
+    final headerStr = getHeaderLogString(
+      headers,
+      includeValues: includeHeaderValues,
+    );
+
+    final queryStr = getQueryParameterLogString(
+      queryParameters,
+      includeValues: includeQueryParameterValues,
+    );
+
+    final payloadStr = getPayloadLogString(
+      payload,
+      includePayload: includePayload,
+    );
+    return '$runtimeType: ${method.name} $path, '
+        'Headers: $headerStr, '
+        'Query Parameters: $queryStr, '
+        'Payload: $payloadStr';
+  }
 }

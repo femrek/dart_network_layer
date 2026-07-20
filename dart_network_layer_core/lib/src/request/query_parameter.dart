@@ -15,4 +15,9 @@ final class QueryParameter {
   /// The parameter value. Accepts any type; converted to a string when the
   /// URL is built. `null` is treated as an empty string.
   final dynamic value;
+
+  /// Returns a string representation of the query parameter for logging.
+  String toLogString({bool hideValue = true}) {
+    return '$key=${!hideValue ? value ?? '' : '***'}';
+  }
 }
