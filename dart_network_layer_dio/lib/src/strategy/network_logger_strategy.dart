@@ -17,8 +17,4 @@ abstract interface class NetworkLoggerStrategy {
   /// Logs when a network request fails with an error.
   void logError<T extends Schema>(
       RequestCommand<T> request, NetworkErrorResult<T> result);
-
-  /// Logs when a network request is cancelled.
-  void logCancel<T extends Schema>(
-      RequestCommand<T> request, NetworkErrorResult<T> result);
 }

@@ -10,25 +10,19 @@ import 'package:dart_network_layer_dio/src/strategy/payload_resolver.dart';
 import 'package:dart_network_layer_dio/src/strategy/request_dispatcher.dart';
 import 'package:dart_network_layer_dio/src/strategy/response_parser.dart';
 import 'package:dio/dio.dart';
-import 'package:logging/logging.dart';
 
 /// The network manager class for managing api communication.
 class DioNetworkInvoker implements INetworkInvoker {
   /// Create a new instance of [DioNetworkInvoker] with the given [Dio]
   /// instance.
-  ///
-  /// set [logger] to custom logger, if not provided, default logger will be
-  /// used with name [_defaultLoggerName].
   DioNetworkInvoker({
     required this.dio,
-    Logger? customLogger,
     RequestRegistry? registry,
     PayloadResolver? payloadResolver,
     ResponseParser? responseParser,
     RequestDispatcher? requestDispatcher,
     NetworkLoggerStrategy? networkLoggerStrategy,
   }) {
-    logger = customLogger ?? Logger(_defaultLoggerName);
     this.registry = registry ?? RequestRegistry();
     this.payloadResolver = payloadResolver ?? const DioPayloadResolver();
     this.responseParser = responseParser ?? const DioResponseParser();
@@ -38,7 +32,7 @@ class DioNetworkInvoker implements INetworkInvoker {
           responseParser: this.responseParser,
         );
     this.networkLoggerStrategy =
-        networkLoggerStrategy ?? DefaultNetworkLogger(logger: logger);
+        networkLoggerStrategy ?? DefaultNetworkLogger();
   }
 
   /// Create a new instance of [DioNetworkInvoker] with the given [baseUrl].
@@ -53,16 +47,10 @@ class DioNetworkInvoker implements INetworkInvoker {
               responseType: ResponseType.plain,
             ),
           ),
-          customLogger: Logger(_defaultLoggerName),
         );
-
-  static const String _defaultLoggerName = 'DioNetworkInvoker';
 
   /// The Dio instance used for network requests.
   final Dio dio;
-
-  /// The logger used for logging network requests and responses.
-  late final Logger logger;
 
   /// The registry for tracking active requests, cancel tokens, and history.
   late final RequestRegistry registry;
@@ -166,11 +154,7 @@ class DioNetworkInvoker implements INetworkInvoker {
           networkLoggerStrategy.logUnsuccessful(request, r);
         }
       case final NetworkErrorResult<T> r:
-        if (r.error is RequestCancelledError) {
-          networkLoggerStrategy.logCancel(request, r);
-        } else {
-          networkLoggerStrategy.logError(request, r);
-        }
+        networkLoggerStrategy.logError(request, r);
     }
 
     return result;
@@ -191,7 +175,6 @@ class DioNetworkInvoker implements INetworkInvoker {
         switch (r.error) {
           case NetworkErrorInvalidResponseType():
           case NetworkErrorInvalidPayload():
-          case NullInvokerError():
           case NetworkError():
             registry.finalizeRequest(request, ProgressStatus.error);
           case RequestCancelledError():

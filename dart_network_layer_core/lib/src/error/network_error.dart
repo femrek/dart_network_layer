@@ -58,22 +58,6 @@ final class NetworkErrorInvalidPayload extends NetworkErrorBase {
   }
 }
 
-/// The error type for errors occurred in the network invoker about the invoker
-/// instance being null.
-final class NullInvokerError extends NetworkErrorBase {
-  /// Creates a null invoker error.
-  const NullInvokerError({
-    required super.message,
-    required super.stackTrace,
-    super.error,
-  });
-
-  @override
-  String toString() {
-    return 'NullInvokerError: $message';
-  }
-}
-
 /// The error type thrown when a request is cancelled while it is still
 /// in-flight.
 ///

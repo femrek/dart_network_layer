@@ -12,19 +12,23 @@ class DefaultNetworkLogger implements NetworkLoggerStrategy {
   /// The logger instance used to output logs.
   final Logger logger;
 
-  void _log(Level level, String message, [Object? e, StackTrace? s]) {
+  /// Logs a message with the given [level], [message], and optional error [e]
+  /// and stack trace [s].
+  void log(Level level, String message, [Object? e, StackTrace? s]) {
     logger.log(level, message, e, s);
   }
 
   @override
   void logRequest<T extends Schema>(RequestCommand<T> request) {
-    _log(Level.FINE, request.logString());
+    log(Level.FINE, request.logString());
   }
 
   @override
   void logSuccess<T extends Schema>(
-      RequestCommand<T> request, SuccessResponseResult<T> result) {
-    _log(
+    RequestCommand<T> request,
+    SuccessResponseResult<T> result,
+  ) {
+    log(
       Level.INFO,
       'Response: ${result.statusCode} ${result.data.runtimeType} '
       'Request path: ${request.path}',
@@ -33,8 +37,10 @@ class DefaultNetworkLogger implements NetworkLoggerStrategy {
 
   @override
   void logUnsuccessful<T extends Schema>(
-      RequestCommand<T> request, SpecifiedResponseResult<T> result) {
-    _log(
+    RequestCommand<T> request,
+    SpecifiedResponseResult<T> result,
+  ) {
+    log(
       Level.WARNING,
       'Response: ${result.statusCode} ${result.data.runtimeType} '
       'Request path: ${request.path}',
@@ -43,27 +49,28 @@ class DefaultNetworkLogger implements NetworkLoggerStrategy {
 
   @override
   void logError<T extends Schema>(
-      RequestCommand<T> request, NetworkErrorResult<T> result) {
-    _log(
-      Level.SEVERE,
-      'Response: ${result.error.runtimeType} '
-      'Request path: ${request.path}',
-      result.error,
-      result.error.stackTrace,
-    );
-  }
-
-  @override
-  void logCancel<T extends Schema>(
-      RequestCommand<T> request, NetworkErrorResult<T> result) {
-    assert(
-      result.error is RequestCancelledError,
-      'Expected RequestCancelledError',
-    );
-    _log(
-      Level.INFO,
-      'Request canceled: ${result.error.message} '
-      'Request path: ${request.path}',
-    );
+    RequestCommand<T> request,
+    NetworkErrorResult<T> result,
+  ) {
+    final error = result.error;
+    switch (error) {
+      case NetworkErrorInvalidResponseType():
+      case NetworkErrorInvalidPayload():
+      case NetworkError():
+        log(
+          Level.SEVERE,
+          'Error while request path: ${request.path} '
+          'Response: ${error.runtimeType} '
+          'Error: ${error.message}',
+          error,
+          error.stackTrace,
+        );
+      case RequestCancelledError():
+        log(
+          Level.INFO,
+          'Request canceled: ${error.message} '
+          'Request path: ${request.path}',
+        );
+    }
   }
 }
