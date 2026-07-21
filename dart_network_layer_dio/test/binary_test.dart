@@ -150,7 +150,7 @@ void main() {
 
       test('factory builds from string', () {
         const factory = BinarySchemaFactory<RawStringBinarySchema>(
-          binaryResponseType: RawStringBinaryResponse('raw'),
+          binaryResponseType: RawStringBinaryResponse(),
         );
         final schema = factory.fromString('hello');
         expect(schema, isA<RawStringBinarySchema>());

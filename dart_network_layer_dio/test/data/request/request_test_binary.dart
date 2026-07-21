@@ -69,7 +69,7 @@ class RequestTestRawStringBinary extends RequestCommand<RawStringBinarySchema> {
 
   @override
   BinaryResponseType get binaryResponseType =>
-      const RawStringBinaryResponse('raw');
+      const RawStringBinaryResponse();
 
   @override
   SchemaFactory<RawStringBinarySchema> get defaultResponseFactory =>
