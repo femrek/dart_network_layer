@@ -6,8 +6,12 @@ abstract interface class NetworkLoggerStrategy {
   void logRequest<T extends Schema>(RequestCommand<T> request);
 
   /// Logs when a network request completes successfully.
+  ///
+  /// The [result] is a [SpecifiedResponseResult] that either originated as a
+  /// [SuccessResponseResult] or was validated as successful by the invoker's
+  /// validateStatus check.
   void logSuccess<T extends Schema>(
-      RequestCommand<T> request, SuccessResponseResult<T> result);
+      RequestCommand<T> request, SpecifiedResponseResult<T> result);
 
   /// Logs when a network request completes but with an unsuccessful
   /// status code.

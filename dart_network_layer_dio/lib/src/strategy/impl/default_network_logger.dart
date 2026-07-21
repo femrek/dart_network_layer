@@ -26,7 +26,7 @@ class DefaultNetworkLogger implements NetworkLoggerStrategy {
   @override
   void logSuccess<T extends Schema>(
     RequestCommand<T> request,
-    SuccessResponseResult<T> result,
+    SpecifiedResponseResult<T> result,
   ) {
     log(
       Level.INFO,

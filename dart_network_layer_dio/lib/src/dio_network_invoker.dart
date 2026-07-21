@@ -119,6 +119,17 @@ class DioNetworkInvoker implements INetworkInvoker {
     try {
       payload = await payloadResolver.resolve(request.payload);
     } on NetworkError catch (e) {
+      // Clean up the registry entry — the request never made it to the
+      // dispatcher, so its finally block will not run.
+      registry.unregisterRequest(request);
+      // ignore: invalid_use_of_internal_member, this is the network invoker
+      request.setOnCancel(() {
+        throw RequestAlreadyCancelledError(
+          message: 'Invalid state: Request was cancelled when it was already '
+              'completed or cancelled.',
+          stackTrace: StackTrace.current,
+        );
+      });
       final errorResult = NetworkErrorResult<T>(error: e);
       _setProgressStatus<T>(request, errorResult);
       // ignore: invalid_use_of_internal_member, this is the network invoker
@@ -143,13 +154,7 @@ class DioNetworkInvoker implements INetworkInvoker {
         networkLoggerStrategy.logSuccess(request, r);
       case final SpecifiedResponseResult<T> r:
         if (dio.options.validateStatus(r.statusCode)) {
-          networkLoggerStrategy.logSuccess(
-              request,
-              SuccessResponseResult<T>(
-                data: r.data as T,
-                statusCode: r.statusCode,
-                headers: r.headers,
-              ));
+          networkLoggerStrategy.logSuccess(request, r);
         } else {
           networkLoggerStrategy.logUnsuccessful(request, r);
         }
