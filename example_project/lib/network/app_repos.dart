@@ -15,14 +15,6 @@ final class AppRepos {
         followRedirects: true,
       ),
     );
-    dio.interceptors.add(
-      LogInterceptor(
-        request: false,
-        requestHeader: false,
-        responseBody: true,
-        logPrint: print,
-      ),
-    );
     example = CustomNetworkInvoker(dio);
   }
 

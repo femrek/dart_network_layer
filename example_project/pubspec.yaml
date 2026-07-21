@@ -26,6 +26,8 @@ dev_dependencies:
 dependency_overrides:
   dart_network_layer_core:
     path: ../dart_network_layer_core
+dart_network_layer_dio:
+  path: ../dart_network_layer_dio
 
 flutter:
   uses-material-design: true

@@ -8,7 +8,10 @@ class CustomNetworkInvoker extends DioNetworkInvoker {
   /// Creates an instance of [CustomNetworkInvoker] with the given [Dio]
   /// instance. You can customize the [Dio] instance before passing it to the
   /// super constructor.
-  CustomNetworkInvoker(Dio dio) : super(dio: dio);
+  CustomNetworkInvoker(Dio dio)
+    : super(
+        dio: dio,
+      );
 
   final Logger _log = Logger('CustomNetworkInvoker');
 
@@ -20,25 +23,6 @@ class CustomNetworkInvoker extends DioNetworkInvoker {
       'CustomNetworkInvoker: Making a request to'
       ' ${request.method} ${request.path}',
     );
-    final result = await super.send(request);
-
-    switch (result) {
-      case SuccessResponseResult(:final statusCode, :final data):
-        _log.info(
-          'CustomNetworkInvoker: Request succeeded with '
-          'status code $statusCode\n$data',
-        );
-      case SpecifiedResponseResult(:final statusCode, :final data):
-        _log.info(
-          'CustomNetworkInvoker: Request received a '
-          'specified response with status code $statusCode\n$data',
-        );
-      case NetworkErrorResult(:final error):
-        _log.severe(
-          'CustomNetworkInvoker: ERROR ${error.message}\n${error.stackTrace}',
-        );
-    }
-
-    return result;
+    return super.send(request);
   }
 }
