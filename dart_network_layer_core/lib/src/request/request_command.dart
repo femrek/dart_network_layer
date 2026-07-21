@@ -136,7 +136,7 @@ abstract class RequestCommand<T extends Schema>
     if (value != null && _sensitiveKeyRegex.hasMatch(key)) {
       return '***';
     }
-    return value.toString();
+    return value?.toString() ?? '';
   }
 
   /// returns the string representation of the request command, including the
