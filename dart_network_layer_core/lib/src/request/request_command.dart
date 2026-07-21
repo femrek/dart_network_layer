@@ -142,9 +142,9 @@ abstract class RequestCommand<T extends Schema>
   /// returns the string representation of the request command, including the
   /// method, path, headers, etc.
   String logString({
-    bool includeHeaderValues = false,
-    bool includePayload = false,
-    bool includeQueryParameterValues = false,
+    bool? includeHeaderValues,
+    bool? includePayload,
+    bool? includeQueryParameterValues,
   }) {
     final headerStr = getHeaderLogString(
       headers,
