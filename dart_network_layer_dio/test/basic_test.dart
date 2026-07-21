@@ -67,4 +67,114 @@ void main() {
       await server.close();
     });
   });
+
+  group('DioNetworkInvoker HTTP method tests', () {
+    test('POST request', () async {
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testUser],
+            method: 'POST',
+          ),
+          handler: (request) async =>
+              '{"id": "2", "name": "created", "age": 25}',
+        ),
+      ]);
+
+      final networkManager = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final response = await networkManager.send(_PostRequest());
+      expect(response, isA<SuccessResponseResult>());
+      await server.close();
+    });
+
+    test('PUT request', () async {
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testUser],
+            method: 'PUT',
+          ),
+          handler: (request) async =>
+              '{"id": "1", "name": "updated", "age": 30}',
+        ),
+      ]);
+
+      final networkManager = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final response = await networkManager.send(_PutRequest());
+      expect(response, isA<SuccessResponseResult>());
+      await server.close();
+    });
+
+    test('DELETE request', () async {
+      final server = await TestServer.createHttpServer(events: [
+        StandardServerEvent(
+          matcher: ServerEvent.standardMatcher(
+            paths: [TestPaths.testUser],
+            method: 'DELETE',
+          ),
+          handler: (request) async =>
+              '{"id": "1", "name": "deleted", "age": 20}',
+        ),
+      ]);
+
+      final networkManager = DioNetworkInvoker.fromBaseUrl(
+        'http://localhost:${server.port}',
+      );
+
+      final response = await networkManager.send(_DeleteRequest());
+      expect(response, isA<SuccessResponseResult>());
+      await server.close();
+    });
+  });
+}
+
+class _PostRequest extends RequestCommand<ResponseTestUser> {
+  @override
+  String get path => TestPaths.testUser;
+
+  @override
+  HttpRequestMethod get method => HttpRequestMethod.post;
+
+  @override
+  SchemaFactory<ResponseTestUser> get defaultResponseFactory =>
+      ResponseTestUserFactory();
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+}
+
+class _PutRequest extends RequestCommand<ResponseTestUser> {
+  @override
+  String get path => TestPaths.testUser;
+
+  @override
+  HttpRequestMethod get method => HttpRequestMethod.put;
+
+  @override
+  SchemaFactory<ResponseTestUser> get defaultResponseFactory =>
+      ResponseTestUserFactory();
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
+}
+
+class _DeleteRequest extends RequestCommand<ResponseTestUser> {
+  @override
+  String get path => TestPaths.testUser;
+
+  @override
+  HttpRequestMethod get method => HttpRequestMethod.delete;
+
+  @override
+  SchemaFactory<ResponseTestUser> get defaultResponseFactory =>
+      ResponseTestUserFactory();
+
+  @override
+  SchemaFactory get defaultErrorResponseFactory => IgnoredSchema.factory;
 }
