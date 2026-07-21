@@ -13,7 +13,7 @@ Use the maintained docs in the root `docs/` folder:
 - [Quick Start](../docs/QUICK_START.md)
 - [Quick Start with OpenAPI](../docs/QUICK_START_WITH_OPENAPI.md)
 - [Sending Files](../docs/SENDING_FILES.md)
-- [Receiving Files](../docs/RECIEVING_FILES.md)
+- [Receiving Files](../docs/RECEIVING_FILES.md)
 
 ## Example Integration
 

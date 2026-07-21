@@ -85,5 +85,5 @@ Generated commands can include:
 - multipart uploads (`FormDataRequestSchema` + `MultipartFileSchema`)
 - binary responses (`BinarySchema` + `BinaryResponseType`)
 
-See `docs/SENDING_FILES.md` and `docs/RECIEVING_FILES.md`.
+See `docs/SENDING_FILES.md` and `docs/RECEIVING_FILES.md`.
 
