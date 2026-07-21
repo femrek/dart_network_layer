@@ -91,7 +91,7 @@ final streamResult = await invoker.send(
 final textResult = await invoker.send(
   DownloadReportCommand(
 	reportId: 'csv-1',
-    responseType: const RawStringBinaryResponse('csv'),
+    responseType: const RawStringBinaryResponse(),
   ),
 );
 ```

@@ -10,7 +10,7 @@ Use the up-to-date guides in `docs/`:
 - [Quick Start](docs/QUICK_START.md)
 - [Quick Start with OpenAPI](docs/QUICK_START_WITH_OPENAPI.md)
 - [Sending Files](docs/SENDING_FILES.md)
-- [Receiving Files](docs/RECIEVING_FILES.md)
+- [Receiving Files](docs/RECEIVING_FILES.md)
 
 ## Packages
 
@@ -34,6 +34,5 @@ MIT
 [pd_dart_network_layer_dio]: https://pub.dev/packages/dart_network_layer_dio
 
 [gh_example_flutter_dio]: https://github.com/femrek/dart_network_layer/tree/main/example_project
-
 
 

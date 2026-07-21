@@ -29,11 +29,8 @@ final class StreamBinaryResponse extends BinaryResponseType {
 /// base64-encoded data or CSV) and you want to receive it as a string rather
 /// than bytes.
 final class RawStringBinaryResponse extends BinaryResponseType {
-  /// Creates an instance of [RawStringBinaryResponse].
-  const RawStringBinaryResponse(this.data);
-
-  /// The raw string response data.
-  final String data;
+  /// Creates a const instance of [RawStringBinaryResponse].
+  const RawStringBinaryResponse();
 }
 
 /// The response will be saved to a file at [savePath].

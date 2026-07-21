@@ -8,7 +8,7 @@ class CustomNetworkInvoker extends DioNetworkInvoker {
   /// Creates an instance of [CustomNetworkInvoker] with the given [Dio]
   /// instance. You can customize the [Dio] instance before passing it to the
   /// super constructor.
-  CustomNetworkInvoker(super.dio) : super.fromDio();
+  CustomNetworkInvoker(Dio dio) : super(dio: dio);
 
   final Logger _log = Logger('CustomNetworkInvoker');
 

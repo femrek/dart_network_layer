@@ -23,6 +23,14 @@ class TestNetworkInvoker implements INetworkInvoker {
   @override
   Future<NetworkResult<T>> send<T extends Schema>(
       RequestCommand<T> request) async {
+    final result = await _sendInternal(request);
+    // ignore: invalid_use_of_internal_member, testing internal mixin setter
+    request.setResult(result);
+    return result;
+  }
+
+  Future<NetworkResult<T>> _sendInternal<T extends Schema>(
+      RequestCommand<T> request) async {
     final response = await http.get(Uri.parse('$baseUrl${request.path}'));
 
     // Check if there's a specified factory for this status code

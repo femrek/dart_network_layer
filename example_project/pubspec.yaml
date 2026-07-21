@@ -23,5 +23,9 @@ dev_dependencies:
     sdk: flutter
   very_good_analysis: ^10.2.0
 
+dependency_overrides:
+  dart_network_layer_core:
+    path: ../dart_network_layer_core
+
 flutter:
   uses-material-design: true

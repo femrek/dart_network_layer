@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 abstract class AggregatedRequestState {
   /// Map of active request commands to their current progress state.
   @protected
-  final Map<RequestCommand, RequestProgressState> progressMap = {};
+  final Map<RequestCommand, RequestProgressState> progressMap = Map.identity();
 
   /// Returns the progress state for the given [command], or `null` if
   /// the request is not currently tracked.
