@@ -1,3 +1,41 @@
+## 1.0.0-rc.13 - 2026-07-22
+
+### 🚀 Features
+
+- Feat: add logging functionality.
+
+### 🐛 Bug Fixes
+
+- Fix(example): update response handling in request detail dialog and adjust dependency overrides
+
+- Fix(example): update response handling in request detail dialog and adjust dependency overrides
+
+### 🚜 Refactor
+
+- Refactor: update class structure of dio network invoker super classes.
+
+- Refactor: rename and restructure network invoker classes for clarity. and introduce logger layer.
+
+- Refactor: update structure of dio network invoker. Using strategy pattern.
+
+- Refactor: remove NullInvokerError and streamline logging in network logger strategy
+
+- Refactor: simplify RawStringBinaryResponse by removing data parameter
+
+- Refactor: streamline CustomNetworkInvoker and enhance logging setup
+
+- Refactor: convert HTTP method names to uppercase in request command logging
+
+- Refactor: enhance DefaultNetworkLogger to include request details in logs
+
+### 📚 Documentation
+
+- Docs: rename receiving files guide and fix links
+
+### 🧪 Testing
+
+- Test: refactor current tests and add tests for missing coverage.
+
 ## 1.0.0-dev.13 - 2026-07-22
 
 ### 🚀 Features
