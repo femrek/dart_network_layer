@@ -160,7 +160,7 @@ abstract class RequestCommand<T extends Schema>
       payload,
       includePayload: includePayload,
     );
-    return '$runtimeType: ${method.name} $path, '
+    return '$runtimeType: ${method.name.toUpperCase()} $path, '
         'Headers: $headerStr, '
         'Query Parameters: $queryStr, '
         'Payload: $payloadStr';
