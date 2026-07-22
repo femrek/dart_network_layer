@@ -1,6 +1,42 @@
+## 1.0.0-dev.13 - 2026-07-22
+
+### 🚀 Features
+
+- Feat: add logging functionality.
+
+### 🐛 Bug Fixes
+
+- Fix(example): update response handling in request detail dialog and adjust dependency overrides
+
+- Fix(example): update response handling in request detail dialog and adjust dependency overrides
+
+### 🚜 Refactor
+
+- Refactor: update class structure of dio network invoker super classes.
+
+- Refactor: rename and restructure network invoker classes for clarity. and introduce logger layer.
+
+- Refactor: update structure of dio network invoker. Using strategy pattern.
+
+- Refactor: remove NullInvokerError and streamline logging in network logger strategy
+
+- Refactor: simplify RawStringBinaryResponse by removing data parameter
+
+- Refactor: streamline CustomNetworkInvoker and enhance logging setup
+
+- Refactor: convert HTTP method names to uppercase in request command logging
+
+- Refactor: enhance DefaultNetworkLogger to include request details in logs
+
+### 📚 Documentation
+
+- Docs: rename receiving files guide and fix links
+
+### 🧪 Testing
+
+- Test: refactor current tests and add tests for missing coverage.
+
 ## 1.0.0-dev.12 - 2026-05-12
-
-
 
 ### 🚀 Features
 
@@ -8,10 +44,7 @@
 
 - Feat: implement RequestInvokerMixin for enhanced request handling
 
-
 ## 1.0.0-dev.11 - 2026-05-11
-
-
 
 ### 🚀 Features
 
@@ -19,10 +52,7 @@
 
 - Feat: enhance result creation logic in mixin_request.dart to handle default responses more robustly
 
-
 ## 1.0.0-dev.10 - 2026-05-09
-
-
 
 ### 🚀 Features
 
@@ -30,10 +60,7 @@
 
 - Feat: add publish target to Makefile and remove pub.dev publishing from GitHub Actions workflow
 
-
 ## 1.0.0-dev10 - 2026-05-09
-
-
 
 ### 🚀 Features
 
@@ -47,8 +74,6 @@
 
 - Feat: add GitHub Actions workflow for publishing Dart packages and creating releases
 
-
-
 ### 🚜 Refactor
 
 - Refactor: replace callback setters with explicit methods for request cancellation and result handling
@@ -59,48 +84,37 @@
 
 - Refactor: update SuccessResponseResult to extend SpecifiedResponseResult for improved type handling
 
-
-
 ### 📚 Documentation
 
 - Docs: update README and add new guides for file handling and OpenAPI integration
 
-
 ## 0.7.1 - 2025-10-25
-
-
 
 ### 🚜 Refactor
 
 - Refactor: Implement the singleton pattern for IgnoredResponseModelFactory
 
-
 ## 0.7.0 - 2025-10-25
-
-
 
 ### 🚀 Features
 
 - Feat: Allows handling error response bodies.
 
 - ResponseResult and RequestCommand have one more generic type representing the error response type.
-- Create IgnoredResponseModel as a ResponseModel implementation provided by the core library. Useful when the response payload is not relevant.
-
-
+- Create IgnoredResponseModel as a ResponseModel implementation provided by the core library. Useful when the response
+  payload is not relevant.
 
 ### 🚜 Refactor
 
-- Refactor: remove payload and headers from RequestCommand.toLogString() method. It can be still overridden by the subclass.
-
+- Refactor: remove payload and headers from RequestCommand.toLogString() method. It can be still overridden by the
+  subclass.
 
 ## 0.6.0 - 2025-09-21
-
-
 
 ### 🚀 Features
 
 - Feat: Create ResponseModelFactory and subclasses to reduce
-ResponseModel. No more sample response model.
+  ResponseModel. No more sample response model.
 
 * Remove JsonResponseModel and CustomResponseModel classes.
   ResponseModes can be extended directly.
@@ -109,24 +123,17 @@ ResponseModel. No more sample response model.
 * Update RequestCommand with 'responsefactory' field instead of
   'sampleModel'.
 
-
-
 ### 📚 Documentation
 
 - Docs: improve clarity and grammar in README.md
 
-
 ## 0.5.0 - 2025-08-30
-
-
 
 ### 🐛 Bug Fixes
 
 - Fix: example project is updated to new version.
 
 - Fix: example flutter dio app updated to new version of the packages.
-
-
 
 ### 🚜 Refactor
 
@@ -139,16 +146,11 @@ ResponseModel. No more sample response model.
 * Remove some log types.
 * Refactor onLog calls in invoker implementations.
 
-
-
 ### 🧪 Testing
 
 - Test: root test extended.
 
-
 ## dart_v0.4.0 - 2025-01-21
-
-
 
 ### 🐛 Bug Fixes
 
@@ -156,10 +158,7 @@ ResponseModel. No more sample response model.
 
 - Fix: workflow release package name.
 
-
 ## dio_v0.4.0 - 2025-01-21
-
-
 
 ### 🚀 Features
 
@@ -169,10 +168,7 @@ ResponseModel. No more sample response model.
 
 - Feat: dart impl switched to core v0.4
 
-
 ## core_v0.4.1 - 2025-01-20
-
-
 
 ### 🐛 Bug Fixes
 
@@ -180,10 +176,7 @@ ResponseModel. No more sample response model.
 
 * missing export of a file.
 
-
 ## core_v0.4.0 - 2025-01-20
-
-
 
 ### 🚀 Features
 
@@ -202,8 +195,6 @@ ResponseModel. No more sample response model.
 * NetworkError classes are created.
 * Error log types are updated with new error data types.
 
-
-
 ### 🚜 Refactor
 
 - Refactor: logging in core module is improved.
@@ -212,8 +203,6 @@ ResponseModel. No more sample response model.
 * Tests is written for each class of log type.
 * Response and Request models hava toLogString function.
 
-
-
 ### 🧪 Testing
 
 - Test: a simple test is written in the root of the project.
@@ -221,10 +210,7 @@ ResponseModel. No more sample response model.
 * http_test_server is added to project.
 * Dio and Dart implementation is being test at the same time.
 
-
 ## dio_v0.3.0 - 2025-01-12
-
-
 
 ### 🚀 Features
 
@@ -234,16 +220,11 @@ ResponseModel. No more sample response model.
 * `when` and `whenAsync` functions of `ResponseResult`
   class are updated to be able to return a custom data.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: workflow release
 
-
 ## core_v0.3.0 - 2025-01-12
-
-
 
 ### 🚀 Features
 
@@ -252,10 +233,7 @@ ResponseModel. No more sample response model.
 * when and whenAsync functions of ResponseResult class are able to
   return an object optionally.
 
-
 ## core_v0.2.1 - 2025-01-12
-
-
 
 ### 🚀 Features
 
@@ -267,8 +245,6 @@ ResponseModel. No more sample response model.
 
 - Feat: reads CHANGELOG.md file when creating github releases.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: change log reader extracts absolute number.
@@ -276,8 +252,6 @@ ResponseModel. No more sample response model.
 - Fix: workflow release job. release body.
 
 - Fix: workflow file. release
-
-
 
 ### 🧪 Testing
 
@@ -287,10 +261,7 @@ ResponseModel. No more sample response model.
 * Instead of using HttpServer directly, using the added package in
   tests.
 
-
 ## 0.2.0 - 2025-01-08
-
-
 
 ### 🚀 Features
 
@@ -299,25 +270,17 @@ ResponseModel. No more sample response model.
 * dart_network_layer_dio dependency updated to v0.2.0.
 * example project and its tests are migrated.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: workflow publish install dependencies --no-example flag.
 
-
 ## dio_v0.2.0 - 2025-01-08
-
-
 
 ### 🐛 Bug Fixes
 
 - Fix: workflow wrong env usage is corrected.
 
-
 ## core_v0.2.0 - 2025-01-08
-
-
 
 ### 🚀 Features
 
@@ -342,8 +305,6 @@ ResponseModel. No more sample response model.
 * Model classes are renewed according to new core classes.
 * readme and changelog files are updated.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: workflow tags are fixed.
@@ -354,13 +315,9 @@ ResponseModel. No more sample response model.
 
 - Fix: workflow publish install dependencies in correct folder.
 
-
-
 ### 🎨 Styling
 
 - Style: unncessary commend block.
-
-
 
 ### 🧪 Testing
 
@@ -368,10 +325,7 @@ ResponseModel. No more sample response model.
 
 * workflow updated to test core module as well.
 
-
 ## core_v0.1.1 - 2025-01-07
-
-
 
 ### 🚀 Features
 
@@ -384,16 +338,11 @@ ResponseModel. No more sample response model.
 
 - Feat: dio module example project reduced to dart console programm.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: example project dependency errors
 
-
 ## 0.1.0 - 2025-01-05
-
-
 
 ### 🚀 Features
 
@@ -403,28 +352,19 @@ ResponseModel. No more sample response model.
   the implementation library.
 * Dio impl package version updated.
 
-
 ## dio_v0.1.1 - 2025-01-05
-
-
 
 ### 🚀 Features
 
 - Feat: core module verion updated.
 
-
 ## core_v0.1.0 - 2025-01-05
-
-
 
 ### 🐛 Bug Fixes
 
 - Fix: github actions release script fixed. (zip file name)
 
-
 ## dio_v0.1.0 - 2025-01-05
-
-
 
 ### 🚀 Features
 
@@ -438,16 +378,11 @@ ResponseModel. No more sample response model.
 * example project copied from bundle project.
 * unneccesary import removed in dio impl.
 
-
-
 ### 📚 Documentation
 
 - Doc: github action file explained better.
 
-
 ## dio_v0.0.2.7 - 2025-01-04
-
-
 
 ### 🐛 Bug Fixes
 
@@ -459,10 +394,7 @@ ResponseModel. No more sample response model.
 
 * auto release script syntax and etc. fixed
 
-
 ## dio_v0.0.2.1 - 2025-01-04
-
-
 
 ### 🚀 Features
 
@@ -490,12 +422,10 @@ ResponseModel. No more sample response model.
 
 - Feat: dio impl exports core package.
 
-
-
 ### 🐛 Bug Fixes
 
 - Fix: analysis_options.yaml files are corrected for both package and
-example project.
+  example project.
 
 - Fix: flutter_test removed.
 
@@ -514,8 +444,6 @@ example project.
 - Fix: github action, runnig tests.
 
 * Test run command is updated to run in correct folder.
-
-
 
 ### 🚜 Refactor
 
