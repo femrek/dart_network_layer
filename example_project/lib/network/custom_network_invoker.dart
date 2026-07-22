@@ -11,6 +11,11 @@ class CustomNetworkInvoker extends DioNetworkInvoker {
   CustomNetworkInvoker(Dio dio)
     : super(
         dio: dio,
+        networkLoggerStrategy: DefaultNetworkLogger(
+          includeHeaderValuesOfRequest: true,
+          includePayloadOfRequest: true,
+          includeQueryParameterValuesOfRequest: true,
+        ),
       );
 
   final Logger _log = Logger('CustomNetworkInvoker');
