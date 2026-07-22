@@ -345,7 +345,7 @@ void main() {
       expect(
         request.logString(),
         equals(
-          '_TestRequest: get /test, Headers: none, '
+          '_TestRequest: GET /test, Headers: none, '
           'Query Parameters: none, Payload: none',
         ),
       );
@@ -356,7 +356,7 @@ void main() {
         testMethod: HttpRequestMethod.post,
         testPath: '/custom',
       );
-      expect(request.logString(), contains('post /custom'));
+      expect(request.logString(), contains('POST /custom'));
     });
 
     test('propagates inclusion flags correctly', () {
@@ -373,7 +373,7 @@ void main() {
           includePayload: true,
         ),
         equals(
-          '_TestRequest: get /test, Headers: H: V, '
+          '_TestRequest: GET /test, Headers: H: V, '
           'Query Parameters: Q=P, Payload: TestJsonPayload(key: value)',
         ),
       );
