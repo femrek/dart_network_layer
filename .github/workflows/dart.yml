@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
 
       # Install dependencies for each package
       - name: Install dependencies for core
@@ -49,7 +49,7 @@ jobs:
       contents: write # Needed for creating GitHub Releases
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify version matches tag
         run: |
@@ -70,6 +70,6 @@ jobs:
           awk '/^## /{ if (p) { exit }; p=1; next } p{ print }' CHANGELOG.md > release_notes.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: release_notes.md
